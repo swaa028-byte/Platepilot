@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { AlertCircle, ArrowRight, Check, FileSpreadsheet, MapPin, Search, ShieldCheck } from "lucide-react";
 import { displayMinorAmount, parseMenuCsv, type ImportedMenuItem } from "@/domain/menu";
@@ -8,7 +8,7 @@ import { displayMinorAmount, parseMenuCsv, type ImportedMenuItem } from "@/domai
 type Place = { id: string; displayName?: { text: string }; formattedAddress?: string; attributions: { provider?: string; providerUri?: string }[] };
 type Workspace = { organizationId: string; locationId: string };
 
-export function OnboardingWizard({ supabaseConfigured, googleConfigured }: { supabaseConfigured: boolean; googleConfigured: boolean }) {
+export function OnboardingWizard({ persistenceConfigured, googleConfigured, localMode }: { persistenceConfigured: boolean; googleConfigured: boolean; localMode: boolean }) {
   const t = useTranslations("Onboarding");
   const locale = useLocale();
   const [step, setStep] = useState(1);
@@ -21,7 +21,36 @@ export function OnboardingWizard({ supabaseConfigured, googleConfigured }: { sup
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [items, setItems] = useState<ImportedMenuItem[]>([]);
   const [published, setPublished] = useState(false);
+  const [session, setSession] = useState<"unknown" | "signedIn" | "signedOut">("unknown");
+  const [email, setEmail] = useState("");
   const [form, setForm] = useState({ name: "", legalCountry: "", currency: "", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", locale, address: "" });
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/auth/session", { cache: "no-store" })
+      .then((response) => response.json())
+      .then((body: { authenticated?: boolean }) => {
+        if (active) setSession(body.authenticated ? "signedIn" : "signedOut");
+      })
+      .catch(() => { if (active) setSession("signedOut"); });
+    return () => { active = false; };
+  }, []);
+
+  async function signIn(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true); setError("");
+    try {
+      const response = await fetch("/api/auth/local", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!response.ok) throw new Error("SIGN_IN_FAILED");
+      setSession("signedIn");
+    } catch {
+      setError(t("error"));
+    } finally { setBusy(false); }
+  }
 
   function update(key: keyof typeof form, value: string) { setForm((current) => ({ ...current, [key]: value })); }
 
@@ -44,7 +73,6 @@ export function OnboardingWizard({ supabaseConfigured, googleConfigured }: { sup
 
   async function createWorkspace(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError("");
-    if (!supabaseConfigured) { setStep(3); setBusy(false); return; }
     try {
       const response = await fetch("/api/onboarding/manual", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, placeId: selectedPlace?.id }) });
       const body = await response.json();
@@ -78,17 +106,26 @@ export function OnboardingWizard({ supabaseConfigured, googleConfigured }: { sup
         {[t("stepOne"), t("stepTwo"), t("stepThree"), t("stepFour")].map((label, index) => <li key={label} className={`setup-step ${step === index + 1 ? "is-active" : ""} ${step > index + 1 ? "is-complete" : ""}`}><span>{step > index + 1 ? <Check size={13} /> : index + 1}</span>{label}</li>)}
       </ol>
       <div className="setup-panel">
-        {!supabaseConfigured && <div className="notice notice--warning"><AlertCircle size={18} />{t("configRequired")}</div>}
+        {!persistenceConfigured && <div className="notice notice--warning"><AlertCircle size={18} />{t("configRequired")}</div>}
         {error && <div className="notice notice--error" role="alert"><AlertCircle size={18} />{error}</div>}
-        {step === 1 && <div className="form-card">
+        {session === "signedOut" && localMode && <form className="form-card" onSubmit={signIn}>
+          <h2>{t("signInTitle")}</h2><p>{t("signInBody")}</p>
+          <label className="field"><span>{t("signInEmail")}</span><input required type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+          <div className="form-actions"><button className="button" disabled={busy}><ShieldCheck size={16} />{busy ? t("creating") : t("signIn")}</button></div>
+        </form>}
+        {session === "signedOut" && !localMode && <div className="form-card">
+          <h2>{t("signInTitle")}</h2><p>{t("signInRequired")}</p>
+          <div className="form-actions"><a className="button" href={`/${locale}/login`}>{t("signInLink")}</a></div>
+        </div>}
+        {session === "signedIn" && step === 1 && <div className="form-card">
           <h2>{t("findTitle")}</h2><p>{t("findBody")}</p>
           {!googleConfigured && <div className="notice"><MapPin size={18} />{t("googleUnavailable")}</div>}
-          <form className="search-row" onSubmit={search}><label className="field"><span>{t("queryLabel")}</span><input minLength={3} maxLength={160} required value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("queryPlaceholder")} /></label><button className="button" disabled={busy || !googleConfigured || !supabaseConfigured}><Search size={16} />{busy ? t("searching") : t("search")}</button></form>
+          <form className="search-row" onSubmit={search}><label className="field"><span>{t("queryLabel")}</span><input minLength={3} maxLength={160} required value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("queryPlaceholder")} /></label><button className="button" disabled={busy || !googleConfigured || !persistenceConfigured}><Search size={16} />{busy ? t("searching") : t("search")}</button></form>
           {searched && places.length === 0 && <p>{t("noResults")}</p>}
           {places.length > 0 && <div className="place-results">{places.map((place) => <article className="place-result" key={place.id}><h3>{place.displayName?.text || place.id}</h3><p>{place.formattedAddress}</p><button className="button button--small" onClick={() => selectPlace(place)}>{t("select")}<ArrowRight size={14} /></button>{place.attributions.map((attribution, index) => <p className="attribution" key={index}>{attribution.providerUri ? <a href={attribution.providerUri} target="_blank" rel="noreferrer">{attribution.provider || attribution.providerUri}</a> : attribution.provider}</p>)}</article>)}<p className="attribution">{t("googleAttribution")}</p></div>}
           <div className="divider-label">{t("or")}</div><button type="button" className="button button--ghost" onClick={() => setStep(2)}>{t("manual")}<ArrowRight size={16} /></button>
         </div>}
-        {step === 2 && <form className="form-card" onSubmit={createWorkspace}>
+        {session === "signedIn" && step === 2 && <form className="form-card" onSubmit={createWorkspace}>
           <h2>{t("manualTitle")}</h2><p>{t("manualBody")}</p>
           {selectedPlace && <div className="notice"><MapPin size={17} />{selectedPlace.displayName?.text} · Place ID {selectedPlace.id}</div>}
           <div className="form-grid">
@@ -101,14 +138,14 @@ export function OnboardingWizard({ supabaseConfigured, googleConfigured }: { sup
           </div>
           <div className="form-actions"><button className="button" disabled={busy}>{busy ? t("creating") : t("continue")}<ArrowRight size={16} /></button><button type="button" className="button button--ghost" onClick={() => setStep(1)}>{t("stepOne")}</button></div>
         </form>}
-        {step === 3 && <div className="form-card">
+        {session === "signedIn" && step === 3 && <div className="form-card">
           <h2>{t("menuTitle")}</h2><p>{t("menuBody")}</p>
           <label className="csv-drop"><FileSpreadsheet size={32} /><strong>{t("chooseCsv")}</strong><input type="file" accept=".csv,text/csv" onChange={(event) => preview(event.target.files?.[0])} /><p>{t("csvFormat")}</p></label>
           {items.length > 0 && <><div className="menu-preview"><table><thead><tr><th>Category</th><th>Item</th><th>Price</th><th>Available</th></tr></thead><tbody>{items.map((item) => <tr key={`${item.category}-${item.item}`}><td>{item.category}</td><td>{item.item}<br /><small>{item.allergens.join(", ")}</small></td><td>{displayMinorAmount(item.amountMinor, item.currency)}</td><td>{item.available ? "Yes" : "No"}</td></tr>)}</tbody></table></div><button className="button" disabled={busy || published} onClick={publish}><Check size={16} />{t("publish")}</button></>}
           {!workspace && <div className="notice notice--warning"><ShieldCheck size={18} />{t("authRequired")}</div>}
           <div className="form-actions"><button type="button" className="button button--ghost" onClick={() => setStep(2)}>{t("stepTwo")}</button></div>
         </div>}
-        {step === 4 && <div className="form-card"><h2>{t("reviewTitle")}</h2><p>{t("reviewBody")}</p>{published && <div className="notice notice--success"><Check size={18} />{t("publish")}</div>}<h3>{t("reviewChecklist")}</h3><ul className="release-gates">{["Merchant ownership review", "Service hours, zones and fulfillment settings", "Verified merchant payment account", "Authorized sandbox payment → kitchen ticket test", "Staff pilot and live-release approval"].map((gate) => <li key={gate}><AlertCircle size={16} />{gate}</li>)}</ul></div>}
+        {session === "signedIn" && step === 4 && <div className="form-card"><h2>{t("reviewTitle")}</h2><p>{t("reviewBody")}</p>{published && <div className="notice notice--success"><Check size={18} />{t("publish")}</div>}<h3>{t("reviewChecklist")}</h3><ul className="release-gates">{["Merchant ownership review", "Service hours, zones and fulfillment settings", "Verified merchant payment account", "Authorized sandbox payment → kitchen ticket test", "Staff pilot and live-release approval"].map((gate) => <li key={gate}><AlertCircle size={16} />{gate}</li>)}</ul></div>}
       </div>
     </div>
   );

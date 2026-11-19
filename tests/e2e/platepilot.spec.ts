@@ -1,13 +1,18 @@
 import { expect, test } from "@playwright/test";
 
-test("public home, health and unconfigured authentication stay honest", async ({ page, request }) => {
+test("public home, health and local authentication stay honest", async ({ page, request }) => {
   await page.goto("/en");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Service has enough moving parts.");
   await expect(page.getByRole("link", { name: "Set up your restaurant" }).first()).toBeVisible();
   expect((await request.get("/api/health")).status()).toBe(200);
   await page.goto("/en/login");
-  await expect(page.getByText("Authentication needs configuration")).toBeVisible();
+  // Without a hosted project PlatePilot signs staff in against its own local
+  // database. It must offer that local form, and it must not offer the hosted
+  // sign-in link, which cannot work here.
+  await expect(page.getByLabel("Work email")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Email me a sign-in link" })).toHaveCount(0);
+  await expect(page.getByText("Authentication needs configuration")).toHaveCount(0);
 });
 
 test("locale routes preserve language and Arabic direction", async ({ page }) => {
@@ -46,6 +51,11 @@ test("floor planner creates a real local draft and keeps 3D opt-in", async ({ pa
 
 test("manual onboarding and real CSV preview do not invent a workspace", async ({ page }) => {
   await page.goto("/en/onboarding");
+  // Onboarding asks who is setting the restaurant up before it will create
+  // anything. Signing in locally is what a merchant without a hosted project
+  // does.
+  await page.getByLabel("Owner email address").fill("owner@test-merchant.co.uk");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(page.getByText("Google discovery is not configured.")).toBeVisible();
   await page.getByRole("button", { name: "Enter restaurant details manually" }).click();
   await page.getByLabel("Restaurant name", { exact: true }).fill("Test merchant input");
@@ -56,5 +66,5 @@ test("manual onboarding and real CSV preview do not invent a workspace", async (
   await page.locator('input[type="file"]').setInputFiles({ name: "menu.csv", mimeType: "text/csv", buffer: Buffer.from("category,item,amount,currency,available\nMains,Merchant item,12.50,GBP,true") });
   await expect(page.getByRole("cell", { name: "Merchant item" })).toBeVisible();
   await expect(page.getByText("12.50 GBP")).toBeVisible();
-  await expect(page.getByText("Sign in to create a workspace or publish a menu.")).toBeVisible();
+  await expect(page.getByText("Sign in to create a workspace or publish a menu.")).toHaveCount(0);
 });

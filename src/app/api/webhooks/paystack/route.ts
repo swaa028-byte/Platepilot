@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createAdminClient } from "@/server/db/admin";
+import { getDbClient } from "@/server/db/client";
 import { verifyPaystackSignature, verifyPaystackTransaction } from "@/server/payments/paystack";
 import { resolveProviderSecret } from "@/server/payments/secrets";
 import { apiError } from "@/server/security/http";
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const raw = new Uint8Array(await request.arrayBuffer());
     if (raw.byteLength > 1_000_000) return NextResponse.json({ error: "BODY_TOO_LARGE" }, { status: 413 });
     const event = eventSchema.parse(JSON.parse(new TextDecoder().decode(raw)));
-    const admin = createAdminClient();
+    const admin = await getDbClient();
     const { data: attempt, error } = await admin.from("payment_attempts").select("id,order_id,payment_connection_id,amount_minor,currency,environment,provider_reference").eq("provider", "paystack").eq("provider_reference", event.data.reference).single();
     if (error || !attempt) return NextResponse.json({ error: "UNKNOWN_REFERENCE" }, { status: 404 });
     const { data: connection } = await admin.from("payment_connections").select("secret_ref").eq("id", attempt.payment_connection_id).single();

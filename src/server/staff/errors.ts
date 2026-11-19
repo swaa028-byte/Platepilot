@@ -23,3 +23,19 @@ export function mapStaffError(message: string) {
   if (message.includes("INVALID_REQUEST")) return "INVALID_REQUEST";
   return "REQUEST_REJECTED";
 }
+
+/**
+ * Maps a database rejection and records the original reason on the server.
+ *
+ * The client only ever receives the mapped code. The original reason is kept
+ * in the server log, because an unmapped rejection is a defect that has to be
+ * diagnosable without leaking database details to a browser.
+ */
+export function staffError(error: { message: string; code?: string } | null) {
+  if (!error) return new Error("REQUEST_REJECTED");
+  const mapped = mapStaffError(error.message);
+  if (mapped === "REQUEST_REJECTED") {
+    console.error("Unmapped database rejection", { message: error.message, code: error.code });
+  }
+  return new Error(mapped);
+}

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createAdminClient } from "@/server/db/admin";
+import { getDbClient } from "@/server/db/client";
 import { checkRateLimit } from "@/server/security/rate-limit";
 import { apiError } from "@/server/security/http";
 
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     const address = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
     checkRateLimit(`orders:${address}`, 20, 60_000);
     const body = input.parse(await request.json());
-    const admin = createAdminClient();
+    const admin = await getDbClient();
     const { data, error } = await admin.rpc("app_create_order", {
       p_location_id: body.locationId,
       p_service_type: body.serviceType,

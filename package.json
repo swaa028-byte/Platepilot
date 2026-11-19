@@ -16,9 +16,11 @@
     "test:db": "vitest run --config vitest.db.config.ts",
     "test:e2e": "playwright test",
     "worker": "tsx worker/index.ts",
-    "messages:check": "tsx scripts/check-messages.ts"
+    "messages:check": "tsx scripts/check-messages.ts",
+    "e2e:clean": "node scripts/clean-e2e-data.mjs"
   },
   "dependencies": {
+    "@electric-sql/pglite": "0.5.16",
     "@react-three/fiber": "9.8.2",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.119.1",
@@ -33,7 +35,6 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.5.16",
     "@playwright/test": "1.65.1",
     "@tailwindcss/postcss": "4.3.5",
     "@testing-library/jest-dom": "8.0.0",

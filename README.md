@@ -6,6 +6,14 @@ PlatePilot is an original, modular restaurant operating system built with Next.j
 
 > Working brand only: no trademark or domain clearance is implied. No live payments, public deployment, real messages, demo merchant records, or provider verification are included.
 
+## Staff surfaces
+
+| Surface | What it is |
+| --- | --- |
+| `/[locale]/kitchen` | The kitchen display. One column per station; ticket number, service type, table, guest and elapsed time on every ticket; the allergy a guest raised; each line is held, started, readied and served on its own |
+| `/[locale]/reports` | The day-end report, read from the orders the location actually took |
+| `/[locale]/floor-planner` | The dining-room plan, with an opt-in 3D view that loads only when it is asked for |
+
 ## Run locally
 
 Prerequisites: Node.js 22.12+ and pnpm 12.21.0 (via Corepack or the pinned `npx` command).
@@ -66,6 +74,13 @@ server inside each database function.
 | `POST /api/staff/refunds` | Request a refund against a settled payment, within the refundable limit |
 | `POST` / `PUT /api/staff/shifts` | Open a cash shift and close the day with an expected total and a variance |
 | `POST /api/staff/reservations` | Book a table, with room capacity and table conflicts checked in the booking transaction |
+| `GET /api/staff/locations` | The locations the signed-in member belongs to, with the role they hold at each |
+| `GET /api/staff/kitchen` | The kitchen board: live tickets grouped by the station that prepares them |
+| `POST /api/staff/kitchen` | Move one ticket line to its next state. Serving a line takes the recipe ingredients out of stock, exactly once |
+| `GET /api/staff/inventory` | The stock position, with low-stock flags |
+| `POST /api/staff/inventory` | Record stock coming in. The delivery note id is idempotent and scoped to the location |
+| `GET` / `POST /api/staff/inventory/config` | Read and change the ingredients, the recipes and the production stations |
+| `GET /api/staff/reports/day-end` | The trading day: net sales, covers, average check, discounts, cancellations, hourly sales, and the split by channel and service type |
 
 Public order placement (`POST /api/orders`) is priced on the server too: item
 prices, modifier deltas, promotions, tax, service fee, delivery fee, opening
@@ -77,6 +92,7 @@ client.
 - [Deployment and rollback](docs/deployment.md)
 - [Operations and restore](docs/operations.md)
 - [Location settings](docs/location-settings.md)
+- [Competitive analysis and the evidence behind it](docs/competitive-analysis.md)
 - [Security and privacy](docs/security.md)
 - [Integration verification matrix](docs/integrations.md)
 - [Staff training and pilot acceptance](docs/staff-training.md)

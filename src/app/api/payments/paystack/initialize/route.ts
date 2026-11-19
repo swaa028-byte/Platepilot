@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createAdminClient } from "@/server/db/admin";
+import { getDbClient } from "@/server/db/client";
 import { initializePaystack } from "@/server/payments/paystack";
 import { resolveProviderSecret } from "@/server/payments/secrets";
 import { checkRateLimit } from "@/server/security/rate-limit";
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   try {
     checkRateLimit(`paystack:${request.headers.get("x-forwarded-for") || "local"}`, 10);
     const body = input.parse(await request.json());
-    const admin = createAdminClient();
+    const admin = await getDbClient();
     const { data: order, error: orderError } = await admin.from("orders").select("id,organization_id,location_id,total_minor,currency,payment_status").eq("id", body.orderId).eq("tracking_token", body.trackingToken).single();
     if (orderError || !order || order.payment_status === "paid") throw new Error("ORDER_NOT_PAYABLE");
     const { data: connection, error: connectionError } = await admin.from("payment_connections").select("id,environment,secret_ref").eq("organization_id", order.organization_id).eq("location_id", order.location_id).eq("provider", "paystack").eq("currency", order.currency).eq("verified", true).eq("enabled", true).single();

@@ -18,6 +18,9 @@ const input = z.object({
     quantity: z.number().int().min(1).max(100),
     // A client may state which options it wants, never what they cost.
     modifiers: z.array(modifierInput).max(50).default([]),
+    // What the kitchen must know: an allergy the guest raised, and a note.
+    allergyNote: z.string().trim().max(200).nullable().default(null),
+    kitchenNote: z.string().trim().max(200).nullable().default(null),
   })).min(1).max(100),
   tenderType: z.enum(["cash", "counter", "external_terminal"]).nullable().default(null),
   tableId: z.string().uuid().nullable().default(null),

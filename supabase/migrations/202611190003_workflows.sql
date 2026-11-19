@@ -33,7 +33,7 @@ begin
     if v_item->>'currency' <> v_currency or (v_item->>'amountMinor') !~ '^[0-9]+$' then raise exception 'CURRENCY_OR_AMOUNT_MISMATCH'; end if;
     insert into catalog_categories(organization_id, location_id, name) values (p_organization_id, p_location_id, v_item->>'category')
       on conflict (location_id, name) do update set name=excluded.name returning id into v_category_id;
-    insert into menu_items(organization_id, location_id, category_id, name, description, allergens, available, version)
+    insert into menu_items(organization_id, location_id, category_id, name, description, allergens, available)
       values (p_organization_id, p_location_id, v_category_id, v_item->>'item', coalesce(v_item->>'description',''), coalesce((select array_agg(value) from jsonb_array_elements_text(coalesce(v_item->'allergens','[]'::jsonb))), '{}'), coalesce((v_item->>'available')::boolean,false))
       on conflict (category_id, name) do update set description=excluded.description, allergens=excluded.allergens, available=excluded.available, version=menu_items.version+1 returning id into v_menu_item_id;
     insert into item_prices(price_book_id, menu_item_id, amount_minor) values (v_price_book_id, v_menu_item_id, (v_item->>'amountMinor')::bigint);

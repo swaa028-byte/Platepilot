@@ -10,3 +10,6 @@ test-results/
 *.tsbuildinfo
 .DS_Store
 .pglite/
+
+# Local database directory (embedded PostgreSQL data)
+.data/

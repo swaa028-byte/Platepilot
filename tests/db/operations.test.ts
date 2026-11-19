@@ -376,6 +376,52 @@ describe("operational workflows", () => {
     } finally { await scoped.close(); }
   });
 
+  it("publishes a merchant menu as a versioned price book", async () => {
+    const scoped = await freshDatabase();
+    try {
+      const { organizationId, locationId } = await seedLocation(scoped, { currency: "ZAR" });
+      const actor = uuid(21);
+      await scoped.query("select set_config('request.jwt.claim.sub',$1,false)", [actor]);
+      await scoped.query("insert into memberships(organization_id,user_id,role) values ($1,$2,'owner')", [organizationId, actor]);
+
+      const items = [
+        { category: "Mains", item: "Bunny chow", description: "Curry in a hollowed loaf", amountMinor: "9500", currency: "ZAR", available: true, allergens: ["gluten"] },
+        { category: "Drinks", item: "Rooibos", description: "", amountMinor: "3500", currency: "ZAR", available: true, allergens: [] },
+      ];
+      const published = await scoped.query<{ price_book_id: string }>(
+        "select app_publish_menu($1,$2,$3::jsonb,$4) as price_book_id",
+        [organizationId, locationId, JSON.stringify(items), actor]);
+      const priceBookId = published.rows[0].price_book_id;
+      expect(priceBookId).toBeTruthy();
+
+      const rows = await scoped.query<{ name: string; amount_minor: number; allergens: string[] }>(
+        "select mi.name, ip.amount_minor, mi.allergens from menu_items mi join item_prices ip on ip.menu_item_id = mi.id join price_books pb on pb.id = ip.price_book_id where pb.id = $1 order by mi.name",
+        [priceBookId],
+      );
+      expect(rows.rows).toHaveLength(2);
+      expect(rows.rows[0].name).toBe("Bunny chow");
+      expect(rows.rows[0].amount_minor).toBe(9500);
+      expect(rows.rows[0].allergens).toEqual(["gluten"]);
+
+      // A menu in a different currency than the location is refused.
+      await expect(
+        scoped.query("select app_publish_menu($1,$2,$3::jsonb,$4)", [
+          organizationId, locationId,
+          JSON.stringify([{ category: "Mains", item: "Foreign", amountMinor: "100", currency: "USD", available: true }]),
+          actor,
+        ]),
+      ).rejects.toThrow(/CURRENCY_OR_AMOUNT_MISMATCH/);
+
+      // Publishing again archives the previous book rather than leaving two live.
+      const second = await scoped.query<{ price_book_id: string }>(
+        "select app_publish_menu($1,$2,$3::jsonb,$4) as price_book_id",
+        [organizationId, locationId, JSON.stringify(items), actor]);
+      expect(second.rows[0].price_book_id).not.toBe(priceBookId);
+      const live = await scoped.query<{ count: number }>("select count(*)::int as count from price_books where location_id = $1 and status = 'published'", [locationId]);
+      expect(live.rows[0].count).toBe(1);
+    } finally { await scoped.close(); }
+  });
+
   it("keeps a fresh database free of demo records", async () => {
     const scoped = await freshDatabase();
     try {

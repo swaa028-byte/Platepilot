@@ -11,7 +11,9 @@
     "signIn": "Sign in",
     "start": "Start setup",
     "menu": "Open navigation",
-    "close": "Close navigation"
+    "close": "Close navigation",
+    "kitchen": "Kitchen",
+    "reports": "Reports"
   },
   "Footer": {
     "tagline": "Your restaurant, from first order to close.",
@@ -89,7 +91,8 @@
     "sentBody": "If the account is eligible, a sign-in link has been requested. Open it on this device to continue.",
     "notConfiguredTitle": "Authentication needs configuration",
     "notConfiguredBody": "Add the public Supabase project URL and anonymous key to enable secure staff sign-in. No account or session has been created.",
-    "back": "Back to PlatePilot"
+    "back": "Back to PlatePilot",
+    "submitLocal": "Sign in"
   },
   "Onboarding": {
     "eyebrow": "RESTAURANT SETUP",
@@ -134,7 +137,13 @@
     "reviewTitle": "Ready for the next gate",
     "reviewBody": "Ordering stays disabled until a real menu, service settings, payment eligibility and merchant review are complete.",
     "reviewChecklist": "Remaining release gates",
-    "error": "The request could not be completed. No success was recorded."
+    "error": "The request could not be completed. No success was recorded.",
+    "signInTitle": "Sign in to start setting up.",
+    "signInBody": "PlatePilot needs to know who owns this restaurant before it can create a workspace. Use the email address your restaurant will use for service.",
+    "signInEmail": "Owner email address",
+    "signIn": "Continue",
+    "signInRequired": "Sign in with your staff account before creating a workspace. A place listing is not proof of ownership.",
+    "signInLink": "Go to sign in"
   },
   "Floor": {
     "eyebrow": "LIVE FLOOR · LOCAL DRAFT",
@@ -215,5 +224,53 @@
     "implemented": "Implemented",
     "verified": "Verified locally",
     "blocked": "Blocked"
+  },
+  "Storefront": {
+    "eyebrow": "RESTAURANT",
+    "hours": "Opening hours",
+    "menu": "Menu",
+    "noMenu": "This restaurant has not published a menu yet.",
+    "allergens": "Contains"
+  },
+  "Kitchen": {
+    "eyebrow": "Kitchen",
+    "title": "Kitchen display",
+    "description": "Every live ticket, in the column of the station that prepares it. Bump a line when it leaves the pass.",
+    "loading": "Loading the board…",
+    "failed": "The board could not be loaded. Check your connection and try again.",
+    "noLocation": "No location is linked to your account yet. Complete setup or ask an owner for access.",
+    "location": "Location",
+    "refresh": "Refresh",
+    "rejected": "The kitchen refused that change.",
+    "noTickets": "No open tickets. New orders appear here as they arrive.",
+    "noNumber": "#?",
+    "hold": "Hold",
+    "fire": "Fire",
+    "start": "Start",
+    "ready": "Ready",
+    "serve": "Serve",
+    "served": "Served"
+  },
+  "Reports": {
+    "eyebrow": "Reporting",
+    "title": "Day-end report",
+    "description": "What the trading day looks like, read from the orders you actually took.",
+    "netSales": "Net sales today",
+    "versusLastWeek": "versus the same day last week",
+    "covers": "Covers",
+    "orders": "{count, plural, one {# order} other {# orders}}",
+    "averageCheck": "Average check",
+    "discounts": "Discounts",
+    "discountOrders": "{count, plural, one {# order discounted} other {# orders discounted}}",
+    "cancelled": "Cancelled",
+    "cancelledOrders": "{count, plural, one {# order} other {# orders}}",
+    "byHour": "Sales by hour",
+    "byChannel": "Sales by channel",
+    "byServiceType": "Sales by service type",
+    "no": "Nothing yet",
+    "notAvailable": "The report is not available yet.",
+    "signInRequired": "Sign in to see your trading day.",
+    "noLocation": "No location is linked to your account yet.",
+    "largestDiscount": "The largest single discount today was {amount}."
   }
 }

@@ -22,15 +22,17 @@ All commands were run locally on Node `v25.8.2` with pnpm `12.21.0`
 | --- | --- |
 | `pnpm lint` | pass — 0 errors, 0 warnings |
 | `pnpm typecheck` | pass |
-| `pnpm test` | pass — 18 of 18 (5 files) |
-| `pnpm test:db` | pass — 15 of 15 (2 files) |
-| `pnpm build` | pass — 42 routes, 5 locales prerendered |
-| `pnpm test:e2e` | pass — 10 of 10 (Chromium desktop + WebKit mobile) |
+| `pnpm test` | pass — 30 of 30 (6 files) |
+| `pnpm test:db` | pass — 28 of 28 (3 files) |
+| `pnpm build` | pass — 5 locales prerendered |
+| `pnpm test:e2e` | pass — 16 of 16 (Chromium desktop + WebKit mobile) |
 
-`pnpm test:db` runs the four migrations and the operational workflows against
-real PostgreSQL via PGlite. `pnpm test:e2e` runs against a **production build**
+`pnpm test:db` runs every migration and the operational workflows against real
+PostgreSQL via PGlite. `pnpm test:e2e` runs against a **production build**
 (`next build && next start`), because the dev server preloads lazy chunks and
-would give a false reading of the opt-in 3D bundle.
+would give a false reading of the opt-in 3D bundle. The end-to-end run gets its
+own database directory, cleared before the server starts, so it always exercises
+a fresh install and never a workspace an earlier run left behind.
 
 ## Defects found by auditing this checkout, and fixed
 
@@ -112,6 +114,60 @@ Each of these was a real failure, reproduced before the fix.
 - **Multi-location reporting, currency conversion and tax tables per country.**
   Tax is a location-level basis-point setting, not a fiscal engine.
 
+
+## Kitchen operations, recipes and reporting (this session)
+
+A competitor review (see `docs/competitive-analysis.md`, which carries the
+reverse-engineering evidence) found that the market treats three things as one
+system: routing a ticket to a named station, costing a menu item from its
+recipe and depleting stock exactly once, and reporting the day from the orders
+themselves. PlatePilot had the order and the ticket but none of the three.
+
+**IMPLEMENTED and VERIFIED LOCALLY**
+
+- **Station routing.** `kitchen_stations`, a prep station on every menu item,
+  and `kitchen_ticket_items` so a ticket line is a row. The board is grouped
+  by station; a line is bumped on its own; a ticket is held and fired.
+- **Recipes and stock.** `menu_item_ingredients` ties a menu item to the
+  ingredients it consumes. Serving a line writes one stock movement per recipe
+  line, and the movement event id is derived from the order line, so serving a
+  line twice cannot double the depletion. A delivery note is scoped to its
+  location, so two restaurants can both receive "delivery 42".
+- **Day-end reporting.** `app_day_end_report` computes net sales, covers,
+  average check, discounts, cancellations, hourly sales and the split by
+  channel and service type, in the location currency, over the location own
+  trading day. `/en/reports` renders it.
+- **Kitchen display.** `/en/kitchen` is a working board: one column per
+  station, ticket number, service type, table, guest, elapsed timer, the
+  allergy the guest raised, and per-line hold / start / ready / serve.
+- **The register now records a table.** `orders.table_id` and
+  `orders.customer_name` existed nowhere; a counter order taken at table 9
+  did not remember the table, so the kitchen could not show it.
+- **Staff locations.** `app_my_locations` and `/api/staff/locations` let a
+  member who works at more than one location choose which floor they are in.
+
+**Defects found and fixed while building it**
+
+1. **The session cookie was marked secure in any production build.** A
+   self-hosted restaurant serving plain HTTP loses the session in browsers that
+   refuse a secure cookie on an insecure origin — WebKit refused it, Chromium
+   did not, so the mobile end-to-end run failed while the desktop run passed.
+   The cookie is now secure only when the request itself is encrypted.
+2. **The login button said "Email me a sign-in link" while signing in
+   locally.** The label described the hosted flow, not what the button did.
+3. **A delivery note id collided across locations.** `stock_movements.event_id`
+   is globally unique, so the second restaurant to receive "delivery 42" lost
+   its receipt. The event id is now scoped to the location.
+4. **The kitchen board 404ed for every page render.** The bundler gave the
+   server component bundle its own copy of the embedded database, which could
+   not find its own assets. The package is now resolved by Node at runtime
+   rather than bundled.
+5. **Ticket status could fall back to "new" while a line sat ready.** The
+   ticket state now follows the lines it actually holds.
+6. **A rejected kitchen transition answered 500.** Domain rejections now carry
+   their own status and code, so a kitchen is told which transition was
+   refused.
+
 ## External verification and blockers
 
 - **Google Places: BLOCKED.** No billing-enabled project or restricted key. The
@@ -141,8 +197,13 @@ Each of these was a real failure, reproduced before the fix.
 2. Exercise tenant isolation against that instance: two organisations, one
    location each, and confirm that every staff route and every RLS policy
    refuses cross-tenant access.
-3. Build the staff surfaces for the existing APIs, starting with the register
-   and the kitchen display, because the release is judged by an actual shift.
-4. Request authorised provider sandbox credentials, then run the Paystack, Stripe
+3. Build the remaining staff surfaces over the existing APIs: the register
+   itself, the host reservation book, and the end-of-shift reconciliation page.
+   The kitchen display and the day-end report are done; the register is still
+   API-only.
+4. Add menu cost and food-cost reporting: actual against theoretical variance
+   per ingredient, and the menu profitability view. The recipe and the stock
+   movement ledger they need are in place; the costing query is not.
+5. Request authorised provider sandbox credentials, then run the Paystack, Stripe
    and PayPal checks separately from the contract fixtures.
-5. Only then approach a consenting restaurant for the pilot checklist.
+6. Only then approach a consenting restaurant for the pilot checklist.

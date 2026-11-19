@@ -1,4 +1,4 @@
-import { createAdminClient } from "../src/server/db/admin";
+import { getDbClient, getDatabaseMode } from "../src/server/db/client";
 import { randomUUID } from "node:crypto";
 
 const workerId = `worker-${randomUUID()}`;
@@ -9,12 +9,21 @@ process.on("SIGTERM", () => { stopped = true; });
 process.on("SIGINT", () => { stopped = true; });
 
 async function run() {
-  const admin = createAdminClient();
+  const mode = getDatabaseMode();
+  if (mode === "local") {
+    // PlatePilot's local database is an embedded PostgreSQL that allows a single
+    // writer, so the web process already runs the job loop in-process. Fitting a
+    // second writer to the same directory would corrupt it.
+    console.log(`PlatePilot worker ${workerId}: local mode runs jobs inside the web process (${getDatabaseMode()}). Nothing to do here.`);
+    return;
+  }
+
+  const admin = await getDbClient();
   console.log(`PlatePilot worker ${workerId} started; unsupported jobs retry then dead-letter.`);
   while (!stopped) {
     const { data: jobs, error } = await admin.rpc("app_claim_jobs", { p_worker: workerId, p_batch: batchSize });
     if (error) {
-      console.error("Job claim failed; retrying after the poll interval.", error.code);
+      console.error("Job claim failed; retrying after the poll interval.", error.code, error.message);
     } else {
       for (const job of jobs ?? []) {
         if (job.status === "dead_letter") {

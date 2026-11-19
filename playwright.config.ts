@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import path from "node:path";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -23,8 +24,15 @@ export default defineConfig({
   webServer: {
     // CI builds first as its own release gate and then starts the built app.
     // Locally the end-to-end command builds and starts the app itself.
-    command: process.env.CI ? "npm run start" : "npm run build && npm run start",
+    //
+    // The run gets its own database directory, cleared before the server
+    // starts, so the checks always see a fresh install and never a workspace
+    // an earlier run left behind.
+    command: process.env.CI
+      ? "npm run e2e:clean && npm run start"
+      : "npm run build && npm run e2e:clean && npm run start",
     url: "http://127.0.0.1:3000/en",
+    env: { LOCAL_DB_DIR: path.resolve(__dirname, ".data/e2e") },
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,
     stdout: "pipe",

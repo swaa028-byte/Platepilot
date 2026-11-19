@@ -30,6 +30,8 @@ export function SiteHeader() {
             <Link href="/#product" onClick={() => setOpen(false)}>{t("product")}</Link>
             <Link href="/operations" onClick={() => setOpen(false)}>{t("operations")}</Link>
             <Link href="/floor-planner" onClick={() => setOpen(false)}>{t("liveFloor")}</Link>
+            <Link href="/kitchen" onClick={() => setOpen(false)}>{t("kitchen")}</Link>
+            <Link href="/reports" onClick={() => setOpen(false)}>{t("reports")}</Link>
             <Link href="/#security" onClick={() => setOpen(false)}>{t("security")}</Link>
           </nav>
           <div className="header-actions">
