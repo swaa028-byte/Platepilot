@@ -364,6 +364,34 @@
       "FLOOR_PLAN_NOT_FOUND": "لا يوجد مخطط صالة بعد. ارسم الصالة أولاً.",
       "FLOOR_PLAN_EMPTY": "مخطط الصالة لا يحتوي على طاولات.",
       "LOCATION_NOT_FOUND": "لم يتم العثور على هذا الفرع."
+    },
+    "supply": {
+      "eyebrow": "التوريد",
+      "title": "أوامر الشراء",
+      "description": "سجّل ما طلبته من المورد ثم استلمه. المخزون لا يتحرك إلا عند وصول التوريد.",
+      "noIngredients": "أضف مكوّناً في شاشة المخزون قبل الطلب.",
+      "supplier": "المورد",
+      "supplierPlaceholder": "مخبز الكاب",
+      "reference": "المرجع",
+      "referencePlaceholder": "DN-42",
+      "addLine": "إضافة بند",
+      "ingredient": "المكوّن",
+      "quantity": "الكمية",
+      "unitCost": "تكلفة الوحدة",
+      "removeLine": "حذف هذا البند",
+      "place": "تنفيذ الطلب",
+      "placed": "تم الطلب من {supplier}.",
+      "receive": "استلام",
+      "received": "تم استلام {supplier}. وصل المخزون.",
+      "cancelled": "تم إلغاء {supplier}.",
+      "cancel": "إلغاء طلب {supplier}",
+      "none": "لا توجد طلبات بعد.",
+      "state": {
+        "draft": "مسودة",
+        "ordered": "مطلوب",
+        "received": "مستلم",
+        "cancelled": "ملغى"
+      }
     }
   }
 }

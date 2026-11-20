@@ -40,7 +40,7 @@ this repository's migrations, API routes and tests.
 | Expectation | Where it comes from | PlatePilot today |
 | --- | --- | --- |
 | Inventory, billing and financial management in one place | TallyPrime | Stock, receipts and day-end exist; no ledger, creditors or supplier invoices |
-| Purchase orders and multi-outlet stock | Petpooja | Stock receipts exist; purchase orders **missing**; multiple locations per organisation are supported |
+| Purchase orders and multi-outlet stock | Petpooja | Purchase orders, receiving and the stock they bring in — **verified** in `tests/db/purchase-orders.test.ts`; multiple locations per organisation are supported |
 | Recipe and stock tracking | Restroworks | Recipe lines drive stock depletion per served item — **verified** in `tests/e2e/kitchen-flow.spec.ts` |
 | Tax-ready invoices | JustBilling | Receipts carry the tax rate and the exact tax amount; invoice numbering per financial year and a tax summary return are **missing** |
 | Loyalty, eGift cards, delivery driver management | Rezku | KDS is native; loyalty, gift cards and dispatch are **missing** |
@@ -60,11 +60,12 @@ Everything below is exercised by a test that was run, not merely written.
 | A signed-in merchant could be shown "you do not have a location" | the local session is resolved inside the request and bound to the client | 36 out-of-scope reads in one end-to-end run dropped to zero |
 | No receipt a merchant or a tax office could read | `app_order_receipt` with lines, discount, tax rate, tax amount, tenders | `tests/e2e/settings.spec.ts` asserts the receipt of the order it just placed |
 | No way to see who the venue serves | `app_customer_book` derived from orders and bookings | `tests/db/operator-settings.test.ts` |
+| Nothing recorded what was bought in, so stock was only ever consumed | `purchase_orders` / `purchase_order_lines`, create, receive (idempotent) and cancel, with a supplier panel on the settings page | `tests/db/purchase-orders.test.ts`: a received order moves the stock exactly once |
 
 ## 4. Still missing, in the order it blocks revenue
 
 1. **Payments end to end.** The webhook routes exist and no provider is configured. Until a real payment is taken, "paid" is a database flag an operator sets, not money that arrived.
-2. **Purchase orders and stock counting.** Stock leaves correctly when a dish is served; nothing records what was ordered from a supplier or counted at close.
+2. **Stock counting.** Stock now arrives with a received purchase order and leaves when a dish is served; a physical count at close still has no screen.
 3. **Multi-menu by service period** (breakfast, lunch, dinner) and **scheduled price books**.
 4. **Loyalty and gift cards**, which is the most common reason a merchant leaves a storefront-only platform.
 5. **Delivery dispatch**: driver assignment, ETA, and proof of delivery.

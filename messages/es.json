@@ -364,6 +364,34 @@
       "FLOOR_PLAN_NOT_FOUND": "No hay plano de sala. Dibuja la sala primero.",
       "FLOOR_PLAN_EMPTY": "El plano no tiene mesas.",
       "LOCATION_NOT_FOUND": "No se encontró ese local."
+    },
+    "supply": {
+      "eyebrow": "Aprovisionamiento",
+      "title": "Pedidos a proveedores",
+      "description": "Anota lo que pediste a un proveedor y recíbelo después. El stock solo se mueve cuando llega la entrega.",
+      "noIngredients": "Añade un ingrediente en la pantalla de inventario antes de pedir.",
+      "supplier": "Proveedor",
+      "supplierPlaceholder": "Panadería del Cabo",
+      "reference": "Referencia",
+      "referencePlaceholder": "ALB-42",
+      "addLine": "Añadir línea",
+      "ingredient": "Ingrediente",
+      "quantity": "Cantidad",
+      "unitCost": "Coste unitario",
+      "removeLine": "Quitar esta línea",
+      "place": "Hacer el pedido",
+      "placed": "Pedido realizado a {supplier}.",
+      "receive": "Recibir",
+      "received": "{supplier} recibido. El stock ha llegado.",
+      "cancelled": "{supplier} cancelado.",
+      "cancel": "Cancelar el pedido de {supplier}",
+      "none": "Todavía no hay pedidos.",
+      "state": {
+        "draft": "borrador",
+        "ordered": "pedido",
+        "received": "recibido",
+        "cancelled": "cancelado"
+      }
     }
   }
 }

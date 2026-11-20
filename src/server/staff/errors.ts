@@ -19,6 +19,9 @@ export function mapStaffError(message: string) {
   if (message.includes("INVALID_SETTINGS")) return "INVALID_SETTINGS";
   if (message.includes("FLOOR_PLAN_NOT_FOUND")) return "FLOOR_PLAN_NOT_FOUND";
   if (message.includes("FLOOR_PLAN_EMPTY")) return "FLOOR_PLAN_EMPTY";
+  if (message.includes("PURCHASE_ORDER_NOT_FOUND")) return "PURCHASE_ORDER_NOT_FOUND";
+  if (message.includes("PURCHASE_ORDER_ALREADY_RECEIVED")) return "PURCHASE_ORDER_ALREADY_RECEIVED";
+  if (message.includes("PURCHASE_ORDER_CANCELLED")) return "PURCHASE_ORDER_CANCELLED";
   if (message.includes("TICKET_NOT_FOUND")) return "TICKET_NOT_FOUND";
   if (message.includes("INVALID_TICKET_TRANSITION")) return "INVALID_TICKET_TRANSITION";
   if (message.includes("REFUND_LIMIT_EXCEEDED")) return "REFUND_LIMIT_EXCEEDED";

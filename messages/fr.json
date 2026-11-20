@@ -364,6 +364,34 @@
       "FLOOR_PLAN_NOT_FOUND": "Aucun plan de salle. Dessinez la salle d'abord.",
       "FLOOR_PLAN_EMPTY": "Le plan de salle ne contient aucune table.",
       "LOCATION_NOT_FOUND": "Ce lieu est introuvable."
+    },
+    "supply": {
+      "eyebrow": "Approvisionnement",
+      "title": "Bons de commande",
+      "description": "Notez ce que vous avez commandé à un fournisseur, puis réceptionnez-le. Le stock ne bouge qu'à l'arrivée de la livraison.",
+      "noIngredients": "Ajoutez un ingrédient dans l'écran d'inventaire avant de commander.",
+      "supplier": "Fournisseur",
+      "supplierPlaceholder": "Boulangerie du Cap",
+      "reference": "Référence",
+      "referencePlaceholder": "BL-42",
+      "addLine": "Ajouter une ligne",
+      "ingredient": "Ingrédient",
+      "quantity": "Quantité",
+      "unitCost": "Coût unitaire",
+      "removeLine": "Supprimer cette ligne",
+      "place": "Passer la commande",
+      "placed": "Commande passée auprès de {supplier}.",
+      "receive": "Réceptionner",
+      "received": "{supplier} réceptionné. Le stock est arrivé.",
+      "cancelled": "{supplier} annulé.",
+      "cancel": "Annuler la commande de {supplier}",
+      "none": "Aucune commande pour l'instant.",
+      "state": {
+        "draft": "brouillon",
+        "ordered": "commandé",
+        "received": "réceptionné",
+        "cancelled": "annulé"
+      }
     }
   }
 }

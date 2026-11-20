@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { requireUser } from "@/server/auth/server";
 import { ServiceSettings } from "@/components/settings/ServiceSettings";
 import { VenueBook } from "@/components/settings/VenueBook";
+import { Suppliers } from "@/components/settings/Suppliers";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,7 @@ export default async function SettingsPage({
               )}
               <ServiceSettings locationId={selected.locationId} locationName={selected.name} />
               <VenueBook locationId={selected.locationId} currency={selected.currency} />
+              <Suppliers locationId={selected.locationId} />
             </>
           )}
         </div>

@@ -364,6 +364,34 @@
       "FLOOR_PLAN_NOT_FOUND": "Ainda não há planta de sala. Desenhe a sala primeiro.",
       "FLOOR_PLAN_EMPTY": "A planta não tem mesas.",
       "LOCATION_NOT_FOUND": "Esse local não foi encontrado."
+    },
+    "supply": {
+      "eyebrow": "Aprovisionamento",
+      "title": "Encomendas a fornecedores",
+      "description": "Registe o que encomendou a um fornecedor e receba depois. O stock só se move quando a entrega chega.",
+      "noIngredients": "Adicione um ingrediente no ecrã de inventário antes de encomendar.",
+      "supplier": "Fornecedor",
+      "supplierPlaceholder": "Padaria do Cabo",
+      "reference": "Referência",
+      "referencePlaceholder": "GT-42",
+      "addLine": "Adicionar linha",
+      "ingredient": "Ingrediente",
+      "quantity": "Quantidade",
+      "unitCost": "Custo unitário",
+      "removeLine": "Remover esta linha",
+      "place": "Fazer encomenda",
+      "placed": "Encomenda feita a {supplier}.",
+      "receive": "Receber",
+      "received": "{supplier} recebido. O stock chegou.",
+      "cancelled": "{supplier} cancelado.",
+      "cancel": "Cancelar a encomenda de {supplier}",
+      "none": "Ainda não há encomendas.",
+      "state": {
+        "draft": "rascunho",
+        "ordered": "encomendado",
+        "received": "recebido",
+        "cancelled": "cancelado"
+      }
     }
   }
 }

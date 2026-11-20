@@ -364,6 +364,34 @@
       "FLOOR_PLAN_NOT_FOUND": "There is no floor plan yet. Draw the room first.",
       "FLOOR_PLAN_EMPTY": "The floor plan has no tables on it.",
       "LOCATION_NOT_FOUND": "That location was not found."
+    },
+    "supply": {
+      "eyebrow": "Supply",
+      "title": "Purchase orders",
+      "description": "Write down what you ordered from a supplier, then receive it. Stock only moves when the delivery arrives.",
+      "noIngredients": "Add an ingredient on the inventory screen before ordering.",
+      "supplier": "Supplier",
+      "supplierPlaceholder": "Cape Bakery",
+      "reference": "Reference",
+      "referencePlaceholder": "DN-42",
+      "addLine": "Add line",
+      "ingredient": "Ingredient",
+      "quantity": "Quantity",
+      "unitCost": "Unit cost",
+      "removeLine": "Remove this line",
+      "place": "Place order",
+      "placed": "Order placed with {supplier}.",
+      "receive": "Receive",
+      "received": "{supplier} received. The stock has arrived.",
+      "cancelled": "{supplier} cancelled.",
+      "cancel": "Cancel the order from {supplier}",
+      "none": "Nothing ordered yet.",
+      "state": {
+        "draft": "draft",
+        "ordered": "ordered",
+        "received": "received",
+        "cancelled": "cancelled"
+      }
     }
   }
 }
