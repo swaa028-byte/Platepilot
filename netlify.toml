@@ -1,0 +1,16 @@
+# Netlify builds from the GitHub repository and serves the Next.js runtime.
+#
+# The site must be configured with a hosted database. Without it the app refuses
+# to start rather than writing orders to a filesystem that is discarded between
+# requests (see src/server/db/hosting.ts).
+
+[build]
+  command = "pnpm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

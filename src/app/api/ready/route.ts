@@ -15,9 +15,12 @@ export async function GET() {
       { status: "ready", database: getDatabaseMode() },
       { headers: { "Cache-Control": "no-store" } },
     );
-  } catch {
+  } catch (error) {
+    const reason = error instanceof Error && error.message === "DATABASE_NOT_CONFIGURED"
+      ? { configuration: "NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required on a serverless host" }
+      : {};
     return NextResponse.json(
-      { status: "not_ready", dependency: "database" },
+      { status: "not_ready", dependency: "database", ...reason },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
   }

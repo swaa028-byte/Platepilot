@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAdminClient } from "@/server/db/runtime";
-import { getLocalClient } from "@/server/db/local";
+import { embeddedDatabaseAllowed } from "@/server/db/hosting";
 import { readLocalSessionUserId } from "@/server/auth/local-session";
 
 export type DatabaseMode = "supabase" | "local";
@@ -45,6 +45,13 @@ export async function getDbClient(): Promise<DbClient> {
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return createAdminClient() as unknown as DbClient;
   }
+  // A serverless host throws its filesystem away between requests, so the
+  // embedded database would accept an order and lose it. Refuse instead of
+  // pretending to be a restaurant that forgets.
+  if (!embeddedDatabaseAllowed()) throw new Error("DATABASE_NOT_CONFIGURED");
+  // Imported only when there is no hosted project, which also keeps the
+  // embedded runtime out of the deployed function bundle.
+  const { getLocalClient } = await import("@/server/db/local");
   const local = await getLocalClient();
   // Resolved here, inside the request, so the claim survives into the query.
   let actorId: string | null = null;

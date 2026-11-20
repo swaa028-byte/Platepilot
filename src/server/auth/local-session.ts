@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { embeddedDatabaseAllowed } from "@/server/db/hosting";
 
 /**
  * Local session for the self-hosted, database-less deployment.
@@ -97,5 +98,6 @@ export async function clearLocalSession() {
 /** True when PlatePilot is configured to use its own local database. */
 export function isLocalModeEnabled() {
   if (process.env.PLATEPILOT_LOCAL_DB === "0") return false;
+  if (!embeddedDatabaseAllowed()) return false;
   return !process.env.NEXT_PUBLIC_SUPABASE_URL;
 }
