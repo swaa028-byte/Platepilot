@@ -75,7 +75,18 @@ delivery fee the settings page saved.
 - **Payments are unconfigured.** No provider keys are set, so orders are unpaid
   by design; `/api/payments/*` returns a configuration error.
 
-## 6. Deploying from a machine instead of GitHub
+## 6. Prepared script
+
+`scripts/launch-netlify.sh` creates the site in a team, copies the three
+database values from `.env.local` into the site's environment, points
+`APP_URL` at the new URL and links the folder. It stops before linking the
+repository, because that step only completes through GitHub's authorisation flow.
+
+```bash
+NETLIFY_ACCOUNT=marcusk-ai ./scripts/launch-netlify.sh
+```
+
+## 7. Deploying from a machine instead of GitHub
 
 Only useful for a preview of an unmerged commit:
 
