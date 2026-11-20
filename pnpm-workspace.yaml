@@ -1,6 +1,11 @@
+# Install the optional binaries for the host running the install and for Linux,
+# because the production deployment builds on Linux. Pinning this to win32
+# stopped pnpm from fetching @next/swc-linux-x64-gnu, and a Linux build then
+# fails on a missing native binary.
 supportedArchitectures:
   os:
-    - win32
+    - current
+    - linux
   cpu:
     - x64
 minimumReleaseAgeExclude:
