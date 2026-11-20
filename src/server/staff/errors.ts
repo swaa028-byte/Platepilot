@@ -10,6 +10,15 @@ export function mapStaffError(message: string) {
   if (message.includes("ITEM_UNAVAILABLE")) return "ITEM_UNAVAILABLE";
   if (message.includes("MODIFIER")) return "MODIFIER_NOT_ALLOWED";
   if (message.includes("TABLE_NOT_FOUND")) return "TABLE_NOT_FOUND";
+  if (message.includes("TABLE_NAME_TAKEN")) return "TABLE_NAME_TAKEN";
+  if (message.includes("TABLE_HAS_BOOKINGS")) return "TABLE_HAS_BOOKINGS";
+  if (message.includes("LOCATION_NOT_FOUND")) return "LOCATION_NOT_FOUND";
+  if (message.includes("ORDER_NOT_FOUND")) return "ORDER_NOT_FOUND";
+  if (message.includes("INVALID_OPENING_HOURS")) return "INVALID_OPENING_HOURS";
+  if (message.includes("INVALID_SERVICE_AREA")) return "INVALID_SERVICE_AREA";
+  if (message.includes("INVALID_SETTINGS")) return "INVALID_SETTINGS";
+  if (message.includes("FLOOR_PLAN_NOT_FOUND")) return "FLOOR_PLAN_NOT_FOUND";
+  if (message.includes("FLOOR_PLAN_EMPTY")) return "FLOOR_PLAN_EMPTY";
   if (message.includes("TICKET_NOT_FOUND")) return "TICKET_NOT_FOUND";
   if (message.includes("INVALID_TICKET_TRANSITION")) return "INVALID_TICKET_TRANSITION";
   if (message.includes("REFUND_LIMIT_EXCEEDED")) return "REFUND_LIMIT_EXCEEDED";
