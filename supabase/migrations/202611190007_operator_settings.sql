@@ -285,12 +285,95 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
+-- Reservations carry the guest.
+--
+-- `app_create_reservation` already required a guest name and then never stored
+-- it, so a booked table had nobody attached to it and the customer book could
+-- not see a guest who had only reserved. Same signature, same checks; the name
+-- is now written and returned.
+-- ---------------------------------------------------------------------------
+
+alter table reservations add column if not exists guest_name text;
+
+create or replace function app_create_reservation(
+  p_location_id uuid,
+  p_starts_at timestamptz,
+  p_ends_at timestamptz,
+  p_party_size integer,
+  p_customer_name text,
+  p_customer_email text,
+  p_actor uuid,
+  p_table_id uuid default null
+) returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_organization_id uuid; v_settings jsonb; v_capacity integer;
+  v_booked bigint := 0; v_reservation_id uuid; v_seats integer;
+begin
+  if auth.uid() is null or auth.uid() <> p_actor then raise exception 'FORBIDDEN'; end if;
+  if p_ends_at <= p_starts_at then raise exception 'INVALID_REQUEST'; end if;
+  if p_party_size is null or p_party_size < 1 then raise exception 'INVALID_REQUEST'; end if;
+  if p_customer_name is null or btrim(p_customer_name) = '' then raise exception 'INVALID_REQUEST'; end if;
+
+  select organization_id, service_settings into v_organization_id, v_settings
+    from locations where id = p_location_id;
+  if not found then raise exception 'INVALID_REQUEST'; end if;
+  if not exists (
+    select 1 from memberships where organization_id = v_organization_id
+      and user_id = p_actor and role in ('owner','manager','host','server')
+  ) then raise exception 'FORBIDDEN'; end if;
+
+  v_capacity := coalesce((v_settings->>'seatingCapacity')::integer, 0);
+  v_seats := coalesce((select sum(rt.capacity) from restaurant_tables rt
+                         where rt.location_id = p_location_id
+                           and (p_table_id is null or rt.id = p_table_id)), 0);
+  if coalesce(v_capacity, 0) = 0 then v_capacity := v_seats; end if;
+  if v_capacity <= 0 then raise exception 'RESERVATION_CAPACITY_UNKNOWN'; end if;
+  if p_party_size > v_capacity then raise exception 'RESERVATION_CAPACITY_EXCEEDED'; end if;
+
+  select coalesce(sum(r.party_size), 0) into v_booked from reservations r
+   where r.location_id = p_location_id
+     and r.status in ('booked','seated')
+     and r.starts_at < p_ends_at and r.ends_at > p_starts_at;
+  if v_booked + p_party_size > v_capacity then raise exception 'RESERVATION_CAPACITY_EXCEEDED'; end if;
+
+  if p_table_id is not null then
+    if not exists (select 1 from restaurant_tables rt
+                    where rt.id = p_table_id and rt.location_id = p_location_id) then
+      raise exception 'TABLE_NOT_FOUND';
+    end if;
+    if exists (select 1 from reservations r
+                where r.table_id = p_table_id and r.status in ('booked','seated')
+                  and r.starts_at < p_ends_at and r.ends_at > p_starts_at) then
+      raise exception 'TABLE_ALREADY_BOOKED';
+    end if;
+  end if;
+
+  -- The guest's name is stored on the booking. It used to be validated and then
+  -- dropped, so a host could not see who a table was held for. The email is not
+  -- persisted: `customers` keeps contact details encrypted and PlatePilot has no
+  -- key management, so writing it in the clear would quietly break that promise.
+  insert into reservations(organization_id, location_id, table_id, starts_at, ends_at, party_size, status, guest_name)
+    values (v_organization_id, p_location_id, p_table_id, p_starts_at, p_ends_at, p_party_size, 'booked', btrim(p_customer_name))
+    returning id into v_reservation_id;
+
+  insert into audit_events(organization_id, actor_id, action, entity_type, entity_id, metadata)
+    values (v_organization_id, p_actor, 'reservation.created', 'reservation', v_reservation_id::text,
+      jsonb_build_object('partySize', p_party_size, 'startsAt', p_starts_at));
+
+  return jsonb_build_object('reservationId', v_reservation_id, 'status', 'booked',
+    'partySize', p_party_size, 'startsAt', p_starts_at, 'endsAt', p_ends_at,
+    'guestName', btrim(p_customer_name), 'tableId', p_table_id);
+end $$;
+
+-- ---------------------------------------------------------------------------
 -- Customer book.
 --
--- Derived from the orders a location actually took, not a separate copy of the
--- same data. Contact details are deliberately not returned: the column that
--- would hold them is encrypted at rest and PlatePilot has no key management,
--- so exposing them here would be a promise the product cannot keep.
+-- Derived from what the location actually did, not a separate copy of the same
+-- data: the orders it took and the bookings it accepted. A guest who reserved a
+-- table is a customer of the venue even before they have ordered anything, so
+-- both feed the same book. Contact details are deliberately not returned: the
+-- column that would hold them is encrypted at rest and PlatePilot has no key
+-- management, so exposing them here would be a promise the product cannot keep.
 -- ---------------------------------------------------------------------------
 
 create or replace function app_customer_book(p_location_id uuid, p_actor uuid, p_limit integer default 50)
@@ -304,18 +387,26 @@ begin
 
   return coalesce((
     select jsonb_agg(row_to_json(book)) from (
-      select o.customer_name as "name",
-             count(*) as "orders",
-             sum(o.total_minor)::text as "spendMinor",
-             max(o.created_at) as "lastOrderAt",
-             min(o.created_at) as "firstOrderAt"
-        from orders o
-       where o.location_id = p_location_id
-         and o.fulfillment_status <> 'cancelled'
-         and o.customer_name is not null
-         and btrim(o.customer_name) <> ''
-       group by o.customer_name
-       order by sum(o.total_minor) desc
+      select visits.name as "name",
+             sum(visits.orders)::integer as "orders",
+             sum(visits.spend)::text as "spendMinor",
+             max(visits.at) as "lastOrderAt",
+             min(visits.at) as "firstOrderAt"
+        from (
+          select o.customer_name as name, o.total_minor as spend, o.created_at as at, 1 as orders
+            from orders o
+           where o.location_id = p_location_id
+             and o.fulfillment_status <> 'cancelled'
+             and o.customer_name is not null and btrim(o.customer_name) <> ''
+          union all
+          select r.guest_name, 0, r.starts_at, 0
+            from reservations r
+           where r.location_id = p_location_id
+             and r.status <> 'cancelled'
+             and r.guest_name is not null and btrim(r.guest_name) <> ''
+        ) visits
+       group by visits.name
+       order by sum(visits.spend) desc, max(visits.at) desc
        limit v_limit) book), '[]'::jsonb);
 end $$;
 

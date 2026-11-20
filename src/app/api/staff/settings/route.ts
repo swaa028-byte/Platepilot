@@ -29,6 +29,24 @@ function locationIdFrom(request: Request) {
 }
 
 /**
+ * A malformed settings body is named for the field that is wrong, using the same
+ * vocabulary the database raises, so the merchant is told which value to fix
+ * rather than that the whole form was rejected.
+ */
+function validate(body: unknown) {
+  try {
+    return input.parse(body);
+  } catch (error) {
+    if (!(error instanceof z.ZodError)) throw error;
+    const path = error.issues.map((issue) => issue.path.join(".")).join(" ");
+    if (path.includes("openingHours")) throw new Error("INVALID_OPENING_HOURS");
+    if (path.includes("serviceArea")) throw new Error("INVALID_SERVICE_AREA");
+    if (path.includes("serviceSettings")) throw new Error("INVALID_SETTINGS");
+    throw new Error("INVALID_REQUEST");
+  }
+}
+
+/**
  * The settings this location orders and books by: whether the storefront is
  * open, when it is open, and what delivery costs.
  */
@@ -56,7 +74,7 @@ export async function PUT(request: Request) {
   try {
     const { supabase, user } = await requireUser();
     checkRateLimit(`staff-settings:${user.id}`, 60, 60_000);
-    const body = input.parse(await request.json());
+    const body = validate(await request.json());
 
     const { data, error } = await supabase.rpc("app_update_location_settings", {
       p_location_id: body.locationId,

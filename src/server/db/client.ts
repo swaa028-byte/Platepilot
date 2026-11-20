@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAdminClient } from "@/server/db/runtime";
 import { getLocalClient } from "@/server/db/local";
+import { readLocalSessionUserId } from "@/server/auth/local-session";
 
 export type DatabaseMode = "supabase" | "local";
 
@@ -44,7 +45,15 @@ export async function getDbClient(): Promise<DbClient> {
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return createAdminClient() as unknown as DbClient;
   }
-  return (await getLocalClient()) as unknown as DbClient;
+  const local = await getLocalClient();
+  // Resolved here, inside the request, so the claim survives into the query.
+  let actorId: string | null = null;
+  try {
+    actorId = await readLocalSessionUserId();
+  } catch {
+    actorId = null; // outside a request scope: a public call or a worker
+  }
+  return local.withActor(actorId) as unknown as DbClient;
 }
 
 export function getDatabaseMode(): DatabaseMode {

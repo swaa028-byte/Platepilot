@@ -90,6 +90,7 @@ async function currentUserId() {
     const { readLocalSessionUserId } = await import("@/server/auth/local-session");
     return await readLocalSessionUserId();
   } catch {
+    // No request scope: a worker, a script, or a public call. Not an error.
     return null;
   }
 }
@@ -242,9 +243,26 @@ class LocalQuery {
 
 class LocalClient {
   private readonly db: PGlite;
+  /**
+   * The signed-in staff member, resolved while the request that needs it is
+   * still in scope.
+   *
+   * Reading the session lazily at query time looks equivalent and is not: an
+   * embedded query can run after Next has left the request scope, where
+   * `cookies()` throws. Swallowing that was a real defect — a signed-in
+   * merchant was shown "you do not have a location". The actor is now bound
+   * when the client is handed out; the lazy read stays as a fallback.
+   */
+  private readonly actorId: string | null;
 
-  constructor(db: PGlite) {
+  constructor(db: PGlite, actorId: string | null = null) {
     this.db = db;
+    this.actorId = actorId;
+  }
+
+  /** The same database, bound to an already-resolved staff member. */
+  withActor(actorId: string | null) {
+    return new LocalClient(this.db, actorId);
   }
 
   from(table: string) {
@@ -272,7 +290,7 @@ class LocalClient {
         ? `select * from ${name}(${named})`
         : `select ${name}(${named})`;
 
-      const userId = await currentUserId();
+      const userId = this.actorId ?? await currentUserId();
       const run = async (tx: PGlite) => {
         if (userId) await tx.query("select set_config('request.jwt.claim.sub', $1, true)", [userId]);
         return tx.query<Row>(sql, values);

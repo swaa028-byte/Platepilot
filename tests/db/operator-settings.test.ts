@@ -301,6 +301,18 @@ describe("read models", () => {
       expect(receipt.totalMinor).toBe("19000");
       expect(receipt.lines).toEqual([{ name: "Bunny chow", quantity: 2, unitPriceMinor: "9500", lineTotalMinor: "19000" }]);
       expect(receipt.taxBasisPoints).toBe(0);
+
+      // A guest who only booked still appears: the book is who the venue serves.
+      await callJson(
+        db,
+        "select app_create_reservation($1,$2::timestamptz,$3::timestamptz,2,'Nomsa',null,$4,$5) as result",
+        [locationId, "2026-12-02T18:00:00Z", "2026-12-02T19:30:00Z", actor, table.tableId],
+      );
+      const booked = await callJson<{ name: string; orders: number; spendMinor: string }[]>(
+        db, "select app_customer_book($1,$2,50) as result", [locationId, actor],
+      );
+      expect(booked.map((guest) => guest.name)).toEqual(["Ada", "Nomsa"]);
+      expect(booked[1]).toMatchObject({ name: "Nomsa", orders: 0, spendMinor: "0" });
     } finally {
       await db.close();
     }
