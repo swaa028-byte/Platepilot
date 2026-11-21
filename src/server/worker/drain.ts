@@ -41,10 +41,11 @@ export type DrainResult = {
 const DELIVERY_TIMEOUT_MS = 8_000;
 const MAX_ATTEMPTS = 8;
 
-/** SMS alerts ride on Twilio when the deployment has credentials. Without them
- *  nothing is enqueued: a queue full of unsendable messages is not a feature. */
+/** SMS alerts ride on SMS8 (app.sms8.io) when the deployment has an API key.
+ *  Without one nothing is enqueued: a queue full of unsendable messages is not
+ *  a feature. Messages send from the merchant's own paired Android SIM. */
 export function smsConfigured(): boolean {
-  return Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_FROM_NUMBER);
+  return Boolean(process.env.SMS8_API_KEY);
 }
 
 export function cronWorkerId(): string {
@@ -158,17 +159,23 @@ async function maybeEnqueueSms(admin: DbClient, event: DueEvent, result: DrainRe
 }
 
 async function sendSms(to: string, body: string): Promise<DeliveryOutcome> {
-  const sid = process.env.TWILIO_ACCOUNT_SID!;
-  const authHeader = "Basic " + Buffer.from(`${sid}:${process.env.TWILIO_AUTH_TOKEN}`).toString("base64");
   try {
-    const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
+    const response = await fetch("https://app.sms8.io/api/v1/messages", {
       method: "POST",
-      headers: { authorization: authHeader, "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ To: to, From: process.env.TWILIO_FROM_NUMBER!, Body: body }).toString(),
+      headers: { "X-Api-Key": process.env.SMS8_API_KEY!, "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ number: to, message: body }).toString(),
       signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),
     });
-    if (response.ok) return { ok: true, statusCode: response.status, errorText: null };
-    return { ok: false, statusCode: response.status, errorText: `TWILIO_HTTP_${response.status}` };
+    // Refusals such as an empty credit balance return HTTP 200 with success:
+    // false, so the flag decides the outcome — never the status code alone.
+    const payload = (await response.json().catch(() => null)) as
+      | { success?: boolean; error?: { code?: string; message?: string } }
+      | null;
+    if (response.ok && payload?.success === true) {
+      return { ok: true, statusCode: response.status, errorText: null };
+    }
+    const detail = payload?.error?.code ? `SMS8_${payload.error.code}` : `SMS8_HTTP_${response.status}`;
+    return { ok: false, statusCode: response.status, errorText: detail };
   } catch (error) {
     return { ok: false, statusCode: null, errorText: error instanceof Error ? error.message : "SMS_ERROR" };
   }
