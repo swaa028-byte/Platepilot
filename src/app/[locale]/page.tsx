@@ -8,11 +8,13 @@ import {
   ShieldCheck,
   ShoppingBag,
   Sparkles,
+  UtensilsCrossed,
 } from "lucide-react";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
-const featureIcons = [ShoppingBag, CreditCard, LayoutGrid, ChefHat];
+const featureIcons = [ShoppingBag, CreditCard, LayoutGrid];
 
 export default async function HomePage({
   params,
@@ -27,66 +29,79 @@ export default async function HomePage({
     { title: t("orderingTitle"), body: t("orderingBody") },
     { title: t("paymentsTitle"), body: t("paymentsBody") },
     { title: t("floorTitle"), body: t("floorBody") },
-    { title: t("kitchenTitle"), body: t("kitchenBody") },
   ];
   const states = [t("available"), t("reserved"), t("seated"), t("resetting")];
 
   return (
     <>
-      <section className="hero">
-        <div className="hero-glow" aria-hidden="true" />
+      <section className="hero hero--photo">
+        <div className="hero-photo" aria-hidden="true">
+          <Image
+            src="/images/hero-restaurant.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="hero-photo-img"
+          />
+          <div className="hero-scrim" />
+        </div>
         <div className="shell hero-grid">
-          <div className="hero-copy">
-            <p className="eyebrow"><span />{t("eyebrow")}</p>
+          <div className="hero-copy hero-copy--photo">
+            <p className="eyebrow eyebrow--gold"><span />{t("eyebrow")}</p>
             <h1>{t("title")}<em>{t("titleAccent")}</em></h1>
             <p className="hero-lede">{t("description")}</p>
             <div className="button-row">
-              <Link href="/onboarding" className="button button--hero">
+              <Link href="/onboarding" className="button button--light">
                 {t("primaryCta")}<ArrowRight size={18} />
               </Link>
-              <Link href="/operations" className="button button--ghost">
+              <Link href="/operations" className="button button--outline-light">
                 {t("secondaryCta")}
               </Link>
             </div>
-            <p className="hero-note"><Check size={15} />{t("note")}</p>
+            <p className="hero-note hero-note--photo"><Check size={15} />{t("note")}</p>
           </div>
 
-          <div className="floor-preview-wrap">
-            <div className="preview-orbit preview-orbit--one" aria-hidden="true" />
-            <div className="preview-orbit preview-orbit--two" aria-hidden="true" />
-            <div className="floor-preview">
-              <div className="preview-topline">
-                <span>{t("previewLabel")}</span>
-                <span className="live-pill"><i />LIVE</span>
-              </div>
-              <div className="preview-copy">
-                <h2>{t("previewTitle")}</h2>
-                <p>{t("previewDescription")}</p>
-              </div>
-              <div className="illustrative-room" aria-label={t("previewLabel")}>
-                <div className="room-line room-line--one" />
-                <div className="room-line room-line--two" />
-                <div className="preview-empty">
-                  <span className="preview-empty-icon"><LayoutGrid size={25} /></span>
-                  <strong>{t("previewEmpty")}</strong>
-                  <p>{t("previewEmptyBody")}</p>
+          <div className="hero-stage">
+            <div className="stage-scene">
+              <div className="stage-orbit stage-orbit--one" aria-hidden="true" />
+              <div className="stage-orbit stage-orbit--two" aria-hidden="true" />
+              <div className="stage-card">
+                <div className="floor-preview floor-preview--glass">
+                  <div className="preview-topline">
+                    <span>{t("previewLabel")}</span>
+                    <span className="live-pill"><i />LIVE</span>
+                  </div>
+                  <div className="preview-copy">
+                    <h2>{t("previewTitle")}</h2>
+                    <p>{t("previewDescription")}</p>
+                  </div>
+                  <div className="illustrative-room" aria-label={t("previewLabel")}>
+                    <div className="room-line room-line--one" />
+                    <div className="room-line room-line--two" />
+                    <div className="preview-empty">
+                      <span className="preview-empty-icon"><LayoutGrid size={25} /></span>
+                      <strong>{t("previewEmpty")}</strong>
+                      <p>{t("previewEmptyBody")}</p>
+                    </div>
+                    <span className="room-coordinate room-coordinate--x">X · m</span>
+                    <span className="room-coordinate room-coordinate--z">Z · m</span>
+                  </div>
+                  <div className="preview-bottom">
+                    <div className="state-legend" aria-label={t("previewLabel")}>
+                      {states.map((state, index) => (
+                        <span key={state}><i className={`state-dot state-dot--${index}`} />{state}</span>
+                      ))}
+                    </div>
+                    <Link href="/floor-planner" className="preview-link" aria-label={t("previewCta")}>
+                      <ArrowRight size={19} />
+                    </Link>
+                  </div>
                 </div>
-                <span className="room-coordinate room-coordinate--x">X · m</span>
-                <span className="room-coordinate room-coordinate--z">Z · m</span>
-              </div>
-              <div className="preview-bottom">
-                <div className="state-legend" aria-label={t("previewLabel")}>
-                  {states.map((state, index) => (
-                    <span key={state}><i className={`state-dot state-dot--${index}`} />{state}</span>
-                  ))}
-                </div>
-                <Link href="/floor-planner" className="preview-link" aria-label={t("previewCta")}>
-                  <ArrowRight size={19} />
-                </Link>
+                <div className="stage-note stage-note--top" aria-hidden="true"><Sparkles size={15} /> 2D + 3D</div>
+                <div className="stage-note stage-note--bottom" aria-hidden="true"><ShieldCheck size={15} /> ACCESSIBLE BY DESIGN</div>
               </div>
             </div>
-            <div className="floating-note floating-note--top" aria-hidden="true"><Sparkles size={15} /> 2D + 3D</div>
-            <div className="floating-note floating-note--bottom" aria-hidden="true"><ShieldCheck size={15} /> ACCESSIBLE BY DESIGN</div>
           </div>
         </div>
       </section>
@@ -99,13 +114,43 @@ export default async function HomePage({
         </div>
       </section>
 
+      <section className="section craft-section" id="experience">
+        <div className="shell craft-grid">
+          <div className="craft-stage">
+            <div className="craft-scene">
+              <div className="craft-card">
+                <Image
+                  src="/images/kitchen-pass.jpg"
+                  alt={t("kitchenTitle")}
+                  width={900}
+                  height={600}
+                  sizes="(max-width: 820px) 100vw, 560px"
+                  className="craft-img"
+                />
+                <div className="craft-chip craft-chip--orders" aria-hidden="true">
+                  <UtensilsCrossed size={14} /> 1042
+                </div>
+                <div className="craft-chip craft-chip--live" aria-hidden="true"><i />LIVE</div>
+              </div>
+              <div className="craft-shadow" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="craft-copy">
+            <p className="eyebrow"><span />{t("productEyebrow")}</p>
+            <h2>{t("kitchenTitle")}</h2>
+            <p>{t("kitchenBody")}</p>
+            <Link href="/kitchen" className="button button--cream">{t("secondaryCta")}<ArrowRight size={17} /></Link>
+          </div>
+        </div>
+      </section>
+
       <section className="section features-section" id="product">
         <div className="shell">
           <div className="section-heading section-heading--split">
             <div><p className="eyebrow"><span />{t("productEyebrow")}</p><h2>{t("productTitle")}</h2></div>
             <p>{t("productDescription")}</p>
           </div>
-          <div className="feature-grid">
+          <div className="feature-grid feature-grid--three">
             {features.map((feature, index) => {
               const Icon = featureIcons[index];
               return (

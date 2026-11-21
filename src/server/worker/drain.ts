@@ -89,7 +89,11 @@ async function relayOutbox(admin: DbClient, result: DrainResult): Promise<void> 
     for (const hook of hooks) {
       // 'pending' belongs to a scheduled retry job; 'delivered'/'failed' are settled.
       if (hook.delivery_status !== null) continue;
-      const outcome = await deliver(target);
+      const outcome = await deliver({
+        eventId: event.event_id, webhookId: hook.webhook_id, url: hook.webhook_url, secret: hook.webhook_secret,
+        eventType: event.event_type, payload: event.payload, createdAt: event.event_created_at,
+        organizationId: event.organization_id,
+      });
       await admin.rpc("app_outbox_delivery_upsert", {
         p_event_id: event.event_id, p_webhook_id: hook.webhook_id,
         p_ok: outcome.ok, p_status_code: outcome.statusCode, p_error: outcome.errorText,
