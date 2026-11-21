@@ -317,7 +317,10 @@
       "unsaved": "Modifications non enregistrées",
       "upToDate": "Tout est enregistré",
       "save": "Enregistrer",
-      "saving": "Enregistrement…"
+      "saving": "Enregistrement…",
+      "smsPhone": "Téléphone d'alerte",
+      "smsPhoneHint": "Où envoyer les alertes SMS de commandes payées, au format international.",
+      "smsEnabled": "SMS à chaque commande payée"
     },
     "zones": {
       "eyebrow": "LIVRAISON",

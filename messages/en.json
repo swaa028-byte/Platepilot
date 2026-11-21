@@ -317,7 +317,10 @@
       "unsaved": "Unsaved changes",
       "upToDate": "Everything saved",
       "save": "Save settings",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "smsPhone": "Alert phone",
+      "smsPhoneHint": "Where paid-order SMS alerts go, in international format.",
+      "smsEnabled": "Send SMS on paid orders"
     },
     "zones": {
       "eyebrow": "DELIVERY",

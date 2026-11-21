@@ -15,6 +15,7 @@ const settings = z.object({
   taxBasisPoints: z.number().int().min(0).max(10000).optional(),
   prepMinutes: z.number().int().min(0).max(240).optional(),
   serviceArea: z.object({ postalCodes: z.array(z.string().trim().min(1).max(20)).max(200).optional() }).strict().optional(),
+  sms: z.object({ enabled: z.boolean(), phone: z.string().regex(/^\+[1-9][0-9]{6,14}$/, "expected E.164 phone number") }).strict().optional(),
 }).strict();
 
 const input = z.object({

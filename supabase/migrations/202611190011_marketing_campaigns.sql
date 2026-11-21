@@ -81,7 +81,7 @@ begin
     returning c.id into v_id;
     if not found then raise exception 'CAMPAIGN_NOT_FOUND'; end if;
   end if;
-  insert into audit_events(organization_id, actor_id, action, entity_type, entity_id)
+  insert into audit_events(organization_id, actor_id, action, entity_type, entity_id, metadata)
   values (v_organization_id, p_actor, 'campaign.saved', 'marketing_campaign', v_id::text,
     jsonb_build_object('kind', p_kind, 'headline', btrim(p_headline)));
   return v_id;

@@ -20,6 +20,7 @@ type ServiceSettings = {
   taxBasisPoints?: number;
   prepMinutes?: number;
   serviceArea?: { postalCodes?: string[] };
+  sms?: { enabled?: boolean; phone?: string };
 };
 
 type Response = {
@@ -36,6 +37,8 @@ type Draft = {
   taxPercent: string;
   prepMinutes: string;
   postalCodes: string;
+  smsEnabled: boolean;
+  smsPhone: string;
 };
 
 const DAYS = ["1", "2", "3", "4", "5", "6", "0"];
@@ -66,6 +69,8 @@ function draftOf(settings: Response): Draft {
     taxPercent: String((source.taxBasisPoints ?? 0) / 100),
     prepMinutes: String(source.prepMinutes ?? 0),
     postalCodes: (source.serviceArea?.postalCodes ?? []).join(", "),
+    smsEnabled: Boolean(source.sms?.enabled),
+    smsPhone: source.sms?.phone ?? "",
   };
 }
 
@@ -85,6 +90,7 @@ function payloadOf(draft: Draft) {
       taxBasisPoints: Math.round(Number(draft.taxPercent || "0") * 100),
       prepMinutes: Math.round(Number(draft.prepMinutes || "0")),
       ...(postalCodes.length > 0 ? { serviceArea: { postalCodes } } : {}),
+      ...(draft.smsPhone.trim() || draft.smsEnabled ? { sms: { enabled: draft.smsEnabled, phone: draft.smsPhone.trim() } } : {}),
     },
   };
 }
@@ -279,6 +285,19 @@ export function ServiceSettings({ locationId, locationName }: { locationId: stri
             <span className="op-label">{t("service.postalCodes")}</span>
             <input value={draft.postalCodes} placeholder={t("service.postalCodesPlaceholder")} onChange={(event) => update({ postalCodes: event.target.value })} />
             <small>{t("service.postalCodesHint")}</small>
+          </label>
+        </div>
+
+        <div className="op-figures">
+          <label className="op-figure">
+            <span className="op-label">{t("service.smsPhone")}</span>
+            <input value={draft.smsPhone} placeholder="+27…" onChange={(event) => update({ smsPhone: event.target.value })} />
+            <small>{t("service.smsPhoneHint")}</small>
+          </label>
+          <label className="op-toggle">
+            <input type="checkbox" checked={draft.smsEnabled} onChange={(event) => update({ smsEnabled: event.target.checked })} />
+            <span className="op-toggle__track" aria-hidden="true"><span className="op-toggle__dot" /></span>
+            <span className="op-toggle__text">{t("service.smsEnabled")}</span>
           </label>
         </div>
       </div>

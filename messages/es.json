@@ -317,7 +317,10 @@
       "unsaved": "Cambios sin guardar",
       "upToDate": "Todo guardado",
       "save": "Guardar ajustes",
-      "saving": "Guardando…"
+      "saving": "Guardando…",
+      "smsPhone": "Teléfono de aviso",
+      "smsPhoneHint": "A dónde van los avisos SMS de pedidos pagados, en formato internacional.",
+      "smsEnabled": "Enviar SMS en pedidos pagados"
     },
     "zones": {
       "eyebrow": "ENTREGA",
