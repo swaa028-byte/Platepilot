@@ -20,10 +20,16 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
   return {
+    metadataBase: new URL((process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "")),
     title: t("title"),
     description: t("description"),
     applicationName: "PlatePilot",
     robots: { index: true, follow: true },
+    // Set GOOGLE_SITE_VERIFICATION to the value Search Console gives you
+    // (the meta-tag method) to claim the site and submit the sitemap.
+    verification: process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : undefined,
   };
 }
 

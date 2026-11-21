@@ -1,40 +1,35 @@
-import { getPublicMenuBySlug, listPublishedLocations } from "@/server/storefront/menu";
-import { buildPlainSummary } from "@/domain/seo";
+import { getDbClient } from "@/server/db/client";
 
 export const dynamic = "force-dynamic";
 
 /**
- * A plain-text description of the platform for systems that read text.
+ * llms.txt — the emerging convention for telling AI systems what a site is.
  *
- * It contains the same real merchant data the structured data carries. No
- * restaurant is listed that has not published a menu.
+ * Lists every live restaurant with its address so assistants and answer
+ * engines can cite real, current information instead of guessing. Plain
+ * markdown, served as text/plain.
  */
 export async function GET(request: Request) {
-  const origin = (process.env.APP_URL || new URL(request.url).origin).replace(/\/$/, "");
-  const locations = await listPublishedLocations();
-
-  const sections: string[] = [
+  const origin = new URL(request.url).origin;
+  let lines = [
     "# PlatePilot",
     "",
-    "PlatePilot is a restaurant operating system. Every restaurant listed below publishes its own menu, prices and opening hours.",
+    "PlatePilot is a restaurant ordering and operations platform. Each restaurant below has a live storefront with its menu, prices and opening hours.",
+    "",
+    "## Restaurants",
     "",
   ];
-
-  for (const location of locations) {
-    const menu = await getPublicMenuBySlug(location.slug, "en");
-    if (!menu || menu.items.filter((item) => item.available).length === 0) continue;
-    sections.push(buildPlainSummary(menu, { origin, locale: "en" }));
-    sections.push("");
+  try {
+    const db = await getDbClient();
+    const { data } = await db.from("locations").select("slug,name,address").limit(1000);
+    for (const row of (data ?? []) as { slug: string | null; name: string; address: string | null }[]) {
+      if (!row.slug) continue;
+      lines.push(`- [${row.name}](${origin}/en/r/${row.slug}): restaurant in ${row.address ?? "South Africa"}. Menu, prices and opening hours.`);
+    }
+  } catch {
+    // An empty list is better than a 500: crawlers should still get the header.
   }
-
-  if (sections.length === 3) {
-    sections.push("No restaurant has published a menu yet.", "");
-  }
-
-  return new Response(sections.join("\n"), {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
-    },
+  return new Response(lines.join("\n") + "\n", {
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" },
   });
 }
