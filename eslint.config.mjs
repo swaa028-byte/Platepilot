@@ -11,6 +11,8 @@ export default defineConfig([
     "coverage/**",
     "playwright-report/**",
     "test-results/**",
+    ".audit/**",
+    "android/**",
     "next-env.d.ts",
   ]),
 ]);

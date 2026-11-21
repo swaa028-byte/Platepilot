@@ -100,9 +100,9 @@ end $$;
 
 revoke all on function app_active_campaign(uuid) from public, authenticated;
 revoke all on function app_list_campaigns(uuid,uuid) from public;
-revoke all on function app_upsert_campaign(uuid,uuid,uuid,text,text,text,text,text,timestamptz,timestamptz,boolean) from public;
+revoke all on function app_upsert_campaign(uuid,uuid,uuid,text,text,text,text,text,text,timestamptz,timestamptz,boolean) from public;
 revoke all on function app_delete_campaign(uuid,uuid) from public;
 grant execute on function app_active_campaign(uuid) to service_role;
 grant execute on function app_list_campaigns(uuid,uuid) to authenticated;
-grant execute on function app_upsert_campaign(uuid,uuid,uuid,text,text,text,text,text,timestamptz,timestamptz,boolean) to authenticated;
+grant execute on function app_upsert_campaign(uuid,uuid,uuid,text,text,text,text,text,text,timestamptz,timestamptz,boolean) to authenticated;
 grant execute on function app_delete_campaign(uuid,uuid) to authenticated;

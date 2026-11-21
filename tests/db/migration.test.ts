@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
+import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-const db = new PGlite();
+const db = new PGlite({ extensions: { pgcrypto } });
 
 beforeAll(async () => {
   const migration = await readFile(new URL("../../supabase/migrations/202611190001_core.sql", import.meta.url), "utf8");

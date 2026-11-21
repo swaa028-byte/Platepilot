@@ -1,5 +1,6 @@
 import { readFile, readdir } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
+import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -7,7 +8,7 @@ import { describe, expect, it } from "vitest";
  * order turns into stock.
  */
 async function freshDatabase() {
-  const db = new PGlite();
+  const db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(`
     create role anon;
     create role authenticated;

@@ -7,10 +7,12 @@ import { Campaigns } from "@/components/settings/Campaigns";
 import { DomainsPanel, GoogleListingPanel } from "@/components/settings/Integrations";
 import { VenueBook } from "@/components/settings/VenueBook";
 import { Suppliers } from "@/components/settings/Suppliers";
+import { StockCounts } from "@/components/settings/StockCounts";
+import { ServiceMenus } from "@/components/settings/ServiceMenus";
 
 export const dynamic = "force-dynamic";
 
-type Location = { locationId: string; name: string; currency: string; role: string };
+type Location = { locationId: string; organizationId: string; name: string; currency: string; role: string };
 
 /**
  * Where a merchant changes how the location trades: whether the storefront takes
@@ -81,6 +83,8 @@ export default async function SettingsPage({
               <DomainsPanel />
               <VenueBook locationId={selected.locationId} currency={selected.currency} />
               <Suppliers locationId={selected.locationId} />
+              <StockCounts locationId={selected.locationId} />
+              <ServiceMenus locationId={selected.locationId} organizationId={selected.organizationId} currency={selected.currency} />
             </>
           )}
         </div>

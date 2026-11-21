@@ -12,6 +12,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
+    <>
     <header className="site-header">
       <div className="shell header-inner">
         <Logo />
@@ -45,5 +46,7 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
+    {open && <button type="button" className="nav-backdrop" aria-label={t("close")} onClick={() => setOpen(false)} />}
+    </>
   );
 }

@@ -1,5 +1,10 @@
 begin;
 
+-- Hashing and random bytes for webhook secrets and domain verification.
+-- Installed by default on Supabase; explicit here so local databases and CI
+-- apply the identical statement.
+create extension if not exists pgcrypto;
+
 create table organizations (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 1 and 120),

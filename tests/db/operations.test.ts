@@ -1,5 +1,6 @@
 import { readFile, readdir } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
+import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 /**
@@ -10,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
  * Each test runs in its own database so tenant state cannot leak between cases.
  */
 async function freshDatabase() {
-  const db = new PGlite();
+  const db = new PGlite({ extensions: { pgcrypto } });
   // The roles and auth schema that Supabase provides. The claim sub is how
   // auth.uid() resolves the signed-in user inside a request.
   await db.exec(`

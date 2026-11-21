@@ -1,4 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
+import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { mkdir, readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -68,7 +69,7 @@ async function applyMigrations(db: PGlite) {
 async function openDatabase() {
   const dataDir = process.env.LOCAL_DB_DIR || resolve(process.cwd(), ".data/platepilot");
   await mkdir(dataDir, { recursive: true });
-  const db = await PGlite.create({ dataDir });
+  const db = await PGlite.create({ dataDir, extensions: { pgcrypto } });
   await applyMigrations(db);
   return db;
 }

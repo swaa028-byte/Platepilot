@@ -7,7 +7,7 @@
 -- every day 09:00-21:00, 20 minutes of prep, tax left at 0 until they set it.
 
 create or replace function app_create_merchant(
-  p_name text, p_address text, p_legal_country text, p_currency text, p_timezone text, p_locale text, p_place_id text
+  p_name text, p_address text, p_legal_country text, p_currency text, p_timezone text, p_locale text, p_place_id text default null
 ) returns jsonb
 language plpgsql security definer set search_path = public, pg_temp as $$
 declare
