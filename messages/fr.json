@@ -94,7 +94,9 @@
     "notConfiguredBody": "Ajoutez l’URL publique Supabase et la clé anonyme. Aucun compte ni session n’a été créé.",
     "back": "Retour à PlatePilot",
     "submitLocal": "Se connecter",
-    "linkExpired": "Ce lien de connexion a expiré ou a déjà servi. Demandez-en un nouveau et ouvrez-le sur cet appareil."
+    "linkExpired": "Ce lien de connexion a expiré ou a déjà servi. Demandez-en un nouveau et ouvrez-le sur cet appareil.",
+    "rateLimited": "Trop d'e-mails de connexion ont été demandés au cours de la dernière heure. Attendez un peu et réessayez.",
+    "sendFailed": "L'e-mail de connexion n'a pas pu être envoyé. Vérifiez l'adresse et réessayez."
   },
   "Onboarding": {
     "eyebrow": "CONFIGURATION DU RESTAURANT",

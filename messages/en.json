@@ -94,7 +94,9 @@
     "notConfiguredBody": "Add the public Supabase project URL and anonymous key to enable secure staff sign-in. No account or session has been created.",
     "back": "Back to PlatePilot",
     "submitLocal": "Sign in",
-    "linkExpired": "That sign-in link has expired or was already used. Request a new one, and open it on this device."
+    "linkExpired": "That sign-in link has expired or was already used. Request a new one, and open it on this device.",
+    "rateLimited": "Too many sign-in emails have been requested in the last hour. Wait a little and try again.",
+    "sendFailed": "The sign-in email could not be sent. Check the address and try again."
   },
   "Onboarding": {
     "eyebrow": "RESTAURANT SETUP",

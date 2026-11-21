@@ -11,7 +11,7 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
   const locale = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "ratelimited">("idle");
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -39,7 +39,9 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
         // landing page.
         options: { emailRedirectTo: `${window.location.origin}/auth/callback/${locale}/operations` },
       });
-      setState(error ? "error" : "sent");
+      // The hosted email service allows only a few messages per hour, and a
+      // quiet 429 here otherwise masqueraded as a configuration problem.
+      setState(error ? (error.code === "over_email_send_rate_limit" || error.status === 429 ? "ratelimited" : "error") : "sent");
     } catch { setState("error"); }
   }
 
@@ -53,7 +55,8 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
     <form onSubmit={submit}>
       {expired && <div className="notice notice--warning"><AlertCircle size={19} /><div>{t("linkExpired")}</div></div>}
       <label className="field"><span>{t("email")}</span><input required type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={t("emailPlaceholder")} /></label>
-      {state === "error" && <div className="notice notice--error"><AlertCircle size={18} />{t("notConfiguredBody")}</div>}
+      {state === "ratelimited" && <div className="notice notice--warning"><AlertCircle size={18} /><div>{t("rateLimited")}</div></div>}
+      {state === "error" && <div className="notice notice--error"><AlertCircle size={18} />{t("sendFailed")}</div>}
       <button className="button" disabled={state === "sending"}><Mail size={17} />{state === "sending" ? t("sending") : localMode ? t("submitLocal") : t("submit")}</button>
     </form>
   );
