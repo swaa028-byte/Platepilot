@@ -469,3 +469,47 @@ describe("bar tabs and bill splits", () => {
       [tabServer, order.orderId, JSON.stringify([items.rows[1].id])])).rejects.toThrow("ORDER_ALREADY_PAID");
   });
 });
+
+describe("invoicing", () => {
+  it("numbers invoices without gaps from a paid order, once per order, and exports the window", async () => {
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(57)]);
+    await callJson(db, "select app_create_invoice_series($1,$2,'Sales','INV-') as result", [uuid(57), uuid(61)]);
+
+    // Two paid orders, taken by the server.
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(58)]);
+    const a = await callJson<{ orderId: string }>(
+      db, "select app_create_staff_order($1,'walk_in','en',$2::jsonb,$3,'cash') as result",
+      [uuid(61), JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 1 }]), uuid(58)]);
+    const b = await callJson<{ orderId: string }>(
+      db, "select app_create_staff_order($1,'walk_in','en',$2::jsonb,$3,'cash') as result",
+      [uuid(61), JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 1 }]), uuid(58)]);
+
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(57)]);
+    const first = await callJson<{ number: string; netMinor: string; taxMinor: string; totalMinor: string }>(
+      db, "select app_issue_invoice($1,$2) as result", [uuid(57), a.orderId]);
+    expect(first.number).toBe("INV-1");
+    expect(first.totalMinor).toBe("1000");
+    expect(first.netMinor).toBe("1000"); // no tax configured on this location
+    const second = await callJson<{ number: string }>(
+      db, "select app_issue_invoice($1,$2) as result", [uuid(57), b.orderId]);
+    expect(second.number).toBe("INV-2");
+
+    // The same order cannot be invoiced twice.
+    await expect(db.query("select app_issue_invoice($1,$2)", [uuid(57), a.orderId])).rejects.toThrow();
+    // An unpaid order cannot be invoiced.
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(58)]);
+    const unpaid = await callJson<{ orderId: string }>(
+      db, "select app_create_staff_order($1,'walk_in','en',$2::jsonb,$3) as result",
+      [uuid(61), JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 1 }]), uuid(58)]);
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(57)]);
+    await expect(db.query("select app_issue_invoice($1,$2)", [uuid(57), unpaid.orderId]))
+      .rejects.toThrow("ORDER_NOT_PAID");
+
+    // The export covers exactly the invoiced orders.
+    const rows = await callJson<Array<{ invoiceNumber: string; totalMinor: string }>>(
+      db, "select app_tax_export($1,$2,now() - interval '1 day', now() + interval '1 day') as result",
+      [uuid(57), uuid(61)]);
+    expect(rows.map((row) => row.invoiceNumber)).toEqual(["INV-1", "INV-2"]);
+    expect(rows.every((row) => row.totalMinor === "1000")).toBe(true);
+  });
+});

@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { requireUser } from "@/server/auth/server";
 import { DayEndReport } from "@/components/reports/DayEndReport";
 import { AntiTheftReport } from "@/components/reports/AntiTheftReport";
+import { TaxExport } from "@/components/reports/TaxExport";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,10 @@ export default async function ReportsPage({
             <DayEndReport locationId={selected.locationId} />
           )}
           {signedIn && selected && (selected.role === "owner" || selected.role === "manager") && (
-            <AntiTheftReport locationId={selected.locationId} currency={selected.currency} />
+            <>
+              <AntiTheftReport locationId={selected.locationId} currency={selected.currency} />
+              <TaxExport locationId={selected.locationId} />
+            </>
           )}
         </div>
       </section>

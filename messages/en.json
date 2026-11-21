@@ -306,6 +306,12 @@
       "flagRefund": "refund-heavy",
       "flagCash": "cash variance",
       "thresholdsNote": "Flags: discounts above 20% of sales, voids or refunds above 5%, any cash variance."
+    },
+    "taxExport": {
+      "eyebrow": "ACCOUNTING",
+      "title": "Tax export",
+      "description": "Every invoice issued in the window, as a CSV: number, date, net, tax and total in minor units.",
+      "download": "Download CSV"
     }
   },
   "Settings": {
@@ -568,6 +574,16 @@
       "cards": "Gift cards",
       "disabled": "disabled",
       "disable": "Disable"
+    },
+    "invoices": {
+      "eyebrow": "ACCOUNTING",
+      "title": "Invoice series",
+      "description": "Invoice numbers run without gaps. An invoice is issued from a paid order, once; the tax export on the reports page is the accountant's view.",
+      "name": "Series name",
+      "prefix": "Number prefix",
+      "create": "Create series",
+      "created": "Series {name} created.",
+      "nextNumber": "Next number: {number}"
     }
   },
   "OrderStatus": {

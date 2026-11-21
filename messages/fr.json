@@ -306,6 +306,12 @@
       "flagRefund": "beaucoup de remboursements",
       "flagCash": "écart de caisse",
       "thresholdsNote": "Signalements : remises au-delà de 20 % des ventes, annulations ou remboursements au-delà de 5 %, tout écart de caisse."
+    },
+    "taxExport": {
+      "eyebrow": "COMPTABILITÉ",
+      "title": "Export fiscal",
+      "description": "Chaque facture émise dans la période, en CSV : numéro, date, net, taxe et total en unités mineures.",
+      "download": "Télécharger le CSV"
     }
   },
   "Settings": {
@@ -568,6 +574,16 @@
       "cards": "Cartes cadeaux",
       "disabled": "désactivée",
       "disable": "Désactiver"
+    },
+    "invoices": {
+      "eyebrow": "COMPTABILITÉ",
+      "title": "Séries de factures",
+      "description": "Les numéros de facture se suivent sans trous. Une facture est émise depuis une commande payée, une seule fois ; l'export fiscal de la page rapports est la vue du comptable.",
+      "name": "Nom de la série",
+      "prefix": "Préfixe des numéros",
+      "create": "Créer la série",
+      "created": "Série {name} créée.",
+      "nextNumber": "Prochain numéro : {number}"
     }
   },
   "OrderStatus": {

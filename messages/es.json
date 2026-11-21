@@ -306,6 +306,12 @@
       "flagRefund": "muchos reembolsos",
       "flagCash": "diferencia de caja",
       "thresholdsNote": "Alertas: descuentos por encima del 20 % de las ventas, anulaciones o reembolsos por encima del 5 %, cualquier diferencia de caja."
+    },
+    "taxExport": {
+      "eyebrow": "CONTABILIDAD",
+      "title": "Exportación fiscal",
+      "description": "Cada factura emitida en el periodo, en CSV: número, fecha, base, impuesto y total en unidades menores.",
+      "download": "Descargar CSV"
     }
   },
   "Settings": {
@@ -568,6 +574,16 @@
       "cards": "Tarjetas de regalo",
       "disabled": "desactivada",
       "disable": "Desactivar"
+    },
+    "invoices": {
+      "eyebrow": "CONTABILIDAD",
+      "title": "Series de facturas",
+      "description": "Los números de factura corren sin huecos. Una factura se emite desde un pedido pagado, una sola vez; la exportación fiscal de la página de informes es la vista del contable.",
+      "name": "Nombre de la serie",
+      "prefix": "Prefijo del número",
+      "create": "Crear serie",
+      "created": "Serie {name} creada.",
+      "nextNumber": "Siguiente número: {number}"
     }
   },
   "OrderStatus": {
