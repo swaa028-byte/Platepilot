@@ -391,3 +391,81 @@ describe("anti-theft reporting", () => {
       .rejects.toThrow("FORBIDDEN");
   });
 });
+
+describe("bar tabs and bill splits", () => {
+  const tabServer = uuid(58); // same server as the anti-theft tenant
+
+  it("grows a tab, takes part payments, and closes it exactly once", async () => {
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [tabServer]);
+    const tab = await callJson<{ orderId: string; totalMinor: string }>(
+      db, "select app_create_staff_order($1,'walk_in','en',$2::jsonb,$3) as result",
+      [uuid(61), JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 1 }]), tabServer]);
+    expect(tab.totalMinor).toBe("1000");
+
+    // The guest orders again: the tab grows, the ticket grows with it.
+    const grown = await callJson<{ totalMinor: string; addedMinor: string }>(
+      db, "select app_add_order_items($1,$2,$3::jsonb) as result",
+      [tabServer, tab.orderId, JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 2 }])]);
+    expect(grown.addedMinor).toBe("2000");
+    expect(grown.totalMinor).toBe("3000");
+
+    // A part payment leaves the tab open; the covering payment closes it.
+    const first = await callJson<{ paymentStatus: string; paidTotalMinor: string }>(
+      db, "select app_record_order_payment($1,$2,1000::bigint,'cash','tab-e1') as result",
+      [tabServer, tab.orderId]);
+    expect(first.paymentStatus).toBe("unpaid");
+    expect(first.paidTotalMinor).toBe("1000");
+    const second = await callJson<{ paymentStatus: string; paidTotalMinor: string }>(
+      db, "select app_record_order_payment($1,$2,2000::bigint,'cash','tab-e2') as result",
+      [tabServer, tab.orderId]);
+    expect(second.paymentStatus).toBe("paid");
+    expect(second.paidTotalMinor).toBe("3000");
+
+    // The same event id cannot take the same money twice.
+    await expect(db.query("select app_record_order_payment($1,$2,1000::bigint,'cash','tab-e1')", [tabServer, tab.orderId]))
+      .rejects.toThrow();
+    const paid = await db.query<{ payment_status: string }>("select payment_status from orders where id=$1", [tab.orderId]);
+    expect(paid.rows[0].payment_status).toBe("paid");
+    const outbox = await db.query<{ n: string }>(
+      "select count(*)::text as n from outbox_events where event_key=$1", [`order.paid:${tab.orderId}`]);
+    expect(outbox.rows[0].n).toBe("1");
+  });
+
+  it("splits items of an open order onto a new order with honest totals", async () => {
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [tabServer]);
+    const order = await callJson<{ orderId: string; totalMinor: string }>(
+      db, "select app_create_staff_order($1,'walk_in','en',$2::jsonb,$3) as result",
+      [uuid(61), JSON.stringify([
+        { menuItemId: loyaltyMenuItemId, quantity: 1 },
+        { menuItemId: loyaltyMenuItemId, quantity: 3 },
+      ]), tabServer]);
+    const items = await db.query<{ id: string; line_total_minor: string }>(
+      "select id, line_total_minor::text from order_items where order_id=$1 order by line_total_minor desc", [order.orderId]);
+    expect(items.rows).toHaveLength(2);
+
+    const split = await callJson<{ newOrderId: string; movedMinor: string; originalTotalMinor: string }>(
+      db, "select app_split_order($1,$2,$3::jsonb) as result",
+      [tabServer, order.orderId, JSON.stringify([items.rows[0].id])]);
+    expect(split.movedMinor).toBe("3000"); // 3 x 1000
+    expect(split.originalTotalMinor).toBe("1000");
+
+    const moved = await db.query<{ n: string }>(
+      "select count(*)::text as n from order_items where order_id=$1", [split.newOrderId]);
+    expect(moved.rows[0].n).toBe("1");
+    const ticket = await db.query<{ n: string }>(
+      "select count(*)::text as n from kitchen_tickets where order_id=$1", [split.newOrderId]);
+    expect(ticket.rows[0].n).toBe("1");
+
+    // Splitting the last item off an order is refused.
+    await expect(db.query(
+      "select app_split_order($1,$2,$3::jsonb)",
+      [tabServer, split.newOrderId, JSON.stringify([items.rows[0].id])])).rejects.toThrow("SPLIT_MUST_LEAVE_ITEMS");
+
+    // A paid order cannot be split; it must be refunded instead.
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [tabServer]);
+    await db.query("select app_record_order_payment($1,$2,1000::bigint,'cash','split-close')", [tabServer, order.orderId]);
+    await expect(db.query(
+      "select app_split_order($1,$2,$3::jsonb)",
+      [tabServer, order.orderId, JSON.stringify([items.rows[1].id])])).rejects.toThrow("ORDER_ALREADY_PAID");
+  });
+});
