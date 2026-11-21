@@ -265,7 +265,9 @@
     "start": "Démarrer",
     "ready": "Prêt",
     "serve": "Servi",
-    "served": "Servi"
+    "served": "Servi",
+    "offline": "Hors ligne — le tableau continue de fonctionner. Les changements partent au retour de la connexion.",
+    "queued": "{count, plural, one {# changement en attente d'envoi} other {# changements en attente d'envoi}}"
   },
   "Reports": {
     "eyebrow": "Rapports",

@@ -265,7 +265,9 @@
     "start": "Empezar",
     "ready": "Listo",
     "serve": "Servido",
-    "served": "Servido"
+    "served": "Servido",
+    "offline": "Sin conexión — la pantalla sigue funcionando. Los cambios se envían cuando vuelva la conexión.",
+    "queued": "{count, plural, one {# cambio pendiente de envío} other {# cambios pendientes de envío}}"
   },
   "Reports": {
     "eyebrow": "Informes",

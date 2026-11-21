@@ -48,6 +48,28 @@ type Location = {
 
 const REFRESH_MS = 8_000;
 
+/** A bump the board could not send yet, kept until the server accepts it. */
+type QueuedBump = { ticketItemId: string; toStatus: TicketItem["status"] };
+
+const QUEUE_KEY = "platepilot.kds.queue";
+
+function readQueue(): QueuedBump[] {
+  try {
+    const raw = window.localStorage.getItem(QUEUE_KEY);
+    return raw ? (JSON.parse(raw) as QueuedBump[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeQueue(queue: QueuedBump[]) {
+  try {
+    window.localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+  } catch {
+    // Storage can be unavailable; the queue then lives only in memory.
+  }
+}
+
 /** The state a line moves to when it is tapped on the board. */
 function nextStatus(status: TicketItem["status"]): TicketItem["status"] | null {
   if (status === "new") return "preparing";
@@ -82,7 +104,71 @@ export function KitchenBoard() {
   const [state, setState] = useState<"loading" | "ready" | "empty" | "failed">("loading");
   const [notice, setNotice] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [online, setOnline] = useState(() => (typeof navigator === "undefined" ? true : navigator.onLine));
+  const [queued, setQueued] = useState<QueuedBump[]>([]);
   const pending = useRef<Set<string>>(new Set());
+  const queueRef = useRef<QueuedBump[]>([]);
+
+  const setQueue = useCallback((queue: QueuedBump[]) => {
+    queueRef.current = queue;
+    setQueued(queue);
+    writeQueue(queue);
+  }, []);
+
+  // The queue survives a reload: the kitchen keeps working through a drop,
+  // and what it bumped is sent the moment the connection returns.
+  useEffect(() => {
+    // Restored after paint, not during the effect, so the reveal is not a
+    // cascading render.
+    const restore = window.setTimeout(() => {
+      const restored = readQueue();
+      queueRef.current = restored;
+      if (restored.length > 0) setQueued(restored);
+    }, 0);
+    const goOnline = () => { setOnline(true); };
+    const goOffline = () => { setOnline(false); };
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      window.clearTimeout(restore);
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
+
+  const flushQueue = useCallback(async () => {
+    if (!navigator.onLine || queueRef.current.length === 0) return;
+    const remaining: QueuedBump[] = [];
+    for (const entry of queueRef.current) {
+      try {
+        const response = await fetch("/api/staff/kitchen", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ticketItemId: entry.ticketItemId, toStatus: entry.toStatus }),
+        });
+        if (!response.ok) {
+          // The server refused the change (the line moved elsewhere while we
+          // were offline). Drop it; the board reload shows the truth.
+          continue;
+        }
+      } catch {
+        // Still offline: keep this entry and the rest.
+        remaining.push(entry);
+        break;
+      }
+    }
+    // Anything after a network failure stays queued.
+    if (remaining.length > 0) {
+      const index = queueRef.current.findIndex((entry) => entry.ticketItemId === remaining[0].ticketItemId);
+      setQueue(queueRef.current.slice(index));
+    } else {
+      setQueue([]);
+    }
+  }, [setQueue]);
+
+  useEffect(() => {
+    if (online) void flushQueue();
+  }, [online, flushQueue]);
 
   const applyBoard = useCallback((data: { stations?: Record<string, Station> }) => {
     const entries = Object.values(data.stations ?? {});
@@ -140,6 +226,19 @@ export function KitchenBoard() {
     if (!locationId || pending.current.has(item.ticketItemId)) return;
     pending.current.add(item.ticketItemId);
     setNotice(null);
+
+    // Offline: the kitchen does not stop. The change is queued, shown on the
+    // board immediately, and sent when the connection returns.
+    const enqueue = () => {
+      const next = [...queueRef.current.filter((entry) => entry.ticketItemId !== item.ticketItemId), { ticketItemId: item.ticketItemId, toStatus }];
+      setQueue(next);
+    };
+    if (!navigator.onLine) {
+      enqueue();
+      pending.current.delete(item.ticketItemId);
+      return;
+    }
+
     try {
       const response = await fetch("/api/staff/kitchen", {
         method: "POST",
@@ -152,10 +251,20 @@ export function KitchenBoard() {
         return;
       }
       await loadBoard(locationId);
+    } catch {
+      // The request itself failed — a drop mid-service. Queue it.
+      enqueue();
     } finally {
       pending.current.delete(item.ticketItemId);
     }
-  }, [locationId, loadBoard]);
+  }, [locationId, loadBoard, setQueue]);
+
+  // A queued bump shows its target state on the board, so the kitchen sees
+  // the room as it believes it to be, not as the last refresh found it.
+  const statusFor = useCallback((item: TicketItem): TicketItem["status"] => {
+    const entry = queued.find((queuedItem) => queuedItem.ticketItemId === item.ticketItemId);
+    return entry ? entry.toStatus : item.status;
+  }, [queued]);
 
   const sorted = useMemo(
     () => [...stations].sort((a, b) => a.station.localeCompare(b.station)),
@@ -205,6 +314,12 @@ export function KitchenBoard() {
 
       {notice && <p className="kitchen-notice"><CircleAlert size={15} />{t("rejected")}</p>}
 
+      {(!online || queued.length > 0) && (
+        <p className="kitchen-notice kitchen-notice--offline" role="status">
+          <CircleAlert size={15} />{!online ? t("offline") : t("queued", { count: queued.length })}
+        </p>
+      )}
+
       {state === "empty" ? (
         <p className="kitchen-state kitchen-state--empty"><ChefHat size={22} /><p>{t("noTickets")}</p></p>
       ) : (
@@ -234,7 +349,8 @@ export function KitchenBoard() {
                       </header>
                       {ticket.customerName && <p className="kitchen-ticket-guest">{ticket.customerName}</p>}
                       <ul className="kitchen-items">
-                        {items.map((item) => {
+                        {items.map((rawItem) => {
+                          const item = { ...rawItem, status: statusFor(rawItem) };
                           const target = nextStatus(item.status);
                           return (
                             <li className={`kitchen-item kitchen-item--${item.status}`} key={item.ticketItemId}>

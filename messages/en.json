@@ -265,7 +265,9 @@
     "start": "Start",
     "ready": "Ready",
     "serve": "Serve",
-    "served": "Served"
+    "served": "Served",
+    "offline": "Offline — the board keeps working. Changes send when the connection returns.",
+    "queued": "{count, plural, one {# change waiting to send} other {# changes waiting to send}}"
   },
   "Reports": {
     "eyebrow": "Reporting",

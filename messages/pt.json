@@ -265,7 +265,9 @@
     "start": "Iniciar",
     "ready": "Pronto",
     "serve": "Servido",
-    "served": "Servido"
+    "served": "Servido",
+    "offline": "Sem ligação — o ecrã continua a funcionar. As alterações enviam-se quando a ligação voltar.",
+    "queued": "{count, plural, one {# alteração à espera de envio} other {# alterações à espera de envio}}"
   },
   "Reports": {
     "eyebrow": "Relatórios",

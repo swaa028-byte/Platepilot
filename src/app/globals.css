@@ -681,3 +681,4 @@ p { text-wrap: pretty; }
   .qr-card { border: 1px dashed #999; border-radius: 0; background: #fff; }
   body { background: #fff; }
 }
+.kitchen-notice--offline { background: #fdf3dd; color: #7a5a17; }
