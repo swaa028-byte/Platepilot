@@ -30,7 +30,7 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
         return;
       }
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithOtp({
+      const { data, error } = await supabase.auth.signInWithOtp({
         email,
         // The callback redeems the code and only then sends the visitor on. The
         // destination rides in the path, not a query string, because Supabase
@@ -39,6 +39,13 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
         // landing page.
         options: { emailRedirectTo: `${window.location.origin}/auth/callback/${locale}/operations` },
       });
+      // While the project auto-confirms (testing mode), the sign-in request
+      // returns the session directly: no email is sent, so go straight in.
+      if (data.session) {
+        router.push(`/${locale}/operations`);
+        router.refresh();
+        return;
+      }
       // The hosted email service allows only a few messages per hour, and a
       // quiet 429 here otherwise masqueraded as a configuration problem.
       setState(error ? (error.code === "over_email_send_rate_limit" || error.status === 429 ? "ratelimited" : "error") : "sent");
