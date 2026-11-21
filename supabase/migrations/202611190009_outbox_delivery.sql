@@ -1,7 +1,7 @@
 -- Outbound delivery for the transactional outbox.
 --
--- Business functions write events into outbox_events (order.created, order.paid,
--- payment.review_required, menu.published) and, until now, nothing ever read
+-- Business functions write events into outbox_events (order.paid,
+-- payment.review_required, kitchen.ticket_*, refund.requested) and, until now, nothing ever read
 -- them: the rows accumulated with dispatched_at unset forever. This migration
 -- gives those events somewhere to go and a delivery record that can be retried.
 --
