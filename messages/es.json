@@ -93,7 +93,8 @@
     "notConfiguredTitle": "La autenticación necesita configuración",
     "notConfiguredBody": "Añade la URL pública y la clave anónima de Supabase. No se creó ninguna cuenta ni sesión.",
     "back": "Volver a PlatePilot",
-    "submitLocal": "Iniciar sesión"
+    "submitLocal": "Iniciar sesión",
+    "linkExpired": "Ese enlace de acceso ha caducado o ya se usó. Solicita otro y ábrelo en este dispositivo."
   },
   "Onboarding": {
     "eyebrow": "CONFIGURACIÓN DEL RESTAURANTE",

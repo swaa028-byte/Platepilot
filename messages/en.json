@@ -93,7 +93,8 @@
     "notConfiguredTitle": "Authentication needs configuration",
     "notConfiguredBody": "Add the public Supabase project URL and anonymous key to enable secure staff sign-in. No account or session has been created.",
     "back": "Back to PlatePilot",
-    "submitLocal": "Sign in"
+    "submitLocal": "Sign in",
+    "linkExpired": "That sign-in link has expired or was already used. Request a new one, and open it on this device."
   },
   "Onboarding": {
     "eyebrow": "RESTAURANT SETUP",

@@ -93,7 +93,8 @@
     "notConfiguredTitle": "L’authentification doit être configurée",
     "notConfiguredBody": "Ajoutez l’URL publique Supabase et la clé anonyme. Aucun compte ni session n’a été créé.",
     "back": "Retour à PlatePilot",
-    "submitLocal": "Se connecter"
+    "submitLocal": "Se connecter",
+    "linkExpired": "Ce lien de connexion a expiré ou a déjà servi. Demandez-en un nouveau et ouvrez-le sur cet appareil."
   },
   "Onboarding": {
     "eyebrow": "CONFIGURATION DU RESTAURANT",

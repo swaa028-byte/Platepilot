@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, Mail } from "lucide-react";
 import { createClient } from "@/server/auth/client";
 
-export function LoginForm({ configured, localMode }: { configured: boolean; localMode: boolean }) {
+export function LoginForm({ configured, localMode, expired = false }: { configured: boolean; localMode: boolean; expired?: boolean }) {
   const t = useTranslations("Login");
   const locale = useLocale();
   const router = useRouter();
@@ -32,7 +32,10 @@ export function LoginForm({ configured, localMode }: { configured: boolean; loca
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: `${window.location.origin}/${locale}/operations` },
+        // The callback redeems the code and only then sends the visitor on. A
+        // direct link to /operations would drop the code and bounce them back
+        // here, which is what happened before /auth/callback existed.
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/${locale}/operations` },
       });
       setState(error ? "error" : "sent");
     } catch { setState("error"); }
@@ -46,6 +49,7 @@ export function LoginForm({ configured, localMode }: { configured: boolean; loca
   }
   return (
     <form onSubmit={submit}>
+      {expired && <div className="notice notice--warning"><AlertCircle size={19} /><div>{t("linkExpired")}</div></div>}
       <label className="field"><span>{t("email")}</span><input required type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={t("emailPlaceholder")} /></label>
       {state === "error" && <div className="notice notice--error"><AlertCircle size={18} />{t("notConfiguredBody")}</div>}
       <button className="button" disabled={state === "sending"}><Mail size={17} />{state === "sending" ? t("sending") : localMode ? t("submitLocal") : t("submit")}</button>
