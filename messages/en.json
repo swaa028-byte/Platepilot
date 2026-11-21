@@ -392,7 +392,9 @@
       "searchPlaceholder": "Restaurant name, city",
       "find": "Find",
       "link": "Link this branch",
-      "notConfigured": "Google Places search is not configured on this deployment yet — add a Places API key to enable it."
+      "notConfigured": "Google Places search is not configured on this deployment yet — add a Places API key to enable it.",
+      "paste": "Or paste your Google Maps link",
+      "pastePlaceholder": "https://www.google.com/maps/place/…  or a ChIJ… Place ID"
     },
     "days": {
       "0": "Sunday",

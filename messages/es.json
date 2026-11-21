@@ -392,7 +392,9 @@
       "searchPlaceholder": "Nombre del restaurante, ciudad",
       "find": "Buscar",
       "link": "Vincular esta sucursal",
-      "notConfigured": "La búsqueda de Google Places no está configurada: añade una clave de API de Places."
+      "notConfigured": "La búsqueda de Google Places no está configurada: añade una clave de API de Places.",
+      "paste": "O pega el enlace de Google Maps de tu restaurante",
+      "pastePlaceholder": "https://www.google.com/maps/place/…  o un ID ChIJ…"
     },
     "days": {
       "0": "Domingo",

@@ -110,6 +110,7 @@ export function GoogleListingPanel({ locationId }: { locationId: string }) {
   const t = useTranslations("Settings");
   const [placeId, setPlaceId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [pasted, setPasted] = useState("");
   const [results, setResults] = useState<PlaceResult[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -168,6 +169,15 @@ export function GoogleListingPanel({ locationId }: { locationId: string }) {
         <button type="button" className="op-save" disabled={busy || query.trim().length < 3} onClick={search}>
           {busy ? <Loader2 size={15} className="op-spin" aria-hidden="true" /> : <Search size={15} aria-hidden="true" />}
           {t("google.find")}
+        </button>
+      </div>
+      <div className="op-inline-form">
+        <label className="op-figure op-figure--wide">
+          <span className="op-label">{t("google.paste")}</span>
+          <input value={pasted} placeholder={t("google.pastePlaceholder")} onChange={(event) => setPasted(event.target.value)} />
+        </label>
+        <button type="button" className="op-save" disabled={busy || pasted.trim().length < 10} onClick={() => link(pasted.trim())}>
+          {t("google.link")}
         </button>
       </div>
       {notice && <p className="op-error" role="alert"><AlertCircle size={16} aria-hidden="true" />{t(`errors.${notice}`, { fallback: notice === "GOOGLE_NOT_CONFIGURED" ? t("google.notConfigured") : t("errors.REQUEST_REJECTED") })}</p>}

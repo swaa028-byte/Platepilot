@@ -392,7 +392,9 @@
       "searchPlaceholder": "Nome do restaurante, cidade",
       "find": "Pesquisar",
       "link": "Ligar esta filial",
-      "notConfigured": "A pesquisa do Google Places não está configurada — adicione uma chave da API Places."
+      "notConfigured": "A pesquisa do Google Places não está configurada — adicione uma chave da API Places.",
+      "paste": "Ou cole o link do Google Maps do seu restaurante",
+      "pastePlaceholder": "https://www.google.com/maps/place/…  ou um ID ChIJ…"
     },
     "days": {
       "0": "Domingo",

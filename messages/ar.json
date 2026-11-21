@@ -392,7 +392,9 @@
       "searchPlaceholder": "اسم المطعم، المدينة",
       "find": "ابحث",
       "link": "اربط هذا الفرع",
-      "notConfigured": "البحث في Google Places غير مُهيأ — أضف مفتاح Places API."
+      "notConfigured": "البحث في Google Places غير مُهيأ — أضف مفتاح Places API.",
+      "paste": "أو ألصق رابط Google Maps لمطعمك",
+      "pastePlaceholder": "https://www.google.com/maps/place/…  أو معرف ChIJ…"
     },
     "days": {
       "0": "الأحد",
