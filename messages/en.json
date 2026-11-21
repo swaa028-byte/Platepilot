@@ -316,6 +316,23 @@
       "save": "Save settings",
       "saving": "Saving…"
     },
+    "zones": {
+      "eyebrow": "DELIVERY",
+      "title": "Delivery zones",
+      "description": "Charge different delivery fees by postal area. The longest matching prefix wins, so 8001 can cost less than the wider 80 region.",
+      "name": "Zone name",
+      "prefixes": "Postal prefixes",
+      "prefixesHint": "Comma separated. A customer's postal code is matched by prefix.",
+      "fee": "Delivery fee",
+      "minOrder": "Minimum order",
+      "active": "Active",
+      "add": "Add zone",
+      "save": "Save zones",
+      "saving": "Saving…",
+      "saved": "Zones saved.",
+      "empty": "No zones yet. Without zones the flat delivery fee in service settings applies everywhere.",
+      "delete": "Remove zone"
+    },
     "days": {
       "0": "Sunday",
       "1": "Monday",
@@ -366,7 +383,10 @@
       "TABLE_NOT_FOUND": "That table no longer exists.",
       "FLOOR_PLAN_NOT_FOUND": "There is no floor plan yet. Draw the room first.",
       "FLOOR_PLAN_EMPTY": "The floor plan has no tables on it.",
-      "LOCATION_NOT_FOUND": "That location was not found."
+      "LOCATION_NOT_FOUND": "That location was not found.",
+      "ZONE_INCOMPLETE": "Every zone needs a name and at least one postal prefix.",
+      "DELIVERY_MIN_ORDER": "The order is below this zone's minimum for delivery.",
+      "OUTSIDE_SERVICE_AREA": "We do not deliver to that postal code."
     },
     "supply": {
       "eyebrow": "Supply",

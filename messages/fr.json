@@ -316,6 +316,23 @@
       "save": "Enregistrer",
       "saving": "Enregistrement…"
     },
+    "zones": {
+      "eyebrow": "LIVRAISON",
+      "title": "Zones de livraison",
+      "description": "Facturez des frais de livraison différents selon le code postal. Le préfixe le plus long l'emporte : 8001 peut coûter moins que la région 80 plus large.",
+      "name": "Nom de la zone",
+      "prefixes": "Préfixes postaux",
+      "prefixesHint": "Séparés par des virgules. Le code postal du client correspond par préfixe.",
+      "fee": "Frais de livraison",
+      "minOrder": "Commande minimum",
+      "active": "Actif",
+      "add": "Ajouter une zone",
+      "save": "Enregistrer les zones",
+      "saving": "Enregistrement…",
+      "saved": "Zones enregistrées.",
+      "empty": "Aucune zone. Sans zones, les frais fixes des paramètres s'appliquent partout.",
+      "delete": "Supprimer la zone"
+    },
     "days": {
       "0": "Dimanche",
       "1": "Lundi",
@@ -366,7 +383,10 @@
       "TABLE_NOT_FOUND": "Cette table n'existe plus.",
       "FLOOR_PLAN_NOT_FOUND": "Aucun plan de salle. Dessinez la salle d'abord.",
       "FLOOR_PLAN_EMPTY": "Le plan de salle ne contient aucune table.",
-      "LOCATION_NOT_FOUND": "Ce lieu est introuvable."
+      "LOCATION_NOT_FOUND": "Ce lieu est introuvable.",
+      "ZONE_INCOMPLETE": "Chaque zone nécessite un nom et au moins un préfixe postal.",
+      "DELIVERY_MIN_ORDER": "La commande est en dessous du minimum de cette zone pour la livraison.",
+      "OUTSIDE_SERVICE_AREA": "Nous ne livrons pas à ce code postal."
     },
     "supply": {
       "eyebrow": "Approvisionnement",

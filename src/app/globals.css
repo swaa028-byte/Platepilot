@@ -566,3 +566,11 @@ p { text-wrap: pretty; }
   .feature-card { border-inline-start: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .feature-card:last-child { border-bottom: 0; }
 }
+
+.op-zones { display: grid; gap: 14px; margin-top: 16px; }
+.op-zones__row { display: grid; grid-template-columns: 1.1fr 1.6fr 0.7fr 0.7fr auto auto; align-items: end; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(29,42,37,0.07); }
+.op-zones__row:last-child { border-bottom: 0; }
+.op-zones__row .op-toggle { align-self: center; padding-bottom: 8px; }
+@media (max-width: 900px) {
+  .op-zones__row { grid-template-columns: 1fr 1fr; }
+}

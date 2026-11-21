@@ -316,6 +316,23 @@
       "save": "Guardar ajustes",
       "saving": "Guardando…"
     },
+    "zones": {
+      "eyebrow": "ENTREGA",
+      "title": "Zonas de entrega",
+      "description": "Cobra tarifas de entrega distintas por zona postal. Gana el prefijo más largo: 8001 puede costar menos que la región 80.",
+      "name": "Nombre de la zona",
+      "prefixes": "Prefijos postales",
+      "prefixesHint": "Separados por comas. El código postal del cliente se empareja por prefijo.",
+      "fee": "Tarifa de entrega",
+      "minOrder": "Pedido mínimo",
+      "active": "Activa",
+      "add": "Añadir zona",
+      "save": "Guardar zonas",
+      "saving": "Guardando…",
+      "saved": "Zonas guardadas.",
+      "empty": "Aún no hay zonas. Sin zonas, la tarifa fija de los ajustes se aplica en todas partes.",
+      "delete": "Eliminar zona"
+    },
     "days": {
       "0": "Domingo",
       "1": "Lunes",
@@ -366,7 +383,10 @@
       "TABLE_NOT_FOUND": "Esa mesa ya no existe.",
       "FLOOR_PLAN_NOT_FOUND": "No hay plano de sala. Dibuja la sala primero.",
       "FLOOR_PLAN_EMPTY": "El plano no tiene mesas.",
-      "LOCATION_NOT_FOUND": "No se encontró ese local."
+      "LOCATION_NOT_FOUND": "No se encontró ese local.",
+      "ZONE_INCOMPLETE": "Cada zona necesita un nombre y al menos un prefijo postal.",
+      "DELIVERY_MIN_ORDER": "El pedido está por debajo del mínimo de esta zona para entrega.",
+      "OUTSIDE_SERVICE_AREA": "No entregamos en ese código postal."
     },
     "supply": {
       "eyebrow": "Aprovisionamiento",
