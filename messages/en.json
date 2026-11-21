@@ -586,6 +586,28 @@
       "create": "Create series",
       "created": "Series {name} created.",
       "nextNumber": "Next number: {number}"
+    },
+    "sms": {
+      "eyebrow": "MARKETING",
+      "title": "SMS campaigns",
+      "description": "Text your guests who asked to hear from you. A phone joins the audience only when consent is recorded; sending is one message per person, once.",
+      "customerName": "Customer name",
+      "phone": "Mobile number",
+      "phoneHint": "E.164 format, e.g. +15550101",
+      "optIn": "Record opt-in",
+      "optOut": "Record opt-out",
+      "consentRecorded": "Consent recorded.",
+      "noAudience": "No one has opted in yet.",
+      "campaignName": "Campaign name",
+      "campaignBody": "Message",
+      "bodyHint": "Up to 320 characters.",
+      "saveDraft": "Save draft",
+      "draftSaved": "Draft saved.",
+      "draft": "Draft",
+      "send": "Send",
+      "sent": "Queued {count} message(s).",
+      "progress": "{recipients} sent · {delivered} delivered",
+      "noCampaigns": "No campaigns yet."
     }
   },
   "OrderStatus": {

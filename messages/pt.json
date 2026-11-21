@@ -586,6 +586,28 @@
       "create": "Criar série",
       "created": "Série {name} criada.",
       "nextNumber": "Próximo número: {number}"
+    },
+    "sms": {
+      "eyebrow": "MARKETING",
+      "title": "Campanhas SMS",
+      "description": "Escreva aos clientes que pediram para ouvir de si. Um número entra na audiência apenas com consentimento registado; o envio é uma mensagem por pessoa, uma única vez.",
+      "customerName": "Nome do cliente",
+      "phone": "Número de telemóvel",
+      "phoneHint": "Formato E.164, ex. +351912345678",
+      "optIn": "Registar consentimento",
+      "optOut": "Registar recusa",
+      "consentRecorded": "Consentimento registado.",
+      "noAudience": "Ainda ninguém aceitou.",
+      "campaignName": "Nome da campanha",
+      "campaignBody": "Mensagem",
+      "bodyHint": "Até 320 caracteres.",
+      "saveDraft": "Guardar rascunho",
+      "draftSaved": "Rascunho guardado.",
+      "draft": "Rascunho",
+      "send": "Enviar",
+      "sent": "{count} mensagem(ns) em fila.",
+      "progress": "{recipients} enviadas · {delivered} entregues",
+      "noCampaigns": "Ainda sem campanhas."
     }
   },
   "OrderStatus": {

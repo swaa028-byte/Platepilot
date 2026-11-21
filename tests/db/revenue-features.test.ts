@@ -513,3 +513,90 @@ describe("invoicing", () => {
     expect(rows.every((row) => row.totalMinor === "1000")).toBe(true);
   });
 });
+
+describe("sms campaigns", () => {
+  it("records consent, snapshots the audience once, and enqueues exactly one job per person", async () => {
+    // Consent: a phone enters the audience only with a valid number and an
+    // opt-in; the trail lands in consent_events either way.
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(57)]);
+    const first = await callJson<{ customerId: string }>(
+      db, "select app_record_sms_consent($1,$2,'Dana Whit',$3,true) as result",
+      [uuid(57), uuid(60), "+15550101"]);
+    const second = await callJson<{ customerId: string }>(
+      db, "select app_record_sms_consent($1,$2,'Ana Reyes',$3,true) as result",
+      [uuid(57), uuid(60), "+15550102"]);
+    expect(first.customerId).not.toBe(second.customerId);
+
+    // A malformed number is refused outright — nothing half-consented.
+    await expect(db.query(
+      "select app_record_sms_consent($1,$2,'Bad Number','5550103',true)",
+      [uuid(57), uuid(60)])).rejects.toThrow("INVALID_PHONE");
+
+    // An opt-out removes the person from the audience but keeps the trail.
+    await callJson(db, "select app_record_sms_consent($1,$2,'Ana Reyes',$3,false) as result",
+      [uuid(57), uuid(60), "+15550102"]);
+    const audience = await callJson<Array<{ customerId: string; phone: string }>>(
+      db, "select app_list_sms_audience($1,$2) as result", [uuid(57), uuid(61)]);
+    expect(audience.map((entry) => entry.phone)).toEqual(["+15550101"]);
+    const consents = await db.query(
+      "select action from consent_events where customer_id=$1 and channel='sms' order by occurred_at",
+      [second.customerId]);
+    expect((consents.rows as Array<{ action: string }>).map((row) => row.action)).toEqual(["opt_in", "opt_out"]);
+
+    // A draft campaign, editable while it is still a draft.
+    const campaign = await callJson<{ campaignId: string }>(
+      db, "select app_upsert_sms_campaign($1,$2,null,'Friday paella','Paella night Friday — show this text for a free dessert.') as result",
+      [uuid(57), uuid(61)]);
+    await callJson(db, "select app_upsert_sms_campaign($1,$2,$3,'Friday paella','Updated body.') as result",
+      [uuid(57), uuid(61), campaign.campaignId]);
+
+    // Only a manager sends.
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(58)]);
+    await expect(db.query("select app_send_sms_campaign($1,$2)", [uuid(58), campaign.campaignId]))
+      .rejects.toThrow("FORBIDDEN");
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [uuid(57)]);
+    const sent = await callJson<{ status: string; enqueued: number }>(
+      db, "select app_send_sms_campaign($1,$2) as result", [uuid(57), campaign.campaignId]);
+    expect(sent.status).toBe("sent");
+    expect(sent.enqueued).toBe(1);
+
+    // One job per recipient, carrying the body and the campaign id.
+    const jobs = await db.query(
+      "select payload from jobs where kind='sms.send' and payload->>'campaignId'=$1", [campaign.campaignId]);
+    expect(jobs.rows).toHaveLength(1);
+    const payload = (jobs.rows as Array<{ payload: { to: string; body: string } }>)[0].payload;
+    expect(payload.to).toBe("+15550101");
+    expect(payload.body).toContain("Updated body.");
+
+    // A second send is refused and can never double-message anyone.
+    await expect(db.query("select app_send_sms_campaign($1,$2)", [uuid(57), campaign.campaignId]))
+      .rejects.toThrow("CAMPAIGN_NOT_DRAFT");
+    // Editing a sent campaign is refused too.
+    await expect(db.query(
+      "select app_upsert_sms_campaign($1,$2,$3,'Renamed','Body')",
+      [uuid(57), uuid(61), campaign.campaignId])).rejects.toThrow("CAMPAIGN_NOT_DRAFT");
+
+    // A later consent re-joins the audience without a duplicate recipient.
+    await callJson(db, "select app_record_sms_consent($1,$2,'Ana Reyes',$3,true) as result",
+      [uuid(57), uuid(60), "+15550102"]);
+    const again = await callJson<{ status: string }>(
+      db, "select app_send_sms_campaign($1,$2) as result",
+      [uuid(57), (await callJson<{ campaignId: string }>(
+        db, "select app_upsert_sms_campaign($1,$2,null,'Second blast','Another week.') as result",
+        [uuid(57), uuid(61)])).campaignId]);
+    expect(again.status).toBe("sent");
+
+    // The list reports recipients and how many jobs the worker completed.
+    const completed = await db.query(
+      "update jobs set status='completed' where kind='sms.send' and payload->>'campaignId' in (select id::text from sms_campaigns where location_id=$1) returning payload->>'campaignId' as id",
+      [uuid(61)]);
+    expect(completed.rows).toHaveLength(3);
+    const listed = await callJson<Array<{ name: string; recipients: number; delivered: number }>>(
+      db, "select app_list_sms_campaigns($1,$2) as result", [uuid(57), uuid(61)]);
+    expect(listed).toHaveLength(2);
+    expect(listed[0].recipients).toBe(2);
+    expect(listed[0].delivered).toBe(2);
+    expect(listed[1].recipients).toBe(1);
+    expect(listed[1].delivered).toBe(1);
+  });
+});
