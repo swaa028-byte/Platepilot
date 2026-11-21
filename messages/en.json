@@ -287,7 +287,26 @@
     "notAvailable": "The report is not available yet.",
     "signInRequired": "Sign in to see your trading day.",
     "noLocation": "No location is linked to your account yet.",
-    "largestDiscount": "The largest single discount today was {amount}."
+    "largestDiscount": "The largest single discount today was {amount}.",
+    "theft": {
+      "eyebrow": "EXCEPTIONS",
+      "title": "Anti-theft report",
+      "description": "Refunds, discounts, voids and cash variances, next to each other per staff member. A flag is a question to ask, not an accusation.",
+      "from": "From",
+      "to": "To",
+      "refresh": "Refresh",
+      "none": "Nothing to report for this window.",
+      "sold": "{count} order(s) · {amount}",
+      "discounted": "discounts {amount} ({count})",
+      "voided": "voids {amount} ({count})",
+      "refunded": "refunds {amount} ({count})",
+      "cash": "cash variance {amount}",
+      "flagDiscount": "discount-heavy",
+      "flagVoid": "void-heavy",
+      "flagRefund": "refund-heavy",
+      "flagCash": "cash variance",
+      "thresholdsNote": "Flags: discounts above 20% of sales, voids or refunds above 5%, any cash variance."
+    }
   },
   "Settings": {
     "eyebrow": "Location settings",

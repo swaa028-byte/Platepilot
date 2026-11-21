@@ -287,7 +287,26 @@
     "notAvailable": "التقرير غير متاح بعد.",
     "signInRequired": "سجّل الدخول لرؤية يومك.",
     "noLocation": "لا يوجد فرع مرتبط بحسابك بعد.",
-    "largestDiscount": "أكبر خصم اليوم كان {amount}."
+    "largestDiscount": "أكبر خصم اليوم كان {amount}.",
+    "theft": {
+      "eyebrow": "الحالات الشاذة",
+      "title": "تقرير مكافحة السرقة",
+      "description": "الخصومات والإلغاءات والاستردادات وفروقات الصندوق، جنبًا إلى جنب لكل موظف. التنبيه سؤال يُطرح، وليس اتهامًا.",
+      "from": "من",
+      "to": "إلى",
+      "refresh": "تحديث",
+      "none": "لا شيء يُذكر في هذه الفترة.",
+      "sold": "{count} طلب · {amount}",
+      "discounted": "خصومات {amount} ({count})",
+      "voided": "إلغاءات {amount} ({count})",
+      "refunded": "استردادات {amount} ({count})",
+      "cash": "فرق الصندوق {amount}",
+      "flagDiscount": "خصومات كثيرة",
+      "flagVoid": "إلغاءات كثيرة",
+      "flagRefund": "استردادات كثيرة",
+      "flagCash": "فرق صندوق",
+      "thresholdsNote": "التنبيهات: خصومات تتجاوز 20٪ من المبيعات، إلغاءات أو استردادات تتجاوز 5٪، أي فرق في الصندوق."
+    }
   },
   "Settings": {
     "eyebrow": "إعدادات الفرع",

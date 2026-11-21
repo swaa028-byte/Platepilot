@@ -287,7 +287,26 @@
     "notAvailable": "O relatório ainda não está disponível.",
     "signInRequired": "Inicia sessão para veres o teu dia.",
     "noLocation": "Ainda não há nenhum restaurante associado à tua conta.",
-    "largestDiscount": "O maior desconto de hoje foi de {amount}."
+    "largestDiscount": "O maior desconto de hoje foi de {amount}.",
+    "theft": {
+      "eyebrow": "EXCEÇÕES",
+      "title": "Relatório antifraude",
+      "description": "Descontos, anulamentos, reembolsos e diferenças de caixa, lado a lado por membro do pessoal. Um alerta é uma pergunta a fazer, não uma acusação.",
+      "from": "De",
+      "to": "Até",
+      "refresh": "Atualizar",
+      "none": "Nada a relatar para este período.",
+      "sold": "{count} pedido(s) · {amount}",
+      "discounted": "descontos {amount} ({count})",
+      "voided": "anulamentos {amount} ({count})",
+      "refunded": "reembolsos {amount} ({count})",
+      "cash": "diferença de caixa {amount}",
+      "flagDiscount": "muitos descontos",
+      "flagVoid": "muitos anulamentos",
+      "flagRefund": "muitos reembolsos",
+      "flagCash": "diferença de caixa",
+      "thresholdsNote": "Alertas: descontos acima de 20 % das vendas, anulamentos ou reembolsos acima de 5 %, qualquer diferença de caixa."
+    }
   },
   "Settings": {
     "eyebrow": "Configurações do local",

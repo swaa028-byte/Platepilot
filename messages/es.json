@@ -287,7 +287,26 @@
     "notAvailable": "El informe aún no está disponible.",
     "signInRequired": "Inicia sesión para ver tu jornada.",
     "noLocation": "Todavía no hay ningún local asociado a tu cuenta.",
-    "largestDiscount": "El mayor descuento de hoy fue de {amount}."
+    "largestDiscount": "El mayor descuento de hoy fue de {amount}.",
+    "theft": {
+      "eyebrow": "EXCEPCIONES",
+      "title": "Informe antifraude",
+      "description": "Descuentos, anulaciones, reembolsos y diferencias de caja, uno junto al otro por miembro del personal. Una alerta es una pregunta que hacer, no una acusación.",
+      "from": "Desde",
+      "to": "Hasta",
+      "refresh": "Actualizar",
+      "none": "Nada que informar para este periodo.",
+      "sold": "{count} pedido(s) · {amount}",
+      "discounted": "descuentos {amount} ({count})",
+      "voided": "anulaciones {amount} ({count})",
+      "refunded": "reembolsos {amount} ({count})",
+      "cash": "diferencia de caja {amount}",
+      "flagDiscount": "muchos descuentos",
+      "flagVoid": "muchas anulaciones",
+      "flagRefund": "muchos reembolsos",
+      "flagCash": "diferencia de caja",
+      "thresholdsNote": "Alertas: descuentos por encima del 20 % de las ventas, anulaciones o reembolsos por encima del 5 %, cualquier diferencia de caja."
+    }
   },
   "Settings": {
     "eyebrow": "Ajustes del local",

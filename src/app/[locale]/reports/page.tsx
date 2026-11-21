@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { requireUser } from "@/server/auth/server";
 import { DayEndReport } from "@/components/reports/DayEndReport";
+import { AntiTheftReport } from "@/components/reports/AntiTheftReport";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,9 @@ export default async function ReportsPage({
             <p className="report-empty">{t("noLocation")}</p>
           ) : (
             <DayEndReport locationId={selected.locationId} />
+          )}
+          {signedIn && selected && (selected.role === "owner" || selected.role === "manager") && (
+            <AntiTheftReport locationId={selected.locationId} currency={selected.currency} />
           )}
         </div>
       </section>

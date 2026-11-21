@@ -209,9 +209,10 @@ describe("service-period menus", () => {
 // Loyalty and gift cards
 // ---------------------------------------------------------------------------
 
+let loyaltyMenuItemId = "";
+
 describe("loyalty and gift cards", () => {
   const loyaltyActor = uuid(57);
-  let loyaltyMenuItemId = "";
 
   async function seedLoyaltyMenu() {
     const category = await db.query<{ id: string }>(
@@ -322,5 +323,71 @@ describe("table qr", () => {
       db, "select app_table_label($1) as result", [uuid(70)]);
     expect(label.name).toBe("Window 4");
     expect(label.locationId).toBe(uuid(61));
+  });
+});
+
+describe("anti-theft reporting", () => {
+  const manager = uuid(57);          // same owner as the loyalty tenant
+  const server = uuid(58);
+  const staffItems = () => JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 2 }]);
+
+  it("attributes staff orders, records voids with reasons, and reports the exceptions", async () => {
+    await db.query("insert into memberships(organization_id,user_id,role) values ($1,$2,'server')", [uuid(60), server]);
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [server]);
+
+    // A server takes a paid walk-in order; the order carries their name.
+    const staff = await callJson<{ orderId: string; totalMinor: string }>(
+      db, "select app_create_staff_order($1,'walk_in','en',$2::jsonb,$3,'cash') as result",
+      [uuid(61), staffItems(), server]);
+    const attribution = await db.query<{ created_by: string }>("select created_by::text from orders where id=$1", [staff.orderId]);
+    expect(attribution.rows[0].created_by).toBe(server);
+
+    // Voiding needs a reason, and a paid order is refunded, not voided.
+    await expect(db.query("select app_void_order($1,$2,'')", [server, staff.orderId]))
+      .rejects.toThrow("VOID_REASON_REQUIRED");
+    await expect(db.query("select app_void_order($1,$2,'changed their mind')", [server, staff.orderId]))
+      .rejects.toThrow();
+
+    // An unpaid order voids cleanly, with the reason recorded immutably.
+    const unpaid = await callJson<{ orderId: string }>(
+      db, "select app_create_staff_order($1,'walk_in','en',$2::jsonb,$3) as result",
+      [uuid(61), staffItems(), server]);
+    await callJson(db, "select app_void_order($1,$2,'wrong table') as result", [server, unpaid.orderId]);
+    const voided = await db.query<{ fulfillment_status: string; void_reason: string }>(
+      "select fulfillment_status, void_reason from orders where id=$1", [unpaid.orderId]);
+    expect(voided.rows[0].fulfillment_status).toBe("cancelled");
+    expect(voided.rows[0].void_reason).toBe("wrong table");
+
+    // A refund and a cash shift with a shortfall, both attributed to the server.
+    const connection = await db.query<{ id: string }>(
+      "insert into payment_connections(organization_id,location_id,provider,merchant_account_reference,environment,currency) values ($1,$2,'counter','till','test','GBP') returning id",
+      [uuid(60), uuid(61)]);
+    const attempt = await db.query<{ id: string }>(
+      "insert into payment_attempts(organization_id,location_id,order_id,payment_connection_id,provider,provider_reference,amount_minor,currency,environment,status) values ($1,$2,$3,$4,'counter','till-1',$5,'GBP','test','succeeded') returning id",
+      [uuid(60), uuid(61), staff.orderId, connection.rows[0].id, BigInt(staff.totalMinor)]);
+    await db.query(
+      "insert into refunds(organization_id,location_id,payment_attempt_id,amount_minor,currency,reason,status,requested_by) values ($3,$4,$1,500,'GBP','guest complaint','confirmed',$2)",
+      [attempt.rows[0].id, server, uuid(60), uuid(61)]);
+    await db.query(
+      "insert into cash_shifts(organization_id,location_id,opened_by,closed_by,opening_minor,expected_minor,counted_minor,variance_minor,currency,status,closed_at) values ($1,$2,$3,$3,10000,20000,19500,-500,'GBP','review',now())",
+      [uuid(60), uuid(61), server]);
+
+    // The manager reads the exception report; a server cannot.
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [manager]);
+    const report = await callJson<{ staff: Array<{ actor: string; orderCount: number; voidCount: number; refundCount: number; refundMinor: string; cashVarianceMinor: string; voidMinor: string }> }>(
+      db, "select app_theft_report($1,$2,now() - interval '1 day', now() + interval '1 day') as result",
+      [manager, uuid(61)]);
+    const row = report.staff.find((entry) => entry.actor === server);
+    expect(row).toBeDefined();
+    expect(row!.orderCount).toBe(2);
+    expect(row!.voidCount).toBe(1);
+    expect(row!.voidMinor).toBe("2000"); // 2 x 1000
+    expect(row!.refundCount).toBe(1);
+    expect(row!.refundMinor).toBe("500");
+    expect(row!.cashVarianceMinor).toBe("-500");
+
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [server]);
+    await expect(db.query("select app_theft_report($1,$2,now(),now() + interval '1 day')", [server, uuid(61)]))
+      .rejects.toThrow("FORBIDDEN");
   });
 });

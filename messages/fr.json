@@ -287,7 +287,26 @@
     "notAvailable": "Le rapport n’est pas encore disponible.",
     "signInRequired": "Connectez-vous pour voir votre journée.",
     "noLocation": "Aucun établissement n’est encore associé à votre compte.",
-    "largestDiscount": "La plus grande remise du jour était de {amount}."
+    "largestDiscount": "La plus grande remise du jour était de {amount}.",
+    "theft": {
+      "eyebrow": "EXCEPTIONS",
+      "title": "Rapport anti-fraude",
+      "description": "Remises, annulations, remboursements et écarts de caisse, côte à côte par membre du personnel. Un signalement est une question à poser, pas une accusation.",
+      "from": "Du",
+      "to": "Au",
+      "refresh": "Actualiser",
+      "none": "Rien à signaler pour cette période.",
+      "sold": "{count} commande(s) · {amount}",
+      "discounted": "remises {amount} ({count})",
+      "voided": "annulations {amount} ({count})",
+      "refunded": "remboursements {amount} ({count})",
+      "cash": "écart de caisse {amount}",
+      "flagDiscount": "beaucoup de remises",
+      "flagVoid": "beaucoup d'annulations",
+      "flagRefund": "beaucoup de remboursements",
+      "flagCash": "écart de caisse",
+      "thresholdsNote": "Signalements : remises au-delà de 20 % des ventes, annulations ou remboursements au-delà de 5 %, tout écart de caisse."
+    }
   },
   "Settings": {
     "eyebrow": "Paramètres du lieu",
