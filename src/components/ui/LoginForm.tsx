@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { AlertCircle, CheckCircle2, Mail } from "lucide-react";
+import { AlertCircle, CheckCircle2, KeyRound, Mail } from "lucide-react";
 import { createClient } from "@/server/auth/client";
 
 export function LoginForm({ configured, localMode, expired = false }: { configured: boolean; localMode: boolean; expired?: boolean }) {
@@ -11,7 +11,9 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
   const locale = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "ratelimited">("idle");
+  const [password, setPassword] = useState("");
+  const [mode, setMode] = useState<"link" | "password">("link");
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "ratelimited" | "badCredentials">("idle");
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -30,6 +32,16 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
         return;
       }
       const supabase = createClient();
+      if (mode === "password") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          setState(error.status === 400 || error.code === "invalid_credentials" ? "badCredentials" : "error");
+          return;
+        }
+        router.push(`/${locale}/operations`);
+        router.refresh();
+        return;
+      }
       const { data, error } = await supabase.auth.signInWithOtp({
         email,
         // The callback redeems the code and only then sends the visitor on. The
@@ -62,9 +74,12 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
     <form onSubmit={submit}>
       {expired && <div className="notice notice--warning"><AlertCircle size={19} /><div>{t("linkExpired")}</div></div>}
       <label className="field"><span>{t("email")}</span><input required type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={t("emailPlaceholder")} /></label>
+      {mode === "password" && <label className="field"><span>{t("password")}</span><input required type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>}
       {state === "ratelimited" && <div className="notice notice--warning"><AlertCircle size={18} /><div>{t("rateLimited")}</div></div>}
+      {state === "badCredentials" && <div className="notice notice--error"><AlertCircle size={18} />{t("invalidCredentials")}</div>}
       {state === "error" && <div className="notice notice--error"><AlertCircle size={18} />{t("sendFailed")}</div>}
-      <button className="button" disabled={state === "sending"}><Mail size={17} />{state === "sending" ? t("sending") : localMode ? t("submitLocal") : t("submit")}</button>
+      <button className="button" disabled={state === "sending"}>{mode === "password" ? <KeyRound size={17} /> : <Mail size={17} />}{state === "sending" ? t("sending") : localMode ? t("submitLocal") : mode === "password" ? t("passwordSubmit") : t("submit")}</button>
+      {!localMode && <button type="button" className="linklike" onClick={() => { setMode(mode === "password" ? "link" : "password"); setState("idle"); }}>{mode === "password" ? t("passwordBack") : t("passwordToggle")}</button>}
     </form>
   );
 }

@@ -77,13 +77,13 @@ export default async function HomePage({
                     <p>{t("previewDescription")}</p>
                   </div>
                   <div className="illustrative-room" aria-label={t("previewLabel")}>
+                    <span className="room-table room-table--round room-table--available room-table--t1" aria-hidden="true">T1</span>
+                    <span className="room-table room-table--booth room-table--reserved room-table--t2" aria-hidden="true">T2</span>
+                    <span className="room-table room-table--round room-table--seated room-table--t3" aria-hidden="true">T3</span>
+                    <span className="room-table room-table--booth room-table--available room-table--t4" aria-hidden="true">T4</span>
+                    <span className="room-table room-table--round room-table--resetting room-table--t5" aria-hidden="true">T5</span>
                     <div className="room-line room-line--one" />
                     <div className="room-line room-line--two" />
-                    <div className="preview-empty">
-                      <span className="preview-empty-icon"><LayoutGrid size={25} /></span>
-                      <strong>{t("previewEmpty")}</strong>
-                      <p>{t("previewEmptyBody")}</p>
-                    </div>
                     <span className="room-coordinate room-coordinate--x">X · m</span>
                     <span className="room-coordinate room-coordinate--z">Z · m</span>
                   </div>

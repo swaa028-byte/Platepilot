@@ -16,3 +16,16 @@ test-results/
 
 # Netlify
 .netlify/
+
+# local serving + audit artifacts
+.audit/
+.tunnel/
+images/audit/
+build.log
+build.pid
+dev.log
+dev.pid
+prod.log
+prod.pid
+tunnel.pid
+next-env.d.ts

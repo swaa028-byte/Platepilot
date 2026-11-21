@@ -96,7 +96,12 @@
     "submitLocal": "Se connecter",
     "linkExpired": "Ce lien de connexion a expiré ou a déjà servi. Demandez-en un nouveau et ouvrez-le sur cet appareil.",
     "rateLimited": "Trop d'e-mails de connexion ont été demandés au cours de la dernière heure. Attendez un peu et réessayez.",
-    "sendFailed": "L'e-mail de connexion n'a pas pu être envoyé. Vérifiez l'adresse et réessayez."
+    "sendFailed": "L'e-mail de connexion n'a pas pu être envoyé. Vérifiez l'adresse et réessayez.",
+    "passwordToggle": "Utiliser un mot de passe",
+    "passwordBack": "M'envoyer un lien par e-mail",
+    "password": "Mot de passe",
+    "passwordSubmit": "Se connecter",
+    "invalidCredentials": "Cet e-mail et ce mot de passe ne correspondent à aucun compte."
   },
   "Onboarding": {
     "eyebrow": "CONFIGURATION DU RESTAURANT",
@@ -147,7 +152,9 @@
     "signInEmail": "Adresse e-mail du propriétaire",
     "signIn": "Continuer",
     "signInRequired": "Connectez-vous avec votre compte avant de créer un espace de travail. Une fiche d’établissement ne prouve pas la propriété.",
-    "signInLink": "Aller à la connexion"
+    "signInLink": "Aller à la connexion",
+    "skipMenu": "Continuer sans fichier de menu",
+    "yourStorefront": "Ouvrir votre vitrine"
   },
   "Floor": {
     "eyebrow": "SALLE EN DIRECT · BROUILLON LOCAL",

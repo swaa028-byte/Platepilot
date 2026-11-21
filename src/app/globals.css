@@ -100,7 +100,7 @@ p { text-wrap: pretty; }
 .hero-glow { position: absolute; width: 620px; height: 620px; inset-block-start: -180px; inset-inline-end: -100px; border-radius: 50%; background: radial-gradient(circle, rgba(224, 181, 111, 0.23), transparent 65%); }
 .hero-grid { position: relative; display: grid; grid-template-columns: 1.03fr 0.97fr; align-items: center; gap: 78px; }
 .hero-copy { padding-block: 22px; }
-.hero-copy h1 { max-width: 660px; margin-bottom: 26px; font-family: var(--display); font-size: clamp(50px, 5.4vw, 75px); font-weight: 400; letter-spacing: -2.8px; line-height: 0.99; }
+.hero-copy h1 { max-width: 660px; margin-bottom: 26px; font-family: var(--display); font-size: clamp(50px, 5.4vw, 75px); font-weight: 400; letter-spacing: -2.8px; line-height: 1.06; text-wrap: balance; }
 .hero-copy h1 em { display: block; margin-top: 7px; color: var(--orange); font-weight: 400; }
 .hero-lede { max-width: 590px; margin-bottom: 32px; color: #56645c; font-size: 18px; line-height: 1.75; }
 .hero-note { display: flex; align-items: center; gap: 8px; margin: 21px 0 0; color: #6e766f; font-size: 12px; }
@@ -114,6 +114,19 @@ p { text-wrap: pretty; }
 .preview-copy h2 { margin-bottom: 8px; font-family: var(--display); font-size: 31px; font-weight: 400; letter-spacing: -0.8px; line-height: 1.1; }
 .preview-copy p { margin-bottom: 0; color: #6d7871; font-size: 12px; line-height: 1.65; }
 .illustrative-room { position: relative; display: grid; place-items: center; min-height: 246px; overflow: hidden; background-color: #e8ede5; background-image: linear-gradient(rgba(50, 87, 66, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(50, 87, 66, 0.08) 1px, transparent 1px); background-size: 23px 23px; border: 1px solid #d4dfd3; border-radius: 12px; }
+/* Furnished mini-room: the preview shows a lived-in floor, not an empty grid. */
+.room-table { position: absolute; display: grid; place-items: center; color: rgba(255, 255, 255, 0.9); font-size: 8px; font-weight: 700; border: 1px solid rgba(23, 63, 53, 0.18); box-shadow: 0 2px 6px rgba(23, 63, 53, 0.14); }
+.room-table--round { width: 34px; height: 34px; border-radius: 50%; }
+.room-table--booth { width: 52px; height: 26px; border-radius: 6px; }
+.room-table--available { background: #4d8f6d; }
+.room-table--reserved { background: #c68a3e; }
+.room-table--seated { background: #527aa2; }
+.room-table--resetting { background: #8a6b98; }
+.room-table--t1 { inset-block-start: 14%; inset-inline-start: 12%; }
+.room-table--t2 { inset-block-start: 12%; inset-inline-end: 18%; }
+.room-table--t3 { inset-block-start: 42%; inset-inline-start: 34%; }
+.room-table--t4 { inset-block-end: 16%; inset-inline-start: 14%; }
+.room-table--t5 { inset-block-end: 20%; inset-inline-end: 12%; }
 .illustrative-room::after { content: ""; position: absolute; inset: 12px; pointer-events: none; border: 1px dashed rgba(45, 79, 59, 0.25); border-radius: 6px; }
 .room-line { position: absolute; background: #bdcebe; }
 .room-line--one { width: 1px; height: 58px; inset-block-start: 13px; inset-inline-start: 30%; }
@@ -497,7 +510,7 @@ p { text-wrap: pretty; }
 .hero--photo::before { display: none; }
 .hero-photo { position: absolute; inset: 0; }
 .hero-photo-img { object-fit: cover; }
-.hero-scrim { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(13, 33, 27, 0.92) 8%, rgba(13, 33, 27, 0.72) 42%, rgba(13, 33, 27, 0.34) 72%, rgba(13, 33, 27, 0.55) 100%); }
+.hero-scrim { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(13, 33, 27, 0.72) 8%, rgba(13, 33, 27, 0.5) 42%, rgba(13, 33, 27, 0.18) 72%, rgba(13, 33, 27, 0.42) 100%); }
 .hero--photo .hero-grid { position: relative; z-index: 1; }
 
 .eyebrow--gold { color: var(--gold); }
@@ -604,3 +617,10 @@ p { text-wrap: pretty; }
 @media (max-width: 900px) {
   .op-campaigns__pair { grid-template-columns: 1fr; }
 }
+
+/* Secondary inline action, e.g. switching the sign-in mode. */
+.linklike { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 0; border: 0; background: none; color: var(--green-deep); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+.linklike:hover { color: var(--green); }
+
+.storefront-link { display: flex; align-items: center; gap: 8px; margin-block: 12px; color: var(--green-deep); }
+.storefront-link a { color: var(--green); font-weight: 600; text-decoration: underline; }

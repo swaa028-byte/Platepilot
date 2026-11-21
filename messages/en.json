@@ -96,7 +96,12 @@
     "submitLocal": "Sign in",
     "linkExpired": "That sign-in link has expired or was already used. Request a new one, and open it on this device.",
     "rateLimited": "Too many sign-in emails have been requested in the last hour. Wait a little and try again.",
-    "sendFailed": "The sign-in email could not be sent. Check the address and try again."
+    "sendFailed": "The sign-in email could not be sent. Check the address and try again.",
+    "passwordToggle": "Use a password instead",
+    "passwordBack": "Email me a link instead",
+    "password": "Password",
+    "passwordSubmit": "Sign in",
+    "invalidCredentials": "That email and password do not match an account."
   },
   "Onboarding": {
     "eyebrow": "RESTAURANT SETUP",
@@ -147,7 +152,9 @@
     "signInEmail": "Owner email address",
     "signIn": "Continue",
     "signInRequired": "Sign in with your staff account before creating a workspace. A place listing is not proof of ownership.",
-    "signInLink": "Go to sign in"
+    "signInLink": "Go to sign in",
+    "skipMenu": "Continue without a menu file",
+    "yourStorefront": "Open your storefront"
   },
   "Floor": {
     "eyebrow": "LIVE FLOOR · LOCAL DRAFT",

@@ -96,7 +96,12 @@
     "submitLocal": "Iniciar sesión",
     "linkExpired": "Ese enlace de acceso ha caducado o ya se usó. Solicita otro y ábrelo en este dispositivo.",
     "rateLimited": "Se han solicitado demasiados correos de acceso en la última hora. Espera un poco e inténtalo de nuevo.",
-    "sendFailed": "No se pudo enviar el correo de acceso. Comprueba la dirección e inténtalo de nuevo."
+    "sendFailed": "No se pudo enviar el correo de acceso. Comprueba la dirección e inténtalo de nuevo.",
+    "passwordToggle": "Usar una contraseña",
+    "passwordBack": "Enviarme un enlace por correo",
+    "password": "Contraseña",
+    "passwordSubmit": "Iniciar sesión",
+    "invalidCredentials": "Ese correo y contraseña no coinciden con ninguna cuenta."
   },
   "Onboarding": {
     "eyebrow": "CONFIGURACIÓN DEL RESTAURANTE",
@@ -147,7 +152,9 @@
     "signInEmail": "Correo electrónico del propietario",
     "signIn": "Continuar",
     "signInRequired": "Inicia sesión con tu cuenta antes de crear un espacio de trabajo. Una ficha de negocio no demuestra la propiedad.",
-    "signInLink": "Ir a iniciar sesión"
+    "signInLink": "Ir a iniciar sesión",
+    "skipMenu": "Continuar sin archivo de menú",
+    "yourStorefront": "Abrir tu escaparate"
   },
   "Floor": {
     "eyebrow": "SALA EN VIVO · BORRADOR LOCAL",

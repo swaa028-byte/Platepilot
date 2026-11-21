@@ -6,12 +6,11 @@ import { AlertCircle, ArrowRight, Check, FileSpreadsheet, MapPin, Search, Shield
 import { displayMinorAmount, parseMenuCsv, type ImportedMenuItem } from "@/domain/menu";
 
 type Place = { id: string; displayName?: { text: string }; formattedAddress?: string; attributions: { provider?: string; providerUri?: string }[] };
-type Workspace = { organizationId: string; locationId: string };
+type Workspace = { organizationId: string; locationId: string; slug?: string };
 
 export function OnboardingWizard({ persistenceConfigured, googleConfigured, localMode }: { persistenceConfigured: boolean; googleConfigured: boolean; localMode: boolean }) {
   const t = useTranslations("Onboarding");
   const locale = useLocale();
-  const [step, setStep] = useState(1);
   const [query, setQuery] = useState("");
   const [places, setPlaces] = useState<Place[]>([]);
   const [searched, setSearched] = useState(false);
@@ -21,6 +20,9 @@ export function OnboardingWizard({ persistenceConfigured, googleConfigured, loca
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [items, setItems] = useState<ImportedMenuItem[]>([]);
   const [published, setPublished] = useState(false);
+  // Without a Places key the search button would only ever be disabled, so the
+  // wizard opens on the manual form and mentions why discovery is absent.
+  const [step, setStep] = useState(googleConfigured ? 1 : 2);
   const [session, setSession] = useState<"unknown" | "signedIn" | "signedOut">("unknown");
   const [email, setEmail] = useState("");
   const [form, setForm] = useState({ name: "", legalCountry: "", currency: "", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", locale, address: "" });
@@ -77,7 +79,7 @@ export function OnboardingWizard({ persistenceConfigured, googleConfigured, loca
       const response = await fetch("/api/onboarding/manual", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, placeId: selectedPlace?.id }) });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "SETUP_FAILED");
-      setWorkspace(body); setStep(3);
+      setWorkspace({ organizationId: body.organizationId, locationId: body.locationId, slug: body.slug }); setStep(3);
     } catch (cause) { setError(cause instanceof Error ? cause.message : t("error")); }
     finally { setBusy(false); }
   }
@@ -143,9 +145,9 @@ export function OnboardingWizard({ persistenceConfigured, googleConfigured, loca
           <label className="csv-drop"><FileSpreadsheet size={32} /><strong>{t("chooseCsv")}</strong><input type="file" accept=".csv,text/csv" onChange={(event) => preview(event.target.files?.[0])} /><p>{t("csvFormat")}</p></label>
           {items.length > 0 && <><div className="menu-preview"><table><thead><tr><th>Category</th><th>Item</th><th>Price</th><th>Available</th></tr></thead><tbody>{items.map((item) => <tr key={`${item.category}-${item.item}`}><td>{item.category}</td><td>{item.item}<br /><small>{item.allergens.join(", ")}</small></td><td>{displayMinorAmount(item.amountMinor, item.currency)}</td><td>{item.available ? "Yes" : "No"}</td></tr>)}</tbody></table></div><button className="button" disabled={busy || published} onClick={publish}><Check size={16} />{t("publish")}</button></>}
           {!workspace && <div className="notice notice--warning"><ShieldCheck size={18} />{t("authRequired")}</div>}
-          <div className="form-actions"><button type="button" className="button button--ghost" onClick={() => setStep(2)}>{t("stepTwo")}</button></div>
+          <div className="form-actions"><button type="button" className="button button--ghost" onClick={() => setStep(4)}>{t("skipMenu")}</button><button type="button" className="button button--ghost" onClick={() => setStep(2)}>{t("stepTwo")}</button></div>
         </div>}
-        {session === "signedIn" && step === 4 && <div className="form-card"><h2>{t("reviewTitle")}</h2><p>{t("reviewBody")}</p>{published && <div className="notice notice--success"><Check size={18} />{t("publish")}</div>}<h3>{t("reviewChecklist")}</h3><ul className="release-gates">{["Merchant ownership review", "Service hours, zones and fulfillment settings", "Verified merchant payment account", "Authorized sandbox payment → kitchen ticket test", "Staff pilot and live-release approval"].map((gate) => <li key={gate}><AlertCircle size={16} />{gate}</li>)}</ul></div>}
+        {session === "signedIn" && step === 4 && <div className="form-card"><h2>{t("reviewTitle")}</h2><p>{t("reviewBody")}</p>{published && <div className="notice notice--success"><Check size={18} />{t("publish")}</div>}{workspace?.slug && <p className="storefront-link"><Check size={16} aria-hidden="true" /><a href={`/${locale}/r/${workspace.slug}`}>{t("yourStorefront")}</a></p>}<h3>{t("reviewChecklist")}</h3><ul className="release-gates">{["Merchant ownership review", "Service hours, zones and fulfillment settings", "Verified merchant payment account", "Authorized sandbox payment → kitchen ticket test", "Staff pilot and live-release approval"].map((gate) => <li key={gate}><AlertCircle size={16} />{gate}</li>)}</ul></div>}
       </div>
     </div>
   );
