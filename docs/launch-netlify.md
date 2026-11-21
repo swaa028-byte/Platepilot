@@ -39,6 +39,23 @@ manual entry.
 Do **not** add `SUPABASE_ACCESS_TOKEN` (it only exists to apply migrations from
 this machine) or `PLATEPILOT_LOCAL_DB`.
 
+### The Supabase side of those links
+
+Supabase rewrites every authentication redirect to the project's **Site URL**
+whenever the requested redirect is not on its allow list, and the default Site
+URL is `http://localhost:3000`. A signup confirmation then arrives pointing at a
+machine nobody is running, which looks like a broken email rather than a
+configuration default.
+
+Set both, in **Authentication → URL Configuration**:
+
+- **Site URL**: `https://<site>.netlify.app`
+- **Redirect URLs**: `https://<site>.netlify.app/**` and, to keep local
+development working, `http://localhost:3000/**`
+
+`LoginForm` already asks for `${origin}/${locale}/operations`, so once the
+deployed origin is on that list the wildcard entry is what lets it through.
+
 ## 3. What happens without those variables
 
 Nothing silently half-works. On a serverless host the app refuses the embedded
