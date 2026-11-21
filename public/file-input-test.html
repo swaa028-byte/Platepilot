@@ -1,0 +1,8 @@
+<!doctype html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>File picker test</title></head>
+<body style="font-family:sans-serif;display:grid;place-items:center;height:100vh;margin:0;background:#102f28;color:#fff">
+<div style="text-align:center">
+<p id="status">Tap the button — the system file picker should open.</p>
+<input type="file" onchange="document.getElementById('status').textContent='PICKER WORKS: '+this.files[0].name"
+  style="font-size:22px;padding:30px 50px;margin-top:20px">
+</div></body></html>

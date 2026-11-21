@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -20,14 +22,17 @@ import android.widget.Toast;
 
 /**
  * The whole app is one WebView pointed at a PlatePilot deployment. Supabase
- * auth needs cookies and local storage, so both are enabled, and the server
+ * auth needs cookies and local storage, so both are enabled, the server
  * address is chosen on first launch (or after a load failure) so one APK can
- * test any deployment.
+ * test any deployment, and file inputs work — a stock WebView silently ignores
+ * &lt;input type="file"&gt; unless the host app forwards the chooser.
  */
 public class MainActivity extends Activity {
 
     private static final String DEFAULT_URL = "https://platepilot-725.netlify.app";
+    private static final int FILE_CHOOSER_REQUEST = 1001;
     private WebView web;
+    private ValueCallback<Uri[]> pendingFileUpload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +61,41 @@ public class MainActivity extends Activity {
                 if (request.isForMainFrame()) askForServer("Could not reach the server. Check the address:");
             }
         });
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
+                if (pendingFileUpload != null) pendingFileUpload.onReceiveValue(null);
+                pendingFileUpload = callback;
+                try {
+                    startActivityForResult(params.createIntent(), FILE_CHOOSER_REQUEST);
+                    return true;
+                } catch (android.content.ActivityNotFoundException e) {
+                    pendingFileUpload = null;
+                    Toast.makeText(MainActivity.this, "No file picker available", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+        });
         web.setBackgroundColor(Color.parseColor("#102f28"));
         setContentView(web, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         String saved = getPreferences(MODE_PRIVATE).getString("baseUrl", null);
         if (saved == null) askForServer("Which PlatePilot server do you want to test?");
         else web.loadUrl(saved);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode != FILE_CHOOSER_REQUEST || pendingFileUpload == null) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+        Uri[] results = null;
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+            results = new Uri[]{ data.getData() };
+        }
+        pendingFileUpload.onReceiveValue(results);
+        pendingFileUpload = null;
     }
 
     private void askForServer(String message) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type DragEvent, type FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { AlertCircle, ArrowRight, Check, FileSpreadsheet, MapPin, Search, ShieldCheck } from "lucide-react";
 import { displayMinorAmount, parseMenuCsv, type ImportedMenuItem } from "@/domain/menu";
@@ -12,6 +12,7 @@ export function OnboardingWizard({ persistenceConfigured, googleConfigured, loca
   const t = useTranslations("Onboarding");
   const locale = useLocale();
   const [query, setQuery] = useState("");
+  const [dragging, setDragging] = useState(false);
   const [places, setPlaces] = useState<Place[]>([]);
   const [searched, setSearched] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -90,6 +91,11 @@ export function OnboardingWizard({ persistenceConfigured, googleConfigured, loca
     catch (cause) { setItems([]); setError(cause instanceof Error ? cause.message : t("error")); }
   }
 
+  function onDrop(event: DragEvent) {
+    event.preventDefault(); setDragging(false);
+    preview(event.dataTransfer.files?.[0]);
+  }
+
   async function publish() {
     if (!workspace) { setError(t("authRequired")); return; }
     setBusy(true); setError("");
@@ -142,7 +148,15 @@ export function OnboardingWizard({ persistenceConfigured, googleConfigured, loca
         </form>}
         {session === "signedIn" && step === 3 && <div className="form-card">
           <h2>{t("menuTitle")}</h2><p>{t("menuBody")}</p>
-          <label className="csv-drop"><FileSpreadsheet size={32} /><strong>{t("chooseCsv")}</strong><input type="file" accept=".csv,text/csv" onChange={(event) => preview(event.target.files?.[0])} /><p>{t("csvFormat")}</p></label>
+          <div className={dragging ? "csv-drop csv-drop--over" : "csv-drop"}
+            onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={onDrop}>
+            <FileSpreadsheet size={32} />
+            <strong>{t("chooseCsv")}</strong>
+            <input type="file" accept=".csv,text/csv" onChange={(event) => { preview(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+            <p>{t("csvFormat")}</p>
+          </div>
           {items.length > 0 && <><div className="menu-preview"><table><thead><tr><th>Category</th><th>Item</th><th>Price</th><th>Available</th></tr></thead><tbody>{items.map((item) => <tr key={`${item.category}-${item.item}`}><td>{item.category}</td><td>{item.item}<br /><small>{item.allergens.join(", ")}</small></td><td>{displayMinorAmount(item.amountMinor, item.currency)}</td><td>{item.available ? "Yes" : "No"}</td></tr>)}</tbody></table></div><button className="button" disabled={busy || published} onClick={publish}><Check size={16} />{t("publish")}</button></>}
           {!workspace && <div className="notice notice--warning"><ShieldCheck size={18} />{t("authRequired")}</div>}
           <div className="form-actions"><button type="button" className="button button--ghost" onClick={() => setStep(4)}>{t("skipMenu")}</button><button type="button" className="button button--ghost" onClick={() => setStep(2)}>{t("stepTwo")}</button></div>

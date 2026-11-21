@@ -221,9 +221,7 @@ export default async function HomePage({
             <h2>{t("securityTitle")}</h2>
             <p>{t("securityBody")}</p>
           </div>
-          <a className="button button--outline" href="https://github.com/MarcusK-ai/rea-cloudwaitress/blob/feature/platepilot-core/docs/security.md" target="_blank" rel="noreferrer">
-            {t("securityCta")}<ArrowRight size={17} />
-          </a>
+          <Link className="button button--outline" href="/security">{t("securityCta")}<ArrowRight size={17} /></Link>
         </div>
       </section>
 
