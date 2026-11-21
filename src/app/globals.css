@@ -624,3 +624,13 @@ p { text-wrap: pretty; }
 
 .storefront-link { display: flex; align-items: center; gap: 8px; margin-block: 12px; color: var(--green-deep); }
 .storefront-link a { color: var(--green); font-weight: 600; text-decoration: underline; }
+
+/* Storefront menu: rows read left-to-right (name … price) on one line, with
+   allergens on their own muted line so they never collide with the price. */
+.storefront-block h2 { font-size: 22px; margin: 28px 0 8px; }
+.storefront-category h3 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green-deep); margin: 20px 0 6px; }
+.storefront-items { list-style: none; margin: 0; padding: 0; }
+.storefront-items li { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(16, 47, 40, 0.08); }
+.storefront-item-name { font-weight: 600; }
+.storefront-item-name small { display: block; margin-top: 2px; font-weight: 400; font-size: 12px; color: rgba(16, 47, 40, 0.6); }
+.storefront-item-price { flex-shrink: 0; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--green-deep); }
