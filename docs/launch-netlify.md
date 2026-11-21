@@ -82,11 +82,16 @@ delivery fee the settings page saved.
 
 ## 5. Known gaps in a hosted deployment
 
-- **The worker does not run.** `worker/index.ts` is a long-lived process that
-  claims jobs (`app_claim_jobs`) to deliver the outbox and payment webhooks.
-  Netlify has no such process, so jobs queue up. Until a scheduled function
-  drives that loop, order placement, kitchen and reports all work but
-  asynchronous follow-up (webhook delivery, notifications) does not.
+- **The outbox now drains on a schedule.** A Netlify scheduled function
+  (`netlify/functions/drain-cron.mjs`, every 10 minutes) calls
+  `POST /api/cron/drain` with the `CRON_SECRET` environment variable. Each pass
+  relays due `outbox_events` to the organization's registered webhooks (HMAC-
+  signed bodies, `X-PlatePilot-Signature`) and works the retry queue: failed
+  deliveries become `webhook.deliver` jobs retried with backoff through the
+  jobs lease, dead-lettering after 8 attempts. Register a webhook with
+  `app_register_outbox_webhook(actor, organizationId, url)`; the signing secret
+  is returned once. Self-hosted deployments can instead run `worker/index.ts`,
+  which runs the same drain loop.
 - **Rate limiting is per instance.** `checkRateLimit` keeps counters in memory,
   so limits are per lambda rather than per site.
 - **Payments are unconfigured.** No provider keys are set, so orders are unpaid
