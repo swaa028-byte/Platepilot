@@ -32,10 +32,12 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        // The callback redeems the code and only then sends the visitor on. A
-        // direct link to /operations would drop the code and bounce them back
-        // here, which is what happened before /auth/callback existed.
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/${locale}/operations` },
+        // The callback redeems the code and only then sends the visitor on. The
+        // destination rides in the path, not a query string, because Supabase
+        // checks the redirect against its allow list and a query gave it room
+        // to fall back to the Site URL root - which stranded the code on the
+        // landing page.
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback/${locale}/operations` },
       });
       setState(error ? "error" : "sent");
     } catch { setState("error"); }
