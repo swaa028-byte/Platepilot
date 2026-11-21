@@ -38,7 +38,7 @@ declare
   v_tax_basis_points integer; v_tax_inclusive boolean;
   v_discount_info jsonb;
   v_postal text; v_zone delivery_zones%rowtype; v_zone_min_order bigint := null;
-  v_email text; v_loyalty_discount bigint := 0; v_points_used bigint := 0;
+  v_email text; v_loyalty_discount bigint := 0; v_points_used bigint := 0; v_balance bigint := 0;
   v_gift gift_cards%rowtype; v_gift_cover bigint := 0; v_paid_by_gift boolean := false;
 begin
   if p_service_type !~ '^(pickup|delivery|dine_in|catering)$' then raise exception 'INVALID_REQUEST'; end if;
@@ -108,11 +108,13 @@ begin
       select 1 from loyalty_programs lp
       where lp.organization_id = v_organization_id and lp.enabled and lp.points_per_discount_minor > 0
     ) then raise exception 'LOYALTY_NOT_AVAILABLE'; end if;
-    select coalesce(sum(l.points), 0) into v_points_used
-      from loyalty_ledger l
-      where l.organization_id = v_organization_id and lower(btrim(l.customer_email)) = v_email
-      for update;
-    if p_redeem_loyalty_points > v_points_used then raise exception 'LOYALTY_INSUFFICIENT_POINTS'; end if;
+    select coalesce(sum(locked.points), 0) into v_balance
+      from (
+        select l.points from loyalty_ledger l
+        where l.organization_id = v_organization_id and lower(btrim(l.customer_email)) = v_email
+        for update
+      ) locked;
+    if p_redeem_loyalty_points > v_balance then raise exception 'LOYALTY_INSUFFICIENT_POINTS'; end if;
     select points_per_discount_minor into v_points_used
       from loyalty_programs where organization_id = v_organization_id;
     v_loyalty_discount := p_redeem_loyalty_points / v_points_used;
@@ -179,7 +181,8 @@ begin
     v_organization_id, p_location_id, v_tracking, p_service_type, p_customer_locale, v_currency,
     v_subtotal, v_discount, v_tax, v_tip, v_total,
     v_delivery_fee, v_tax_basis_points, v_discount_info->>'code', p_scheduled_for,
-    p_delivery_address, p_delivery_postal_code, 'storefront', v_zone.id
+    p_delivery_address, p_delivery_postal_code, 'storefront', v_zone.id,
+    v_email, v_points_used, v_gift.code, v_gift_cover
   ) returning id into v_order_id;
 
   for v_line in select value from jsonb_array_elements(v_lines) loop

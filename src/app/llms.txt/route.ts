@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   // Same origin rule as every other SEO surface: APP_URL when pinned (behind a
   // tunnel or proxy the internal request host is not the public address).
   const origin = (process.env.APP_URL || new URL(request.url).origin).replace(/\/$/, "");
-  let lines = [
+  const lines = [
     "# PlatePilot",
     "",
     "PlatePilot is a restaurant ordering and operations platform. Each restaurant below has a live storefront with its menu, prices and opening hours.",

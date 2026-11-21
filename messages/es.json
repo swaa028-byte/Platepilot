@@ -14,7 +14,8 @@
     "close": "Cerrar navegación",
     "kitchen": "Cocina",
     "reports": "Informes",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "tableCodes": "Códigos de mesa"
   },
   "Footer": {
     "tagline": "Tu restaurante, del primer pedido al cierre.",
@@ -244,7 +245,8 @@
     "allergens": "Contiene",
     "dismiss": "Cerrar",
     "announcement": "Aviso",
-    "code": "Código"
+    "code": "Código",
+    "yourTable": "Mesa {table}"
   },
   "Kitchen": {
     "eyebrow": "Cocina",
@@ -530,6 +532,23 @@
       "parsed": "{count} artículo(s) leído(s)",
       "publish": "Publicar menú",
       "hint": "El menú programado se sirve solo dentro de su ventana, en los días indicados, en la zona horaria del local."
+    },
+    "loyalty": {
+      "eyebrow": "FIDELIZACIÓN",
+      "title": "Fidelización y tarjetas de regalo",
+      "description": "Los clientes ganan puntos por el dinero que realmente llega, y los gastan como descuento al pagar. Las tarjetas de regalo son un medio de pago: una tarjeta que cubre el total paga el pedido completo.",
+      "earnRate": "Puntos por cada 0,01 gastado",
+      "earnHint": "1 significa un punto por unidad menor gastada.",
+      "redeemRate": "Puntos por 0,01 de descuento",
+      "redeemHint": "100 significa que 100 puntos compran una unidad menor de descuento.",
+      "enabled": "Programa activado",
+      "save": "Guardar programa",
+      "cardAmount": "Valor de la tarjeta",
+      "issue": "Emitir tarjeta de regalo",
+      "issued": "Emitida {code} — {value}. El código paga al checkout.",
+      "cards": "Tarjetas de regalo",
+      "disabled": "desactivada",
+      "disable": "Desactivar"
     }
   },
   "OrderStatus": {
@@ -548,5 +567,16 @@
     "thankYou": "Gracias — hasta pronto",
     "total": "Total",
     "reference": "Referencia"
+  },
+  "QrCodes": {
+    "eyebrow": "En sala",
+    "title": "Códigos QR de las mesas",
+    "description": "Un código imprimible para cada mesa. Los clientes escanean, llegan a tu carta y la mesa en la que están sentados viene con ellos.",
+    "signInRequired": "Inicia sesión para imprimir los códigos de las mesas.",
+    "noLocation": "Todavía no hay ningún local para el que imprimir códigos.",
+    "noStorefront": "Este local aún no tiene dirección de escaparate, así que los códigos no tienen nada que abrir.",
+    "noTables": "Todavía no hay mesas. Añade mesas primero en el plano de sala.",
+    "scanHint": "Escanea para ver la carta",
+    "print": "Imprimir hoja"
   }
 }

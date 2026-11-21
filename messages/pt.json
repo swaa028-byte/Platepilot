@@ -14,7 +14,8 @@
     "close": "Fechar navegação",
     "kitchen": "Cozinha",
     "reports": "Relatórios",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "tableCodes": "Códigos de mesa"
   },
   "Footer": {
     "tagline": "Seu restaurante, do primeiro pedido ao fecho.",
@@ -244,7 +245,8 @@
     "allergens": "Contém",
     "dismiss": "Fechar",
     "announcement": "Aviso",
-    "code": "Código"
+    "code": "Código",
+    "yourTable": "Mesa {table}"
   },
   "Kitchen": {
     "eyebrow": "Cozinha",
@@ -530,6 +532,23 @@
       "parsed": "{count} artigo(s) lido(s)",
       "publish": "Publicar menu",
       "hint": "O menu programado serve-se apenas na sua janela, nos dias indicados, no fuso horário do local."
+    },
+    "loyalty": {
+      "eyebrow": "FIDELIZAÇÃO",
+      "title": "Fidelização e cartões-presente",
+      "description": "Os clientes ganham pontos pelo dinheiro que realmente chega, e gastam-nos como desconto no checkout. Os cartões-presente são uma forma de pagamento: um cartão que cobre o total paga a encomenda por completo.",
+      "earnRate": "Pontos por 0,01 gasto",
+      "earnHint": "1 significa um ponto por unidade menor gasta.",
+      "redeemRate": "Pontos por 0,01 de desconto",
+      "redeemHint": "100 significa que 100 pontos compram uma unidade menor de desconto.",
+      "enabled": "Programa ativado",
+      "save": "Guardar programa",
+      "cardAmount": "Valor do cartão",
+      "issue": "Emitir cartão-presente",
+      "issued": "Emitido {code} — {value}. O código paga no checkout.",
+      "cards": "Cartões-presente",
+      "disabled": "desativado",
+      "disable": "Desativar"
     }
   },
   "OrderStatus": {
@@ -548,5 +567,16 @@
     "thankYou": "Obrigado — até já",
     "total": "Total",
     "reference": "Referência"
+  },
+  "QrCodes": {
+    "eyebrow": "Em sala",
+    "title": "Códigos QR das mesas",
+    "description": "Um código imprimível para cada mesa. Os clientes leem o código, chegam ao seu menu e a mesa em que estão sentados vem com eles.",
+    "signInRequired": "Inicie sessão para imprimir os códigos das mesas.",
+    "noLocation": "Ainda não há nenhum local para o qual imprimir códigos.",
+    "noStorefront": "Este local ainda não tem endereço de montra, por isso os códigos não têm nada para abrir.",
+    "noTables": "Ainda não há mesas. Adicione mesas primeiro na planta do salão.",
+    "scanHint": "Leia o código para ver o menu",
+    "print": "Imprimir folha"
   }
 }

@@ -15,7 +15,9 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
+    // Where the Playwright browsers are not installed (a constrained machine),
+    // PLAYWRIGHT_CHROME=1 runs the desktop project against the system Chrome.
+    { name: "desktop", use: { ...devices["Desktop Chrome"], ...(process.env.PLAYWRIGHT_CHROME ? { channel: "chrome" } : {}) } },
     { name: "mobile", use: { ...devices["iPhone 13"] } },
   ],
   // End-to-end checks run against a production build. The dev server preloads lazy

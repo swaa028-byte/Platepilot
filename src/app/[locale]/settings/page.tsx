@@ -9,6 +9,7 @@ import { VenueBook } from "@/components/settings/VenueBook";
 import { Suppliers } from "@/components/settings/Suppliers";
 import { StockCounts } from "@/components/settings/StockCounts";
 import { ServiceMenus } from "@/components/settings/ServiceMenus";
+import { Loyalty } from "@/components/settings/Loyalty";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,7 @@ export default async function SettingsPage({
               <Suppliers locationId={selected.locationId} />
               <StockCounts locationId={selected.locationId} />
               <ServiceMenus locationId={selected.locationId} organizationId={selected.organizationId} currency={selected.currency} />
+              <Loyalty organizationId={selected.organizationId} currency={selected.currency} />
             </>
           )}
         </div>

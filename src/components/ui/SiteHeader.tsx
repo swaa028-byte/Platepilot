@@ -32,6 +32,7 @@ export function SiteHeader() {
             <Link href="/operations" onClick={() => setOpen(false)}>{t("operations")}</Link>
             <Link href="/floor-planner" onClick={() => setOpen(false)}>{t("liveFloor")}</Link>
             <Link href="/kitchen" onClick={() => setOpen(false)}>{t("kitchen")}</Link>
+            <Link href="/qr-codes" onClick={() => setOpen(false)}>{t("tableCodes")}</Link>
             <Link href="/reports" onClick={() => setOpen(false)}>{t("reports")}</Link>
             <Link href="/settings" onClick={() => setOpen(false)}>{t("settings")}</Link>
             <Link href="/#security" onClick={() => setOpen(false)}>{t("security")}</Link>

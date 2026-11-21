@@ -25,13 +25,19 @@ export function CampaignPopup({ campaign }: { campaign: Campaign }) {
 
   useEffect(() => {
     const key = `campaign-seen-${campaign.id}`;
+    let seen = false;
     try {
-      if (window.sessionStorage.getItem(key)) return;
+      seen = window.sessionStorage.getItem(key) === "1";
       window.sessionStorage.setItem(key, "1");
     } catch {
       // Storage can be unavailable (private mode); showing the popup is safe.
     }
-    setOpen(true);
+    if (!seen) {
+      // Open after paint, not during the effect, so the reveal is not a
+      // cascading render.
+      const timer = window.setTimeout(() => setOpen(true), 0);
+      return () => window.clearTimeout(timer);
+    }
   }, [campaign.id]);
 
   if (!open) return null;

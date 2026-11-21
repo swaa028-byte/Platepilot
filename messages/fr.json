@@ -14,7 +14,8 @@
     "close": "Fermer la navigation",
     "kitchen": "Cuisine",
     "reports": "Rapports",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "tableCodes": "Codes de table"
   },
   "Footer": {
     "tagline": "Votre restaurant, de la première commande à la fermeture.",
@@ -244,7 +245,8 @@
     "allergens": "Contient",
     "dismiss": "Fermer",
     "announcement": "Annonce",
-    "code": "Code"
+    "code": "Code",
+    "yourTable": "Table {table}"
   },
   "Kitchen": {
     "eyebrow": "Cuisine",
@@ -530,6 +532,23 @@
       "parsed": "{count} article(s) lu(s)",
       "publish": "Publier le menu",
       "hint": "Le menu programmé n'est servi que dans sa fenêtre, aux jours indiqués, dans le fuseau de l'établissement."
+    },
+    "loyalty": {
+      "eyebrow": "FIDÉLITÉ",
+      "title": "Fidélité & cartes cadeaux",
+      "description": "Les clients gagnent des points sur l'argent réellement encaissé, et les dépensent en remise au passage en caisse. Les cartes cadeaux sont un moyen de paiement : une carte qui couvre le total règle la commande.",
+      "earnRate": "Points gagnés par 0,01 dépensé",
+      "earnHint": "1 signifie un point par unité mineure dépensée.",
+      "redeemRate": "Points par 0,01 de remise",
+      "redeemHint": "100 signifie que 100 points achètent une unité mineure de remise.",
+      "enabled": "Programme activé",
+      "save": "Enregistrer le programme",
+      "cardAmount": "Valeur de la carte",
+      "issue": "Émettre une carte cadeau",
+      "issued": "Carte {code} émise — {value}. Le code paie au passage en caisse.",
+      "cards": "Cartes cadeaux",
+      "disabled": "désactivée",
+      "disable": "Désactiver"
     }
   },
   "OrderStatus": {
@@ -548,5 +567,16 @@
     "thankYou": "Merci — à bientôt",
     "total": "Total",
     "reference": "Référence"
+  },
+  "QrCodes": {
+    "eyebrow": "En salle",
+    "title": "QR codes des tables",
+    "description": "Un code imprimable pour chaque table. Les clients scannent, arrivent sur votre menu, et la table où ils sont assis vient avec eux.",
+    "signInRequired": "Connectez-vous pour imprimer les codes des tables.",
+    "noLocation": "Aucun établissement pour imprimer des codes pour l'instant.",
+    "noStorefront": "Cet établissement n'a pas encore d'adresse de vitrine ; les codes n'ont donc rien à ouvrir.",
+    "noTables": "Aucune table pour l'instant. Ajoutez d'abord des tables dans le plan de salle.",
+    "scanHint": "Scannez pour voir le menu",
+    "print": "Imprimer la planche"
   }
 }

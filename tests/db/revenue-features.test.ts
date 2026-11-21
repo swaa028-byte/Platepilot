@@ -211,12 +211,27 @@ describe("service-period menus", () => {
 
 describe("loyalty and gift cards", () => {
   const loyaltyActor = uuid(57);
-  const loyaltyItems = JSON.stringify([{ category: "Mains", item: "Stew", description: "", allergens: [], amountMinor: "1200", currency: "GBP", available: true }]);
+  let loyaltyMenuItemId = "";
+
+  async function seedLoyaltyMenu() {
+    const category = await db.query<{ id: string }>(
+      "insert into catalog_categories(organization_id,location_id,name) values ($1,$2,'Mains') returning id",
+      [uuid(60), uuid(61)]);
+    const item = await db.query<{ id: string }>(
+      "insert into menu_items(organization_id,location_id,category_id,name,available) values ($1,$2,$3,'Stew',true) returning id",
+      [uuid(60), uuid(61), category.rows[0].id]);
+    const priceBook = await db.query<{ id: string }>(
+      "insert into price_books(organization_id,location_id,currency,status,published_at) values ($1,$2,'GBP','published',now()) returning id",
+      [uuid(60), uuid(61)]);
+    await db.query("insert into item_prices(price_book_id,menu_item_id,amount_minor) values ($1,$2,1000)",
+      [priceBook.rows[0].id, item.rows[0].id]);
+    return item.rows[0].id;
+  }
 
   async function placeOrder(email: string | null, redeemPoints: string | null, giftCode: string | null) {
     return callJson<{ orderId: string; totalMinor: string; paymentStatus: string; giftCardMinor: string; loyaltyPointsRedeemed: string; discountMinor: string }>(
       db, "select app_create_order($1,'pickup','en',$2::jsonb,null,null,null,null,null,$3,$4::bigint,$5) as result",
-      [uuid(61), loyaltyItems, email, redeemPoints, giftCode]);
+      [uuid(61), JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 1 }]), email, redeemPoints, giftCode]);
   }
 
   it("earns points only on paid orders and spends them exactly once", async () => {
@@ -224,8 +239,8 @@ describe("loyalty and gift cards", () => {
     await db.query("insert into locations(id,organization_id,name,address,timezone,currency,ordering_enabled) values ($1,$2,'Main','1 Loyal Street','UTC','GBP',true)", [uuid(61), uuid(60)]);
     await db.query("insert into memberships(organization_id,user_id,role) values ($1,$2,'owner')", [uuid(60), loyaltyActor]);
     await db.query("select set_config('request.jwt.claim.sub',$1,false)", [loyaltyActor]);
-    await callJson(db, "select app_publish_menu($1,$2,$3::jsonb,$4) as result", [uuid(60), uuid(61), loyaltyItems, loyaltyActor]);
-    await callJson(db, "select app_configure_loyalty($1,$2,1::bigint,100::bigint,true) as result", [loyaltyActor, uuid(60)]);
+    loyaltyMenuItemId = await seedLoyaltyMenu();
+    await callJson(db, "select app_configure_loyalty($1,$2,1::bigint,1::bigint,true) as result", [loyaltyActor, uuid(60)]);
 
     // An unpaid order earns nothing.
     const first = await placeOrder("ada@example.com", null, null);
@@ -250,9 +265,9 @@ describe("loyalty and gift cards", () => {
     const earned = await callJson<{ points: string }>(db, "select app_loyalty_balance($1,$2) as result", [uuid(60), "ada@example.com"]);
     expect(earned.points).toBe(first.totalMinor); // 1 point per minor spent
 
-    // The points pay for the next order: 1200 points at 100 per minor = 12.00 off.
-    const second = await placeOrder("ada@example.com", "1200", null);
-    expect(second.discountMinor).toBe("1200");
+    // The points pay for the next order: 1000 points at 1 per minor = 10.00 off.
+    const second = await placeOrder("ada@example.com", "1000", null);
+    expect(second.discountMinor).toBe("1000");
     expect(second.totalMinor).toBe("0");
     const after = await callJson<{ points: string }>(db, "select app_loyalty_balance($1,$2) as result", [uuid(60), "ada@example.com"]);
     expect(after.points).toBe("0");
@@ -260,34 +275,52 @@ describe("loyalty and gift cards", () => {
     // More points than the customer has are refused.
     await expect(db.query(
       "select app_create_order($1,'pickup','en',$2::jsonb,null,null,null,null,null,$3,999999::bigint,null)",
-      [uuid(61), loyaltyItems, "ada@example.com"])).rejects.toThrow("LOYALTY_INSUFFICIENT_POINTS");
+      [uuid(61), JSON.stringify([{ menuItemId: loyaltyMenuItemId, quantity: 1 }]), "ada@example.com"])).rejects.toThrow("LOYALTY_INSUFFICIENT_POINTS");
   });
 
   it("lets a gift card pay an order outright and records partial covers once", async () => {
     const issued = await callJson<{ code: string; initialMinor: string }>(
       db, "select app_issue_gift_card($1,$2,5000::bigint,'GBP') as result", [loyaltyActor, uuid(60)]);
 
-    // 5000 minor covers a 1200 minor order outright: paid, ticketed.
+    // 5000 minor covers a 1000 minor order outright: paid, ticketed.
     const full = await placeOrder("grace@example.com", null, issued.code);
     expect(full.paymentStatus).toBe("paid");
     expect(full.giftCardMinor).toBe(full.totalMinor);
     const ticket = await db.query<{ n: string }>("select count(*)::text as n from kitchen_tickets where order_id=$1", [full.orderId]);
     expect(ticket.rows[0].n).toBe("1");
     const balance1 = await callJson<{ balanceMinor: string }>(db, "select app_gift_card_balance($1,$2) as result", [uuid(60), issued.code]);
-    expect(balance1.balanceMinor).toBe("3800");
+    expect(balance1.balanceMinor).toBe("4000");
 
-    // A second order takes another 1200; the card cannot cover a third.
+    // Each further order takes another 1000; when the balance reaches zero the
+    // card is refused.
     await placeOrder("grace@example.com", null, issued.code);
     const balance2 = await callJson<{ balanceMinor: string }>(db, "select app_gift_card_balance($1,$2) as result", [uuid(60), issued.code]);
-    expect(balance2.balanceMinor).toBe("2600");
+    expect(balance2.balanceMinor).toBe("3000");
     await placeOrder("grace@example.com", null, issued.code);
     const balance3 = await callJson<{ balanceMinor: string; valid: boolean }>(db, "select app_gift_card_balance($1,$2) as result", [uuid(60), issued.code]);
-    expect(balance3.balanceMinor).toBe("1400");
+    expect(balance3.balanceMinor).toBe("2000");
+    await placeOrder("grace@example.com", null, issued.code);
+    await placeOrder("grace@example.com", null, issued.code);
+    const drained = await callJson<{ balanceMinor: string; valid: boolean }>(db, "select app_gift_card_balance($1,$2) as result", [uuid(60), issued.code]);
+    expect(drained.balanceMinor).toBe("0");
+    expect(drained.valid).toBe(false);
     await expect(placeOrder("grace@example.com", null, issued.code)).rejects.toThrow();
 
     // The merchant sees the cards; an unknown code is refused.
     const cards = await callJson<{ code: string; balanceMinor: string }[]>(db, "select app_list_gift_cards($1,$2) as result", [loyaltyActor, uuid(60)]);
     expect(cards).toHaveLength(1);
     await expect(placeOrder("grace@example.com", null, "GC-NOPE-NOPE")).rejects.toThrow("GIFT_CARD_NOT_FOUND");
+  });
+});
+
+describe("table qr", () => {
+  it("resolves a table id from a scanned code back to its name", async () => {
+    await db.query(
+      "insert into restaurant_tables(id,organization_id,location_id,name,capacity) values ($1,$2,$3,'Window 4',4)",
+      [uuid(70), uuid(60), uuid(61)]);
+    const label = await callJson<{ name: string; locationId: string }>(
+      db, "select app_table_label($1) as result", [uuid(70)]);
+    expect(label.name).toBe("Window 4");
+    expect(label.locationId).toBe(uuid(61));
   });
 });

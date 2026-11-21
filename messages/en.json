@@ -14,7 +14,8 @@
     "close": "Close navigation",
     "kitchen": "Kitchen",
     "reports": "Reports",
-    "settings": "Settings"
+    "settings": "Settings",
+    "tableCodes": "Table codes"
   },
   "Footer": {
     "tagline": "Your restaurant, from first order to close.",
@@ -244,7 +245,8 @@
     "allergens": "Contains",
     "dismiss": "Dismiss",
     "announcement": "Announcement",
-    "code": "Code"
+    "code": "Code",
+    "yourTable": "Table {table}"
   },
   "Kitchen": {
     "eyebrow": "Kitchen",
@@ -530,6 +532,23 @@
       "parsed": "{count} item(s) read",
       "publish": "Publish menu",
       "hint": "The scheduled menu serves only inside its window on the listed days, in the location's own timezone."
+    },
+    "loyalty": {
+      "eyebrow": "LOYALTY",
+      "title": "Loyalty & gift cards",
+      "description": "Guests earn points on money that actually arrives, and spend them as a discount at checkout. Gift cards are a tender: a card that covers the whole total pays for the order outright.",
+      "earnRate": "Points earned per 0.01 spent",
+      "earnHint": "1 means one point per minor unit of spend.",
+      "redeemRate": "Points per 0.01 of discount",
+      "redeemHint": "100 means 100 points buy one minor unit of discount.",
+      "enabled": "Programme enabled",
+      "save": "Save programme",
+      "cardAmount": "Card value",
+      "issue": "Issue gift card",
+      "issued": "Issued {code} — {value}. The code pays at checkout.",
+      "cards": "Gift cards",
+      "disabled": "disabled",
+      "disable": "Disable"
     }
   },
   "OrderStatus": {
@@ -548,5 +567,16 @@
     "thankYou": "Thank you — see you soon",
     "total": "Total",
     "reference": "Reference"
+  },
+  "QrCodes": {
+    "eyebrow": "Front of house",
+    "title": "Table QR codes",
+    "description": "A printable code for every table. Guests scan, land on your menu, and the table they sit at comes with them.",
+    "signInRequired": "Sign in to print table codes.",
+    "noLocation": "No location to print codes for yet.",
+    "noStorefront": "This location has no storefront address yet, so there is nothing for the codes to open.",
+    "noTables": "No tables yet. Add tables in the floor planner first.",
+    "scanHint": "Scan to see the menu",
+    "print": "Print sheet"
   }
 }

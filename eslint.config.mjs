@@ -12,6 +12,7 @@ export default defineConfig([
     "playwright-report/**",
     "test-results/**",
     ".audit/**",
+    ".netlify/**",
     "android/**",
     "next-env.d.ts",
   ]),

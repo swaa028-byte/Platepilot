@@ -4,7 +4,7 @@ import { requireUser } from "@/server/auth/server";
 import { staffError } from "@/server/staff/errors";
 import { apiError } from "@/server/security/http";
 import { checkRateLimit } from "@/server/security/rate-limit";
-import { buildEscPosReceipt, type ReceiptOrder } from "@/server/pos/receipt";
+import { buildEscPosReceipt, buildEscPosKitchenTicket } from "@/server/pos/receipt";
 
 /**
  * A thermal-printer receipt for one order, as raw ESC/POS bytes. Any POS setup
@@ -16,12 +16,13 @@ export async function GET(request: Request) {
     const { supabase, user } = await requireUser();
     checkRateLimit(`receipt:${user.id}`, 60, 60_000);
     const orderId = new URL(request.url).searchParams.get("orderId") ?? "";
+    const format = new URL(request.url).searchParams.get("format") === "kitchen" ? "kitchen" : "receipt";
     if (!z.string().uuid().safeParse(orderId).success) {
       return NextResponse.json({ error: "INVALID_REQUEST" }, { status: 400 });
     }
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .select("id,organization_id,location_id,currency,subtotal_minor,discount_minor,tax_minor,tip_minor,total_minor,payment_status,created_at,delivery_fee_minor")
+      .select("id,organization_id,location_id,currency,subtotal_minor,discount_minor,tax_minor,tip_minor,total_minor,payment_status,created_at,delivery_fee_minor,service_type,table_id")
       .eq("id", orderId)
       .maybeSingle();
     if (orderError) throw staffError(orderError);
@@ -35,12 +36,37 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
     }
 
-    const [orgResult, locationResult, itemsResult] = await Promise.all([
+    const [orgResult, locationResult, itemsResult, tableResult] = await Promise.all([
       supabase.from("organizations").select("name").eq("id", row.organization_id).maybeSingle(),
       supabase.from("locations").select("name").eq("id", row.location_id).maybeSingle(),
       supabase.from("order_items").select("name_snapshot,quantity,line_total_minor").eq("order_id", orderId),
+      row.table_id
+        ? supabase.from("restaurant_tables").select("name").eq("id", row.table_id).maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
     ]);
     if (itemsResult.error) throw staffError(itemsResult.error);
+    const tableName = (tableResult.data as { name?: string } | null)?.name ?? null;
+
+    if (format === "kitchen") {
+      const ticket = buildEscPosKitchenTicket({
+        orderNumber: orderId,
+        locationName: String((locationResult.data as { name?: string } | null)?.name ?? ""),
+        tableName,
+        serviceType: String(row.service_type ?? ""),
+        createdAt: String(row.created_at),
+        lines: (itemsResult.data as Array<{ name_snapshot: string; quantity: number }> | null)?.map((item) => ({
+          name: item.name_snapshot, quantity: item.quantity,
+        })) ?? [],
+      });
+      return new Response(ticket as unknown as BodyInit, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "Content-Disposition": `attachment; filename="ticket-${orderId.slice(0, 8)}.bin"`,
+          "Cache-Control": "private, no-store",
+        },
+      });
+    }
 
     const receipt = buildEscPosReceipt({
       orderNumber: orderId,
@@ -60,6 +86,7 @@ export async function GET(request: Request) {
       tipMinor: Number(row.tip_minor ?? 0),
       totalMinor: Number(row.total_minor),
       paymentStatus: String(row.payment_status),
+      tableName,
     });
 
     return new Response(receipt as unknown as BodyInit, {

@@ -34,7 +34,17 @@ export type ReceiptOrder = {
   tipMinor: number;
   totalMinor: number;
   paymentStatus: string;
-};
+  tableName?: string | null;
+}
+
+export type KitchenTicket = {
+  orderNumber: string;
+  locationName: string;
+  tableName?: string | null;
+  serviceType: string;
+  createdAt: string;
+  lines: Array<{ name: string; quantity: number }>;
+};;
 
 function money(minor: number, currency: string): string {
   const symbol = currencySymbol(currency);
@@ -67,6 +77,7 @@ export function buildEscPosReceipt(order: ReceiptOrder): Uint8Array {
   line(order.restaurantName.toUpperCase());
   push(...BOLD_OFF);
   if (order.locationName && order.locationName !== order.restaurantName) line(order.locationName);
+  if (order.tableName) line(`Table ${order.tableName}`);
   line("");
   push(...ALIGN_LEFT);
   line(`Order ${order.orderNumber.slice(0, 13)}`);
@@ -89,6 +100,33 @@ export function buildEscPosReceipt(order: ReceiptOrder): Uint8Array {
   line("");
   push(...ALIGN_CENTER);
   line("Thank you");
+  push(...FEED, ...CUT);
+  return new Uint8Array(bytes);
+}
+
+/**
+ * The kitchen ticket: what was ordered and for whom, never prices. Printed
+ * wide and bold so it is readable across a hot pass.
+ */
+export function buildEscPosKitchenTicket(ticket: KitchenTicket): Uint8Array {
+  const bytes: number[] = [...INIT];
+  const push = (...values: number[]) => bytes.push(...values);
+  const line = (value: string) => push(...text(value), 0x0a);
+
+  push(...ALIGN_CENTER, ...BOLD_ON);
+  line("** KITCHEN **");
+  push(...BOLD_OFF);
+  push(...ALIGN_LEFT);
+  line(`Order ${ticket.orderNumber.slice(0, 13)}`);
+  line(new Date(ticket.createdAt).toISOString().replace("T", " ").slice(0, 19));
+  line(`Service: ${ticket.serviceType.replace("_", " ")}`);
+  if (ticket.tableName) line(`TABLE: ${ticket.tableName}`);
+  line("-".repeat(WIDTH));
+  for (const item of ticket.lines) {
+    const name = item.name.length > WIDTH - 6 ? item.name.slice(0, WIDTH - 7) : item.name;
+    line(`${item.quantity} x ${name}`);
+  }
+  line("-".repeat(WIDTH));
   push(...FEED, ...CUT);
   return new Uint8Array(bytes);
 }
