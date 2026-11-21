@@ -361,6 +361,32 @@
       "empty": "No campaigns yet.",
       "delete": "Remove campaign"
     },
+    "domains": {
+      "eyebrow": "CUSTOM DOMAIN",
+      "title": "Your own domain",
+      "description": "Serve your storefront from your own address. Point a CNAME at {target}, then verify — the check is a real DNS lookup.",
+      "empty": "No custom domains yet.",
+      "verified": "verified",
+      "pending": "pending",
+      "verify": "Verify now",
+      "delete": "Remove domain",
+      "claim": "Claim a domain",
+      "claimHint": "You own it; we verify it.",
+      "add": "Claim"
+    },
+    "google": {
+      "eyebrow": "GOOGLE",
+      "title": "Find your restaurant",
+      "description": "Search Google for your restaurant and link the right branch. The link feeds structured data to search engines; it is not an ownership claim.",
+      "linked": "Linked Place ID: {placeId}",
+      "notLinked": "No Google listing linked.",
+      "unlink": "Unlink",
+      "search": "Search Google Places",
+      "searchPlaceholder": "Restaurant name, city",
+      "find": "Find",
+      "link": "Link this branch",
+      "notConfigured": "Google Places search is not configured on this deployment yet — add a Places API key to enable it."
+    },
     "days": {
       "0": "Sunday",
       "1": "Monday",
@@ -415,7 +441,10 @@
       "ZONE_INCOMPLETE": "Every zone needs a name and at least one postal prefix.",
       "DELIVERY_MIN_ORDER": "The order is below this zone's minimum for delivery.",
       "OUTSIDE_SERVICE_AREA": "We do not deliver to that postal code.",
-      "CAMPAIGN_INCOMPLETE": "Every campaign needs a headline."
+      "CAMPAIGN_INCOMPLETE": "Every campaign needs a headline.",
+      "INVALID_DOMAIN": "That does not look like a domain name.",
+      "DOMAIN_TAKEN": "That domain is already claimed by another organization.",
+      "DOMAIN_NOT_FOUND": "Domain not found."
     },
     "supply": {
       "eyebrow": "Supply",

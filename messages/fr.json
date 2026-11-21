@@ -361,6 +361,32 @@
       "empty": "Aucune campagne.",
       "delete": "Supprimer la campagne"
     },
+    "domains": {
+      "eyebrow": "DOMAINE PERSONNALISÉ",
+      "title": "Votre propre domaine",
+      "description": "Servez votre vitrine depuis votre adresse. Pointez un CNAME vers {target}, puis vérifiez — le contrôle est une vraie recherche DNS.",
+      "empty": "Pas encore de domaine.",
+      "verified": "vérifié",
+      "pending": "en attente",
+      "verify": "Vérifier",
+      "delete": "Supprimer le domaine",
+      "claim": "Réclamer un domaine",
+      "claimHint": "Vous le possédez ; nous le vérifions.",
+      "add": "Réclamer"
+    },
+    "google": {
+      "eyebrow": "GOOGLE",
+      "title": "Trouvez votre restaurant",
+      "description": "Cherchez votre restaurant sur Google et liez la bonne branche. Le lien alimente les données structurées ; ce n'est pas une preuve de propriété.",
+      "linked": "Place ID lié : {placeId}",
+      "notLinked": "Aucune fiche Google liée.",
+      "unlink": "Délier",
+      "search": "Rechercher Google Places",
+      "searchPlaceholder": "Nom du restaurant, ville",
+      "find": "Chercher",
+      "link": "Lier cette branche",
+      "notConfigured": "La recherche Google Places n'est pas configurée — ajoutez une clé API Places."
+    },
     "days": {
       "0": "Dimanche",
       "1": "Lundi",
@@ -415,7 +441,10 @@
       "ZONE_INCOMPLETE": "Chaque zone nécessite un nom et au moins un préfixe postal.",
       "DELIVERY_MIN_ORDER": "La commande est en dessous du minimum de cette zone pour la livraison.",
       "OUTSIDE_SERVICE_AREA": "Nous ne livrons pas à ce code postal.",
-      "CAMPAIGN_INCOMPLETE": "Chaque campagne nécessite un titre."
+      "CAMPAIGN_INCOMPLETE": "Chaque campagne nécessite un titre.",
+      "INVALID_DOMAIN": "Cela ne ressemble pas à un nom de domaine.",
+      "DOMAIN_TAKEN": "Ce domaine est déjà réclamé par une autre organisation.",
+      "DOMAIN_NOT_FOUND": "Domaine introuvable."
     },
     "supply": {
       "eyebrow": "Approvisionnement",

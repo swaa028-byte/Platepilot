@@ -361,6 +361,32 @@
       "empty": "Ainda sem campanhas.",
       "delete": "Remover campanha"
     },
+    "domains": {
+      "eyebrow": "DOMÍNIO PRÓPRIO",
+      "title": "O seu próprio domínio",
+      "description": "Sirva a sua montra no seu endereço. Aponte um CNAME para {target} e verifique — a verificação é uma consulta DNS real.",
+      "empty": "Ainda sem domínios.",
+      "verified": "verificado",
+      "pending": "pendente",
+      "verify": "Verificar",
+      "delete": "Remover domínio",
+      "claim": "Reivindicar um domínio",
+      "claimHint": "É seu; nós verificamos.",
+      "add": "Reivindicar"
+    },
+    "google": {
+      "eyebrow": "GOOGLE",
+      "title": "Encontre o seu restaurante",
+      "description": "Procure o seu restaurante no Google e ligue a filial certa. A ligação alimenta os dados estruturados; não é uma prova de propriedade.",
+      "linked": "Place ID ligado: {placeId}",
+      "notLinked": "Nenhuma ficha Google ligada.",
+      "unlink": "Desligar",
+      "search": "Pesquisar no Google Places",
+      "searchPlaceholder": "Nome do restaurante, cidade",
+      "find": "Pesquisar",
+      "link": "Ligar esta filial",
+      "notConfigured": "A pesquisa do Google Places não está configurada — adicione uma chave da API Places."
+    },
     "days": {
       "0": "Domingo",
       "1": "Segunda",
@@ -415,7 +441,10 @@
       "ZONE_INCOMPLETE": "Cada zona precisa de um nome e pelo menos um prefixo postal.",
       "DELIVERY_MIN_ORDER": "O pedido está abaixo do mínimo desta zona para entrega.",
       "OUTSIDE_SERVICE_AREA": "Não entregamos nesse código postal.",
-      "CAMPAIGN_INCOMPLETE": "Cada campanha precisa de um título."
+      "CAMPAIGN_INCOMPLETE": "Cada campanha precisa de um título.",
+      "INVALID_DOMAIN": "Isso não parece um nome de domínio.",
+      "DOMAIN_TAKEN": "Esse domínio já foi reivindicado por outra organização.",
+      "DOMAIN_NOT_FOUND": "Domínio não encontrado."
     },
     "supply": {
       "eyebrow": "Aprovisionamento",
