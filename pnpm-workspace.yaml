@@ -8,6 +8,10 @@ supportedArchitectures:
     - linux
   cpu:
     - x64
+# pnpm fails an install outright when a dependency's build script was skipped
+# without saying so (ERR_PNPM_IGNORED_BUILDS). These three ask to run scripts,
+# and an unconfigured install exits 1 - which is what the first Netlify build
+# died on. Naming them is the approved way to settle the question.
 minimumReleaseAgeExclude:
   - '@supabase/auth-js@2.119.1'
   - '@supabase/functions-js@2.119.1'
@@ -18,3 +22,7 @@ minimumReleaseAgeExclude:
   - '@testing-library/jest-dom@8.0.0'
   - lucide-react@1.76.0
   - stripe@23.2.0
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
