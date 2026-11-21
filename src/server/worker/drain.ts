@@ -89,6 +89,7 @@ async function relayOutbox(admin: DbClient, result: DrainResult): Promise<void> 
     const hooks = (webhooks ?? []) as WebhookRow[];
     if (hooks.length === 0) {
       // No subscriber: the event is journaled and nothing will ever consume it.
+      await maybeEnqueueSms(admin, event, result);
       await admin.rpc("app_outbox_mark_dispatched", { p_event_id: event.event_id });
       result.eventsDispatched += 1;
       continue;
