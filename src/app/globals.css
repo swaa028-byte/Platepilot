@@ -574,3 +574,33 @@ p { text-wrap: pretty; }
 @media (max-width: 900px) {
   .op-zones__row { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---- Storefront campaigns ----------------------------------------------- */
+
+.campaign-banner { background: var(--green); color: #f2f5ef; }
+.campaign-banner__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-block: 13px; font-size: 13.5px; }
+.campaign-banner__inner p { margin: 0; }
+.campaign-banner__inner strong { color: var(--gold); font-weight: 700; }
+.campaign-banner__cta { color: var(--gold); font-weight: 700; text-decoration: none; white-space: nowrap; }
+.campaign-banner__cta:hover { text-decoration: underline; }
+
+.campaign-popup { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: rgba(16, 30, 24, 0.55); backdrop-filter: blur(3px); }
+.campaign-popup__card { position: relative; width: min(100%, 430px); padding: 30px 28px 26px; background: var(--paper); border: 1px solid rgba(23, 63, 53, 0.14); border-radius: 18px; box-shadow: 0 40px 90px rgba(10, 24, 18, 0.45); }
+.campaign-popup__close { position: absolute; inset-block-start: 12px; inset-inline-end: 12px; display: grid; place-items: center; width: 32px; height: 32px; color: var(--muted); background: transparent; border: 0; border-radius: 8px; cursor: pointer; }
+.campaign-popup__close:hover { background: #eef0ea; color: var(--ink); }
+.campaign-popup__eyebrow { margin-bottom: 8px; color: #6e766e; font-size: 10px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; }
+.campaign-popup__card h2 { margin-bottom: 10px; font-family: var(--display); font-size: 27px; font-weight: 400; letter-spacing: -0.6px; line-height: 1.12; }
+.campaign-popup__card > p { margin-bottom: 12px; color: #56645c; font-size: 14px; line-height: 1.6; }
+.campaign-popup__code { color: var(--green) !important; }
+.campaign-popup__code strong { letter-spacing: 1px; }
+.campaign-popup__cta { margin-top: 6px; }
+
+.op-campaigns { display: grid; gap: 16px; margin-top: 16px; }
+.op-campaigns__row { padding: 12px 0; border-bottom: 1px solid rgba(29,42,37,0.07); display: grid; gap: 10px; }
+.op-campaigns__row:last-child { border-bottom: 0; }
+.op-campaigns__head { display: flex; align-items: center; gap: 14px; }
+.op-campaigns__head .op-figure { min-width: 130px; }
+.op-campaigns__pair { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) {
+  .op-campaigns__pair { grid-template-columns: 1fr; }
+}

@@ -5,6 +5,7 @@ import { getDbClient } from "@/server/db/client";
 import { routing } from "@/i18n/routing";
 import { buildMenuJsonLd, buildRestaurantJsonLd, currencySymbol, exponent, openingHoursSpecification } from "@/domain/seo";
 import { getPublicMenuBySlug } from "@/server/storefront/menu";
+import { CampaignPopup, type Campaign } from "@/components/storefront/CampaignPopup";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
   if (!menu) notFound();
 
   const placeId = await getLinkedPlaceId(menu.location.id);
+  const campaign = await getActiveCampaign(menu.location.id);
   const restaurant = buildRestaurantJsonLd(menu, { origin, locale, placeId });
   const menuLd = buildMenuJsonLd(menu);
   const hours = openingHoursSpecification(menu.location.serviceSettings);
@@ -56,6 +58,22 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
     <div className="storefront-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurant) }} />
       {menuLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(menuLd) }} />}
+
+      {campaign?.kind === "popup" && <CampaignPopup campaign={campaign} />}
+      {campaign?.kind === "banner" && (
+        <aside className="campaign-banner" role="note">
+          <div className="shell campaign-banner__inner">
+            <p>
+              <strong>{campaign.headline}</strong>
+              {campaign.body ? ` — ${campaign.body}` : ""}
+              {campaign.discountCode ? ` · ${campaign.discountCode}` : ""}
+            </p>
+            {campaign.ctaLabel && campaign.ctaHref && (
+              <Link href={campaign.ctaHref} className="campaign-banner__cta">{campaign.ctaLabel} →</Link>
+            )}
+          </div>
+        </aside>
+      )}
 
       <section className="page-hero page-hero--compact">
         <div className="shell">
@@ -111,6 +129,20 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
       </section>
     </div>
   );
+}
+
+import { Link } from "@/i18n/navigation";
+
+async function getActiveCampaign(locationId: string): Promise<Campaign | null> {
+  try {
+    const db = await getDbClient();
+    const { data, error } = await db.rpc("app_active_campaign", { p_location_id: locationId });
+    if (error || !data) return null;
+    const value = data as Campaign | null;
+    return value && value.headline ? value : null;
+  } catch {
+    return null;
+  }
 }
 
 async function getLinkedPlaceId(locationId: string) {

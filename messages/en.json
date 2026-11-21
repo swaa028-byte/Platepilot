@@ -234,7 +234,10 @@
     "hours": "Opening hours",
     "menu": "Menu",
     "noMenu": "This restaurant has not published a menu yet.",
-    "allergens": "Contains"
+    "allergens": "Contains",
+    "dismiss": "Dismiss",
+    "announcement": "Announcement",
+    "code": "Code"
   },
   "Kitchen": {
     "eyebrow": "Kitchen",
@@ -333,6 +336,28 @@
       "empty": "No zones yet. Without zones the flat delivery fee in service settings applies everywhere.",
       "delete": "Remove zone"
     },
+    "campaigns": {
+      "eyebrow": "MARKETING",
+      "title": "Storefront campaigns",
+      "description": "Scheduled popups and banners on your storefront. A discount code shown here is enforced by the promotion's own limits at order time.",
+      "kind": "Kind",
+      "popup": "Popup",
+      "banner": "Banner",
+      "active": "Active",
+      "headline": "Headline",
+      "body": "Body",
+      "ctaLabel": "Button label",
+      "ctaHref": "Button link",
+      "discountCode": "Discount code",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "add": "Add campaign",
+      "save": "Save campaigns",
+      "saving": "Saving…",
+      "saved": "Campaigns saved.",
+      "empty": "No campaigns yet.",
+      "delete": "Remove campaign"
+    },
     "days": {
       "0": "Sunday",
       "1": "Monday",
@@ -386,7 +411,8 @@
       "LOCATION_NOT_FOUND": "That location was not found.",
       "ZONE_INCOMPLETE": "Every zone needs a name and at least one postal prefix.",
       "DELIVERY_MIN_ORDER": "The order is below this zone's minimum for delivery.",
-      "OUTSIDE_SERVICE_AREA": "We do not deliver to that postal code."
+      "OUTSIDE_SERVICE_AREA": "We do not deliver to that postal code.",
+      "CAMPAIGN_INCOMPLETE": "Every campaign needs a headline."
     },
     "supply": {
       "eyebrow": "Supply",

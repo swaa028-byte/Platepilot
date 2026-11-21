@@ -57,6 +57,7 @@ function mapOrderError(message: string) {
   if (message.includes("SCHEDULE_OUTSIDE_OPENING_HOURS")) return "SCHEDULE_OUTSIDE_OPENING_HOURS";
   if (message.includes("OUTSIDE_SERVICE_AREA")) return "OUTSIDE_SERVICE_AREA";
   if (message.includes("DELIVERY_ADDRESS_REQUIRED")) return "DELIVERY_ADDRESS_REQUIRED";
+  if (message.includes("DELIVERY_MIN_ORDER")) return "DELIVERY_MIN_ORDER";
   if (message.includes("ITEM_UNAVAILABLE")) return "ITEM_UNAVAILABLE";
   if (message.includes("MODIFIER")) return "MODIFIER_NOT_ALLOWED";
   if (message.includes("PROMOTION")) return "PROMOTION_NOT_APPLICABLE";

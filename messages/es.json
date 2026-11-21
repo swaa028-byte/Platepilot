@@ -234,7 +234,10 @@
     "hours": "Horario",
     "menu": "Carta",
     "noMenu": "Este restaurante aún no ha publicado una carta.",
-    "allergens": "Contiene"
+    "allergens": "Contiene",
+    "dismiss": "Cerrar",
+    "announcement": "Aviso",
+    "code": "Código"
   },
   "Kitchen": {
     "eyebrow": "Cocina",
@@ -333,6 +336,28 @@
       "empty": "Aún no hay zonas. Sin zonas, la tarifa fija de los ajustes se aplica en todas partes.",
       "delete": "Eliminar zona"
     },
+    "campaigns": {
+      "eyebrow": "MARKETING",
+      "title": "Campañas del escaparate",
+      "description": "Popups y banners programados en tu escaparate. Un código mostrado aquí sigue los límites de la promoción al pedir.",
+      "kind": "Tipo",
+      "popup": "Popup",
+      "banner": "Banner",
+      "active": "Activa",
+      "headline": "Titular",
+      "body": "Texto",
+      "ctaLabel": "Texto del botón",
+      "ctaHref": "Enlace del botón",
+      "discountCode": "Código de descuento",
+      "startsAt": "Empieza",
+      "endsAt": "Termina",
+      "add": "Añadir campaña",
+      "save": "Guardar campañas",
+      "saving": "Guardando…",
+      "saved": "Campañas guardadas.",
+      "empty": "Aún no hay campañas.",
+      "delete": "Eliminar campaña"
+    },
     "days": {
       "0": "Domingo",
       "1": "Lunes",
@@ -386,7 +411,8 @@
       "LOCATION_NOT_FOUND": "No se encontró ese local.",
       "ZONE_INCOMPLETE": "Cada zona necesita un nombre y al menos un prefijo postal.",
       "DELIVERY_MIN_ORDER": "El pedido está por debajo del mínimo de esta zona para entrega.",
-      "OUTSIDE_SERVICE_AREA": "No entregamos en ese código postal."
+      "OUTSIDE_SERVICE_AREA": "No entregamos en ese código postal.",
+      "CAMPAIGN_INCOMPLETE": "Cada campaña necesita un titular."
     },
     "supply": {
       "eyebrow": "Aprovisionamiento",

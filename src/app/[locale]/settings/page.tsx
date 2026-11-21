@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { requireUser } from "@/server/auth/server";
 import { ServiceSettings } from "@/components/settings/ServiceSettings";
 import { DeliveryZones } from "@/components/settings/DeliveryZones";
+import { Campaigns } from "@/components/settings/Campaigns";
 import { VenueBook } from "@/components/settings/VenueBook";
 import { Suppliers } from "@/components/settings/Suppliers";
 
@@ -74,6 +75,7 @@ export default async function SettingsPage({
               )}
               <ServiceSettings locationId={selected.locationId} locationName={selected.name} />
               <DeliveryZones locationId={selected.locationId} />
+              <Campaigns locationId={selected.locationId} />
               <VenueBook locationId={selected.locationId} currency={selected.currency} />
               <Suppliers locationId={selected.locationId} />
             </>

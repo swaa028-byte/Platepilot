@@ -64,7 +64,7 @@ begin
     returning z.id into v_id;
     if not found then raise exception 'ZONE_NOT_FOUND'; end if;
   end if;
-  insert into audit_events(organization_id, actor_id, action, entity_type, entity_id)
+  insert into audit_events(organization_id, actor_id, action, entity_type, entity_id, metadata)
   values (v_organization_id, p_actor, 'delivery_zone.saved', 'delivery_zone', v_id::text,
     jsonb_build_object('name', btrim(p_name), 'prefixes', to_jsonb(p_postal_prefixes)));
   return v_id;
