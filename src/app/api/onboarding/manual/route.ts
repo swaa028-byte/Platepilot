@@ -6,7 +6,7 @@ import { apiError } from "@/server/security/http";
 
 const input = z.object({
   name: z.string().trim().min(1).max(120), address: z.string().trim().min(1).max(300),
-  legalCountry: z.string().regex(/^[A-Z]{2}$/), currency: z.enum(["USD", "EUR", "GBP", "ZAR", "CAD", "AUD", "NGN", "KES", "JPY", "KWD"]),
+  legalCountry: z.string().regex(/^[A-Z]{2}$/), currency: z.enum(["USD", "EUR", "GBP", "ZAR", "CAD", "AUD", "NGN", "XOF", "XAF", "KES", "JPY", "KWD"]),
   timezone: z.string().max(100).refine((value) => { try { new Intl.DateTimeFormat("en", { timeZone: value }); return true; } catch { return false; } }),
   locale: z.enum(["en", "fr", "es", "pt", "ar"]), placeId: z.string().max(300).optional(),
 });

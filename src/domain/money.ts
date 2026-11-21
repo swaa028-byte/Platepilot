@@ -1,6 +1,9 @@
 export const currencyExponents = {
   USD: 2, EUR: 2, GBP: 2, ZAR: 2, CAD: 2, AUD: 2,
   NGN: 2, KES: 2, JPY: 0, KWD: 3,
+  // The CFA franc is issued in two zones with fixed parity and no decimals:
+  // XOF (West Africa) and XAF (Central Africa — Cameroon, Congo, …).
+  XOF: 0, XAF: 0,
 } as const;
 
 export type Currency = keyof typeof currencyExponents;

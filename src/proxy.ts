@@ -5,6 +5,45 @@ import { routing } from "./i18n/routing";
 const intl = createMiddleware(routing);
 
 /**
+ * Country to interface language.
+ *
+ * Visitors are routed by the edge's geo header: Cloudflare (`cf-ipcountry`,
+ * which the tunnel also carries), Netlify (`x-nf-country`) or Vercel
+ * (`x-vercel-ip-country`). Nigeria speaks English; the CFA franc belt
+ * (Cameroon, Congo, Senegal, Côte d'Ivoire, …) and France speak French; the
+ * Iberian and Lusophone markets map to their own languages. Everything else
+ * keeps the default.
+ */
+const COUNTRY_LOCALES: Record<string, string> = {
+  NG: "en",
+  CM: "fr", CG: "fr", CD: "fr", CF: "fr", TD: "fr", GA: "fr", GQ: "fr", KM: "fr",
+  SN: "fr", CI: "fr", ML: "fr", BF: "fr", BJ: "fr", NE: "fr", TG: "fr", GW: "fr",
+  FR: "fr", BE: "fr", LU: "fr", MC: "fr",
+  ES: "es", MX: "es", AR: "es", CL: "es", CO: "es", PE: "es",
+  PT: "pt", BR: "pt", AO: "pt", MZ: "pt",
+  SA: "ar", AE: "ar", MA: "ar", DZ: "ar", TN: "ar", EG: "ar",
+};
+
+/**
+ * First visit, no explicit choice: pick the language from the visitor's
+ * country. Only the bare root path is redirected — an explicit path, a saved
+ * NEXT_LOCALE cookie, or any API/auth route always wins over geo-guessing.
+ */
+function geoLocaleRedirect(request: NextRequest): NextResponse | null {
+  if (request.nextUrl.pathname !== "/") return null;
+  if (request.cookies.get("NEXT_LOCALE")) return null;
+  const country = (
+    request.headers.get("cf-ipcountry")
+    ?? request.headers.get("x-nf-country")
+    ?? request.headers.get("x-vercel-ip-country")
+    ?? ""
+  ).toUpperCase();
+  const locale = COUNTRY_LOCALES[country];
+  if (!locale || locale === routing.defaultLocale) return null;
+  return NextResponse.redirect(new URL(`/${locale}`, request.url));
+}
+
+/**
  * One canonical host.
  *
  * Netlify serves every deploy under a unique alias (123abc--site.netlify.app) as
@@ -25,7 +64,7 @@ export default function proxy(request: NextRequest) {
   if (canonical && host && host !== canonical && proto === "https") {
     return NextResponse.redirect(new URL(request.nextUrl.pathname + request.nextUrl.search, `https://${canonical}`));
   }
-  return intl(request);
+  return geoLocaleRedirect(request) ?? intl(request);
 }
 
 export const config = {

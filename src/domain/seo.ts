@@ -95,13 +95,14 @@ export function priceRange(items: PublicMenuItem[]): string | null {
 export function exponent(currency: string) {
   if (currency === "JPY") return 0;
   if (currency === "KWD") return 3;
+  if (currency === "XOF" || currency === "XAF") return 0;
   return 2;
 }
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
   ZAR: "R", NGN: "₦", KES: "KSh", GHS: "GH₵", EGP: "E£", TZS: "TSh",
   UGX: "USh", ZMW: "ZK", USD: "$", EUR: "€", GBP: "£", CAD: "CA$", AUD: "A$",
-  JPY: "¥", KWD: "KD",
+  JPY: "¥", KWD: "KD", XOF: "CFA ", XAF: "FCFA ",
 };
 
 export function currencySymbol(currency: string) {
@@ -167,7 +168,9 @@ export function buildMenuJsonLd(menu: PublicMenu) {
           description: item.description || undefined,
           offers: {
             "@type": "Offer",
-            price: (Number(item.amountMinor) / 10 ** exponent(item.currency)).toFixed(2),
+            // Zero-decimal currencies (JPY, the CFA francs) must not show
+            // fictional cents in structured data.
+            price: (Number(item.amountMinor) / 10 ** exponent(item.currency)).toFixed(exponent(item.currency)),
             priceCurrency: item.currency,
             availability: "https://schema.org/InStock",
           },
