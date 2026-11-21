@@ -15,7 +15,8 @@
     "kitchen": "Cozinha",
     "reports": "Relatórios",
     "settings": "Configurações",
-    "tableCodes": "Códigos de mesa"
+    "tableCodes": "Códigos de mesa",
+    "findUs": "Encontrar um restaurante"
   },
   "Footer": {
     "tagline": "Seu restaurante, do primeiro pedido ao fecho.",
@@ -637,5 +638,12 @@
     "noTables": "Ainda não há mesas. Adicione mesas primeiro na planta do salão.",
     "scanHint": "Leia o código para ver o menu",
     "print": "Imprimir folha"
+  },
+  "Locations": {
+    "title": "Encontrar um restaurante",
+    "description": "Todos os restaurantes PlatePilot com ementa online, morada e horários.",
+    "empty": "Ainda nenhum restaurante publicou a sua ementa.",
+    "orderOnline": "Encomendar online",
+    "walkInOnly": "Apenas no local"
   }
 }

@@ -15,7 +15,8 @@
     "kitchen": "Kitchen",
     "reports": "Reports",
     "settings": "Settings",
-    "tableCodes": "Table codes"
+    "tableCodes": "Table codes",
+    "findUs": "Find a restaurant"
   },
   "Footer": {
     "tagline": "Your restaurant, from first order to close.",
@@ -637,5 +638,12 @@
     "noTables": "No tables yet. Add tables in the floor planner first.",
     "scanHint": "Scan to see the menu",
     "print": "Print sheet"
+  },
+  "Locations": {
+    "title": "Find a restaurant",
+    "description": "Every PlatePilot restaurant with a live menu, its address and its hours.",
+    "empty": "No restaurants have published a storefront yet.",
+    "orderOnline": "Order online",
+    "walkInOnly": "Walk-in only"
   }
 }

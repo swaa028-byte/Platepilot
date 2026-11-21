@@ -682,3 +682,14 @@ p { text-wrap: pretty; }
   body { background: #fff; }
 }
 .kitchen-notice--offline { background: #fdf3dd; color: #7a5a17; }
+.locations-page .hero h1 { font-size: clamp(30px, 5vw, 44px); margin: 0 0 10px; }
+.locations-page .hero p { color: var(--muted); max-width: 640px; }
+.locations-brand h2 { margin: 26px 0 12px; font-size: 20px; }
+.locations-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.locations-card { display: flex; justify-content: space-between; gap: 16px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); flex-wrap: wrap; }
+.locations-card h3 { margin: 0 0 6px; font-size: 17px; }
+.locations-card h3 a { color: inherit; }
+.locations-address { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+.locations-hours { list-style: none; margin: 0; padding: 0; font-size: 13px; color: var(--muted); }
+.locations-walkin { font-size: 13px; color: var(--muted); align-self: center; }
+.locations-empty { color: var(--muted); }

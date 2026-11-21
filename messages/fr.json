@@ -15,7 +15,8 @@
     "kitchen": "Cuisine",
     "reports": "Rapports",
     "settings": "Paramètres",
-    "tableCodes": "Codes de table"
+    "tableCodes": "Codes de table",
+    "findUs": "Trouver un restaurant"
   },
   "Footer": {
     "tagline": "Votre restaurant, de la première commande à la fermeture.",
@@ -637,5 +638,12 @@
     "noTables": "Aucune table pour l'instant. Ajoutez d'abord des tables dans le plan de salle.",
     "scanHint": "Scannez pour voir le menu",
     "print": "Imprimer la planche"
+  },
+  "Locations": {
+    "title": "Trouver un restaurant",
+    "description": "Tous les restaurants PlatePilot avec un menu en ligne, leur adresse et leurs horaires.",
+    "empty": "Aucun restaurant n'a encore publié de vitrine.",
+    "orderOnline": "Commander en ligne",
+    "walkInOnly": "Sur place uniquement"
   }
 }
