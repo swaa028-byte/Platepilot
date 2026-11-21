@@ -25,9 +25,9 @@ const menu: PublicMenu = {
     },
   },
   items: [
-    { id: "i1", name: "Bunny chow", description: "Curry in a hollowed loaf", allergens: ["gluten"], category: "Mains", amountMinor: "9500", currency: "ZAR", available: true },
-    { id: "i2", name: "Rooibos", description: "", allergens: [], category: "Drinks", amountMinor: "3500", currency: "ZAR", available: true },
-    { id: "i3", name: "Sold out breakfast", description: "", allergens: [], category: "Mains", amountMinor: "1000", currency: "ZAR", available: false },
+    { id: "i1", name: "Bunny chow", description: "Curry in a hollowed loaf", allergens: ["gluten"], category: "Mains", amountMinor: "9500", currency: "ZAR", available: true, imageUrl: "/images/menu/bunny-chow.jpg" },
+    { id: "i2", name: "Rooibos", description: "", allergens: [], category: "Drinks", amountMinor: "3500", currency: "ZAR", available: true, imageUrl: null },
+    { id: "i3", name: "Sold out breakfast", description: "", allergens: [], category: "Mains", amountMinor: "1000", currency: "ZAR", available: false, imageUrl: null },
   ],
 };
 

@@ -109,14 +109,15 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
                   <h3>{category}</h3>
                   <ul className="storefront-items">
                     {available.filter((item) => item.category === category).map((item) => (
-                      <li key={item.id}>
+                      <li key={item.id} className={item.imageUrl ? "has-photo" : undefined}>
+                        {item.imageUrl && <img src={item.imageUrl} alt={item.name} loading="lazy" className="storefront-item-photo" width={72} height={72} />}
                         <span className="storefront-item-name">
                           {item.name}
                           {item.allergens.length > 0 && <small>{t("allergens")}: {item.allergens.join(", ")}</small>}
                         </span>
                         <span className="storefront-item-price">
                           {currencySymbol(item.currency)}
-                          {(Number(item.amountMinor) / 10 ** exponent(item.currency)).toFixed(2)}
+                          {(Number(item.amountMinor) / 10 ** exponent(item.currency)).toFixed(exponent(item.currency))}
                         </span>
                       </li>
                     ))}

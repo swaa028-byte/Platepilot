@@ -17,6 +17,7 @@ export type PublicMenuItem = {
   amountMinor: string;
   currency: string;
   available: boolean;
+  imageUrl: string | null;
 };
 
 export type PublicLocation = {
