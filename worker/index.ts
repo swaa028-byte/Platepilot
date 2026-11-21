@@ -1,9 +1,9 @@
 import { getDbClient, getDatabaseMode } from "../src/server/db/client";
+import { drainOnce, cronWorkerId } from "../src/server/worker/drain";
 import { randomUUID } from "node:crypto";
 
 const workerId = `worker-${randomUUID()}`;
 const pollMs = Math.max(250, Number(process.env.WORKER_POLL_MS || 1000));
-const batchSize = Math.max(1, Math.min(50, Number(process.env.WORKER_BATCH_SIZE || 10)));
 let stopped = false;
 process.on("SIGTERM", () => { stopped = true; });
 process.on("SIGINT", () => { stopped = true; });
@@ -19,22 +19,15 @@ async function run() {
   }
 
   const admin = await getDbClient();
-  console.log(`PlatePilot worker ${workerId} started; unsupported jobs retry then dead-letter.`);
+  console.log(`PlatePilot worker ${workerId} started: relaying the outbox to webhooks and draining queued jobs.`);
   while (!stopped) {
-    const { data: jobs, error } = await admin.rpc("app_claim_jobs", { p_worker: workerId, p_batch: batchSize });
-    if (error) {
-      console.error("Job claim failed; retrying after the poll interval.", error.code, error.message);
-    } else {
-      for (const job of jobs ?? []) {
-        if (job.status === "dead_letter") {
-          console.error("Job moved to dead letter", { id: job.id, kind: job.kind, attempts: job.attempts });
-          continue;
-        }
-        // No external side effect is faked. A new handler must be registered and provider-tested
-        // before its job kind is enabled. Unknown kinds receive bounded retries via the DB lease.
-        const retryAt = new Date(Date.now() + Math.min(300_000, 1000 * 2 ** job.attempts));
-        await admin.from("jobs").update({ status: "queued", available_at: retryAt.toISOString(), lease_until: null, last_error: "NO_VERIFIED_HANDLER" }).eq("id", job.id).eq("leased_by", workerId);
+    try {
+      const result = await drainOnce(admin, cronWorkerId());
+      if (result.eventsExamined > 0 || result.jobsClaimed > 0) {
+        console.log("drain pass", result);
       }
+    } catch (error) {
+      console.error("Drain pass failed; retrying after the poll interval.", error instanceof Error ? error.message : error);
     }
     await new Promise((resolve) => setTimeout(resolve, pollMs));
   }
