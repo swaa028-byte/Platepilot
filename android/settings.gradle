@@ -1,0 +1,16 @@
+// PlatePilot Android test shell.
+//
+// A thin WebView wrapper so testers can install the storefront and operations
+// UI as an app while the product is served by the web deployment. The server
+// address is chosen at first launch and stored on the device, so the same APK
+// works against production, a tunnel, or a self-hosted box.
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = "platepilot-shell"
+include(":app")
