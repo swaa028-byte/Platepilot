@@ -3,14 +3,19 @@
  * PlatePilot theme functions.
  *
  * Self-contained: no build step, no external libraries. Registers the
- * navigation, a "PlatePilot" settings screen where the hosted-database and
+ * navigation, a "PlatePilot" settings screen where the database and
  * payment-gateway credentials are entered, and shortcodes that read live
  * data through those credentials.
  *
- * Honest note: WordPress (and free PHP hosts) cannot run the ordering
- * engine itself — checkout verification and the kitchen display live in the
- * PlatePilot Node application, whose address is stored in the settings
- * below. This theme carries the site and reads published data.
+ * How the pieces fit: this theme is the whole website and it talks to the
+ * database directly over HTTPS from PHP. That means no application server
+ * is required to run the site: a free PHP host plus the database project is
+ * enough to publish menus, take table QR traffic and show live prices.
+ *
+ * The ordering engine (checkout verification, the kitchen display and
+ * reports) is a separate Node application. Where it is hosted, its address
+ * goes in the settings below and the site links visitors into it. Without
+ * it, the site still works as a site: it publishes what the database holds.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -52,20 +57,41 @@ function platepilot_assets() {
 add_action( 'wp_enqueue_scripts', 'platepilot_assets' );
 
 /* ------------------------------------------------------------------ */
-/* Settings: credentials the site and the app need                     */
+/* Settings: the keys this site needs                                  */
 /* ------------------------------------------------------------------ */
 
 function platepilot_settings_fields() {
 	return array(
-		'app_url'            => array( 'label' => __( 'PlatePilot app address', 'platepilot' ), 'hint' => __( 'Where the ordering engine runs (the Node application). Ordering, checkout and the kitchen display live there; visitors are sent to it from this site.', 'platepilot' ), 'type' => 'url' ),
-		'db_url'             => array( 'label' => __( 'Hosted database project URL', 'platepilot' ), 'hint' => __( 'The REST address of your hosted Postgres project (ends in .co or .com — no trailing slash).', 'platepilot' ), 'type' => 'url' ),
-		'db_anon_key'        => array( 'label' => __( 'Hosted database public key', 'platepilot' ), 'hint' => __( 'The public (anon) key of that project. Only published data is readable with it.', 'platepilot' ), 'type' => 'text' ),
-		'stripe_publishable' => array( 'label' => __( 'Stripe publishable key', 'platepilot' ), 'hint' => __( 'pk_live_… from your Stripe dashboard. Stored on your own server; never printed on the site.', 'platepilot' ), 'type' => 'text' ),
-		'stripe_secret'      => array( 'label' => __( 'Stripe secret key', 'platepilot' ), 'hint' => __( 'sk_live_…. Entered in the PlatePilot app settings as well; stored here for the connection check only.', 'platepilot' ), 'type' => 'text' ),
-		'paystack_public'    => array( 'label' => __( 'Paystack public key', 'platepilot' ), 'hint' => __( 'pk_live_… from your Paystack dashboard.', 'platepilot' ), 'type' => 'text' ),
-		'paystack_secret'    => array( 'label' => __( 'Paystack secret key', 'platepilot' ), 'hint' => __( 'sk_live_….', 'platepilot' ), 'type' => 'text' ),
-		'paypal_client_id'   => array( 'label' => __( 'PayPal client ID', 'platepilot' ), 'hint' => __( 'From your PayPal developer app.', 'platepilot' ), 'type' => 'text' ),
-		'paypal_secret'      => array( 'label' => __( 'PayPal secret', 'platepilot' ), 'hint' => __( 'From your PayPal developer app.', 'platepilot' ), 'type' => 'text' ),
+		'db_url'       => array(
+			'label'    => __( 'Supabase project URL', 'platepilot' ),
+			'hint'     => __( 'Supabase dashboard → Project Settings → API → Project URL. Paste it with no trailing slash, for example https://abcdefgh.supabase.co', 'platepilot' ),
+			'type'     => 'url',
+			'required' => true,
+		),
+		'db_anon_key'  => array(
+			'label'    => __( 'Supabase anon public key', 'platepilot' ),
+			'hint'     => __( 'Same screen, the key marked anon public. It can only read what your row-level security allows, so it is safe to keep here — and it is never printed on the public site.', 'platepilot' ),
+			'type'     => 'text',
+			'required' => true,
+		),
+		'menu_slug'    => array(
+			'label'    => __( 'Restaurant slug', 'platepilot' ),
+			'hint'     => __( 'The storefront slug of your restaurant in the database, for example la-divine-eden. Used by the [platepilot_menu] shortcode and by the connection test.', 'platepilot' ),
+			'type'     => 'text',
+			'required' => true,
+		),
+		'app_url'      => array(
+			'label'    => __( 'Ordering app address (optional)', 'platepilot' ),
+			'hint'     => __( 'Only if you host the PlatePilot ordering application somewhere: checkout, the kitchen display and the staff dashboard live in that app. Leave it empty and the site still publishes your menu; the ordering buttons simply ask visitors to phone you.', 'platepilot' ),
+			'type'     => 'url',
+			'required' => false,
+		),
+		'stripe_publishable' => array( 'label' => __( 'Stripe publishable key', 'platepilot' ), 'hint' => __( 'pk_live_… from your Stripe dashboard. Stored on your own server; never printed on the site.', 'platepilot' ), 'type' => 'text', 'required' => false ),
+		'stripe_secret'      => array( 'label' => __( 'Stripe secret key', 'platepilot' ), 'hint' => __( 'sk_live_…. Kept for the connection check; charging happens in the ordering app.', 'platepilot' ), 'type' => 'text', 'required' => false ),
+		'paystack_public'    => array( 'label' => __( 'Paystack public key', 'platepilot' ), 'hint' => __( 'pk_live_… from your Paystack dashboard.', 'platepilot' ), 'type' => 'text', 'required' => false ),
+		'paystack_secret'    => array( 'label' => __( 'Paystack secret key', 'platepilot' ), 'hint' => __( 'sk_live_….', 'platepilot' ), 'type' => 'text', 'required' => false ),
+		'paypal_client_id'   => array( 'label' => __( 'PayPal client ID', 'platepilot' ), 'hint' => __( 'From your PayPal developer app.', 'platepilot' ), 'type' => 'text', 'required' => false ),
+		'paypal_secret'      => array( 'label' => __( 'PayPal secret', 'platepilot' ), 'hint' => __( 'From your PayPal developer app.', 'platepilot' ), 'type' => 'text', 'required' => false ),
 	);
 }
 
@@ -88,21 +114,122 @@ function platepilot_value( $key ) {
 	return trim( (string) get_option( 'platepilot_' . $key, '' ) );
 }
 
+/**
+ * The best URL for a marketing route: the WordPress page that carries it,
+ * the app when it is hosted, and the home page as a last resort. Keeps the
+ * navigation honest instead of printing links that go nowhere.
+ */
+function platepilot_link( $slug ) {
+	$page = get_page_by_path( sanitize_title( $slug ) );
+	if ( $page instanceof WP_Post ) {
+		$permalink = get_permalink( $page );
+		if ( $permalink ) return $permalink;
+	}
+	$app_url = untrailingslashit( platepilot_value( 'app_url' ) );
+	if ( '' !== $app_url ) return $app_url . '/en/' . $slug;
+	return home_url( '/' );
+}
+
+/** Where "ask about a plan" goes: the site administrator, obfuscated. */
+function platepilot_contact_url() {
+	$email = antispambot( get_option( 'admin_email', '' ) );
+	return $email ? 'mailto:' . $email : home_url( '/' );
+}
+
+/* ------------------------------------------------------------------ */
+/* Database access (PostgREST over HTTPS, from PHP)                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * One request to the database project's REST interface. The public key
+ * travels in a header, server-side: it is never sent to a visitor's
+ * browser and never echoed into a page.
+ */
+function platepilot_db_request( $path, $args = array() ) {
+	$db_url = untrailingslashit( platepilot_value( 'db_url' ) );
+	$key    = platepilot_value( 'db_anon_key' );
+	if ( '' === $db_url || '' === $key ) {
+		return new WP_Error( 'platepilot_unconfigured', 'Database credentials are missing.' );
+	}
+	$request = array(
+		'method'  => isset( $args['method'] ) ? $args['method'] : 'GET',
+		'headers' => array(
+			'apikey'        => $key,
+			'Authorization' => 'Bearer ' . $key,
+			'Accept'        => 'application/json',
+			'Content-Type'  => 'application/json',
+		),
+		'timeout' => 10,
+	);
+	if ( isset( $args['body'] ) ) {
+		$request['body'] = wp_json_encode( $args['body'] );
+	}
+	$response = wp_remote_request( $db_url . $path, $request );
+	if ( is_wp_error( $response ) ) return $response;
+	$code = wp_remote_retrieve_response_code( $response );
+	$body = wp_remote_retrieve_body( $response );
+	return array( 'code' => (int) $code, 'body' => $body );
+}
+
+/**
+ * The published menu for a slug, read through the database's public read
+ * function. Only published, available items come back.
+ *
+ * @return array|WP_Error { location: array, items: array }
+ */
+function platepilot_fetch_menu( $slug, $locale = 'en' ) {
+	$slug = sanitize_title( $slug );
+	if ( '' === $slug ) return new WP_Error( 'platepilot_no_slug', 'No restaurant slug configured.' );
+	$response = platepilot_db_request( '/rest/v1/rpc/public_menu', array(
+		'method' => 'POST',
+		'body'   => array( 'p_slug' => $slug, 'p_locale' => $locale ),
+	) );
+	if ( is_wp_error( $response ) ) return $response;
+	if ( 404 === $response['code'] ) {
+		return new WP_Error( 'platepilot_no_function', 'The database is reachable but the public_menu function is missing. Run kit/supabase-public-menu.sql in the Supabase SQL editor.' );
+	}
+	if ( $response['code'] < 200 || $response['code'] >= 300 ) {
+		return new WP_Error( 'platepilot_bad_status', 'The database answered HTTP ' . $response['code'] . '.' );
+	}
+	$menu = json_decode( $response['body'], true );
+	if ( ! is_array( $menu ) || empty( $menu['items'] ) ) {
+		return new WP_Error( 'platepilot_not_published', 'No published menu for that slug yet. Publish the menu in PlatePilot first.' );
+	}
+	return $menu;
+}
+
+/** Money is stored in minor units; print it the way the shop prices it. */
+function platepilot_money( $amount_minor, $currency ) {
+	$amount = number_format( (float) $amount_minor / 100, 2, '.', ',' );
+	return trim( $amount . ' ' . (string) $currency );
+}
+
+/* ------------------------------------------------------------------ */
+/* Settings screen                                                     */
+/* ------------------------------------------------------------------ */
+
 function platepilot_render_settings() {
 	if ( ! current_user_can( 'manage_options' ) ) return;
 	$missing = array();
 	foreach ( platepilot_settings_fields() as $key => $field ) {
-		if ( '' === platepilot_value( $key ) ) $missing[] = $field['label'];
+		if ( ! empty( $field['required'] ) && '' === platepilot_value( $key ) ) $missing[] = $field['label'];
+	}
+	$probe = null;
+	if ( ! $missing ) {
+		$menu  = platepilot_fetch_menu( platepilot_value( 'menu_slug' ) );
+		$probe = is_wp_error( $menu ) ? $menu->get_error_message() : sprintf( 'Connected. %d published items found for “%s”.', count( $menu['items'] ), platepilot_value( 'menu_slug' ) );
 	}
 	?>
 	<div class="wrap">
 		<h1>PlatePilot</h1>
 		<?php if ( $missing ) : ?>
 			<div class="notice notice-warning"><p>
-				<?php printf( esc_html( _n( 'Waiting for credentials: %s', 'Waiting for credentials: %s (and %d more)', count( $missing ) - 1 + 1, 'platepilot' ) ), esc_html( implode( ', ', array_slice( $missing, 0, 3 ) ) ), max( 0, count( $missing ) - 3 ) ); ?>
+				<?php printf( esc_html( 'Waiting for credentials: %s', 'platepilot' ), esc_html( implode( ', ', $missing ) ) ); ?>
 			</p></div>
+		<?php elseif ( is_wp_error( platepilot_fetch_menu( platepilot_value( 'menu_slug' ) ) ) ) : ?>
+			<div class="notice notice-error"><p><?php echo esc_html( (string) $probe ); ?></p></div>
 		<?php else : ?>
-			<div class="notice notice-success"><p><?php esc_html_e( 'All credentials present. The site is ready to receive users.', 'platepilot' ); ?></p></div>
+			<div class="notice notice-success"><p><?php echo esc_html( (string) $probe ); ?></p></div>
 		<?php endif; ?>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'platepilot' ); ?>
@@ -119,7 +246,7 @@ function platepilot_render_settings() {
 			</table>
 			<?php submit_button(); ?>
 		</form>
-		<p><em><?php esc_html_e( 'Secrets are stored in your own database and are never printed on the public site.', 'platepilot' ); ?></em></p>
+		<p><em><?php esc_html_e( 'Keys are stored in your own database and are never printed on the public site.', 'platepilot' ); ?></em></p>
 	</div>
 	<?php
 }
@@ -133,70 +260,70 @@ function platepilot_render_settings() {
  * configured and what is still missing. Values are never echoed.
  */
 function platepilot_status_shortcode() {
-	if ( ! is_user_logged_in() ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
 		return '<p>' . esc_html__( 'Sign in as an administrator to see the connection status.', 'platepilot' ) . '</p>';
 	}
 	$rows = '';
 	foreach ( platepilot_settings_fields() as $key => $field ) {
-		$ok = '' !== platepilot_value( $key );
-		$rows .= '<div class="flow-row ' . ( $ok ? 'is-in' : '' ) . '"><strong>' . esc_html( $field['label'] ) . '</strong><span>' .
-			( $ok ? esc_html__( 'configured', 'platepilot' ) : esc_html__( 'missing — add it under PlatePilot in the dashboard', 'platepilot' ) ) . '</span></div>';
+		$ok   = '' !== platepilot_value( $key );
+		$mark = $ok ? 'configured' : ( ! empty( $field['required'] ) ? 'missing' : 'not set (optional)' );
+		$rows .= '<div class="flow-row ' . ( $ok ? 'is-in' : '' ) . '"><strong>' . esc_html( $field['label'] ) . '</strong><span>' . esc_html( $mark ) . '</span></div>';
 	}
+	$menu  = platepilot_fetch_menu( platepilot_value( 'menu_slug' ) );
+	$rows .= '<div class="flow-row ' . ( is_wp_error( $menu ) ? '' : 'is-in' ) . '"><strong>' . esc_html__( 'Live menu read', 'platepilot' ) . '</strong><span>' .
+		esc_html( is_wp_error( $menu ) ? $menu->get_error_message() : sprintf( '%d items', count( $menu['items'] ) ) ) . '</span></div>';
 	return '<div class="flow-list">' . $rows . '</div>';
 }
 add_shortcode( 'platepilot_status', 'platepilot_status_shortcode' );
 
 /**
- * [platepilot_menu slug="la-divine-eden"] — renders a published menu read
- * live from the hosted database REST endpoint with the stored public key.
- * Read-only: ordering and checkout happen in the PlatePilot app.
+ * [platepilot_menu slug="la-divine-eden"] — the published menu, read live
+ * from the database with the stored public key. Read-only: ordering and
+ * checkout belong to the ordering app.
  */
 function platepilot_menu_shortcode( $atts ) {
-	$atts = shortcode_atts( array( 'slug' => '' ), $atts, 'platepilot_menu' );
-	$db_url = untrailingslashit( platepilot_value( 'db_url' ) );
-	$anon   = platepilot_value( 'db_anon_key' );
-	if ( '' === $atts['slug'] || '' === $db_url || '' === $anon ) {
-		return current_user_can( 'manage_options' )
-			? '<p><em>' . esc_html__( '[platepilot_menu] needs a slug, the hosted database URL and its public key (see PlatePilot in the dashboard).', 'platepilot' ) . '</em></p>'
-			: '';
+	$atts = shortcode_atts( array( 'slug' => '', 'locale' => 'en' ), $atts, 'platepilot_menu' );
+	$slug = '' !== $atts['slug'] ? $atts['slug'] : platepilot_value( 'menu_slug' );
+	if ( '' === $slug ) {
+		return current_user_can( 'manage_options' ) ? '<p><em>' . esc_html__( '[platepilot_menu] needs a slug: add one here, or write [platepilot_menu slug="your-restaurant"].', 'platepilot' ) . '</em></p>' : '';
 	}
-	$response = wp_remote_get( $db_url . '/rest/v1/locations?select=id,name,address,currency,slug&slug=eq.' . rawurlencode( $atts['slug'] ), array(
-		'headers' => array( 'apikey' => $anon, 'Authorization' => 'Bearer ' . $anon ),
-		'timeout' => 8,
-	) );
-	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-		return current_user_can( 'manage_options' ) ? '<p><em>' . esc_html__( 'The hosted database could not be reached. Check the URL and public key in the dashboard.', 'platepilot' ) . '</em></p>' : '';
+	$menu = platepilot_fetch_menu( $slug, $atts['locale'] );
+	if ( is_wp_error( $menu ) ) {
+		return current_user_can( 'manage_options' ) ? '<p><em>' . esc_html( $menu->get_error_message() ) . '</em></p>' : '';
 	}
-	$locations = json_decode( wp_remote_retrieve_body( $response ), true );
-	if ( empty( $locations ) ) {
-		return current_user_can( 'manage_options' ) ? '<p><em>' . esc_html__( 'No published location with that slug yet. Publish the menu from the PlatePilot app first.', 'platepilot' ) . '</em></p>' : '';
+	$location = isset( $menu['location'] ) ? $menu['location'] : array();
+	$out  = '<div class="storefront-block">';
+	$out .= '<h2>' . esc_html( isset( $location['name'] ) ? $location['name'] : get_bloginfo( 'name' ) ) . '</h2>';
+	if ( ! empty( $location['address'] ) ) {
+		$out .= '<p class="locations-address">' . esc_html( $location['address'] ) . '</p>';
 	}
-	$location = $locations[0];
-	$items_response = wp_remote_get( $db_url . '/rest/v1/menu_items?select=name,description,category,amount_minor,currency,allergens,available&location_id=eq.' . rawurlencode( $location['id'] ) . '&order=category.asc,name.asc', array(
-		'headers' => array( 'apikey' => $anon, 'Authorization' => 'Bearer ' . $anon ),
-		'timeout' => 8,
-	) );
-	$out  = '<div class="storefront-block"><h2>' . esc_html( $location['name'] ) . '</h2>';
-	$out .= '<p class="locations-address">' . esc_html( $location['address'] ) . '</p>';
-	if ( ! is_wp_error( $items_response ) && 200 === wp_remote_retrieve_response_code( $items_response ) ) {
-		$items = json_decode( wp_remote_retrieve_body( $items_response ), true );
-		$items = array_values( array_filter( (array) $items, function ( $item ) { return ! empty( $item['available'] ); } ) );
-		$category = null;
-		foreach ( $items as $item ) {
-			if ( $category !== $item['category'] ) {
-				$category = $item['category'];
-				$out .= '<h3>' . esc_html( $category ) . '</h3><ul class="storefront-items">';
-			}
-			$amount = number_format( (float) $item['amount_minor'] / 100, 2 );
-			$out .= '<li><span class="storefront-item-name">' . esc_html( $item['name'] ) .
-				( ! empty( $item['description'] ) ? '<small>' . esc_html( $item['description'] ) . '</small>' : '' ) .
-				'</span><span class="storefront-item-price">' . esc_html( $amount . ' ' . $item['currency'] ) . '</span></li>';
+	$currency = isset( $location['currency'] ) ? $location['currency'] : '';
+	$category = null;
+	$open     = false;
+	foreach ( $menu['items'] as $item ) {
+		if ( empty( $item['available'] ) ) continue;
+		$item_category = isset( $item['category'] ) ? (string) $item['category'] : '';
+		if ( $item_category !== $category ) {
+			if ( $open ) $out .= '</ul>';
+			$category = $item_category;
+			if ( '' !== $category ) $out .= '<h3>' . esc_html( $category ) . '</h3>';
+			$out .= '<ul class="storefront-items">';
+			$open = true;
 		}
-		if ( $items ) $out .= '</ul>';
+		$out .= '<li><span class="storefront-item-name">' . esc_html( $item['name'] );
+		if ( ! empty( $item['description'] ) ) {
+			$out .= '<small>' . esc_html( $item['description'] ) . '</small>';
+		}
+		if ( ! empty( $item['allergens'] ) && is_array( $item['allergens'] ) ) {
+			$out .= '<small class="storefront-allergens">' . esc_html( implode( ' · ', $item['allergens'] ) ) . '</small>';
+		}
+		$out .= '</span><span class="storefront-item-price">' . esc_html( platepilot_money( $item['amountMinor'], isset( $item['currency'] ) ? $item['currency'] : $currency ) ) . '</span></li>';
 	}
+	if ( $open ) $out .= '</ul>';
+
 	$app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 	if ( '' !== $app_url ) {
-		$out .= '<p><a class="button" href="' . esc_url( $app_url . '/en/r/' . rawurlencode( $atts['slug'] ) ) . '">' . esc_html__( 'Order online', 'platepilot' ) . '</a></p>';
+		$out .= '<p><a class="button" href="' . esc_url( $app_url . '/en/r/' . rawurlencode( $slug ) ) . '">' . esc_html__( 'Order online', 'platepilot' ) . '</a></p>';
 	}
 	$out .= '</div>';
 	return $out;

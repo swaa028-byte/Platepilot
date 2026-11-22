@@ -4,14 +4,17 @@ Requires at least: 6.0
 Tested up to: 6.7
 License: GPLv2 or later
 
-A green, self-contained marketing theme for the PlatePilot restaurant
-platform: statement hero with a typed rotating word and a three.js room,
-GSAP scroll reveals, the four service modes, a numbered walk-through,
-tabbed feature lists, the integration catalog, FAQs, and the green
-closing banner. No build step; GSAP, ScrollTrigger and three.js load
-from a CDN.
+A green, self-contained marketing theme for PlatePilot: statement hero with
+a typed rotating word and a three.js room, GSAP scroll reveals, four flat
+pricing plans, the service modes, a numbered walk-through, tabbed feature
+lists, the integration catalog, FAQs, and the closing banner. No build
+step; GSAP, ScrollTrigger and three.js load from a CDN.
 
-== Setup (five minutes) ==
+It also reads your published menu straight from your Supabase project, so
+the site works on plain PHP hosting — no application server required. See
+../kit/KIT.md for the recommended WordPress + GitHub + Supabase setup.
+
+== Setup (ten minutes) ==
 
 1. Upload the `platepilot` folder (or the zip) under Appearance → Themes
    and activate it.
@@ -23,30 +26,34 @@ from a CDN.
    - "White label"    → template **White label**
    - "About"          → template **About**
    - "Status"         → template **Connection status** (keep private)
+   Add "la-divine-eden" style slugs so the navigation finds them.
 3. Settings → Reading → set the homepage to a static page. The front page
    uses the theme's `front-page.php` automatically.
-4. Open **PlatePilot** in the dashboard menu and enter the credentials:
-   - the PlatePilot app address (where the ordering engine runs),
-   - the hosted-database project URL and its public key,
-   - your payment gateway keys (Stripe / Paystack / PayPal).
-   The **Connection status** page turns green when everything is present.
-5. Publish a menu from the PlatePilot app, then show it anywhere with the
-   shortcode `[platepilot_menu slug="your-restaurant"]`.
+4. In the Supabase SQL editor, run `kit/supabase-public-menu.sql` so the
+   public key can read a published menu and nothing else.
+5. Open **PlatePilot** in the dashboard menu and enter:
+   - Supabase project URL,
+   - Supabase anon public key,
+   - your restaurant slug,
+   - the ordering app address only if you host the app.
+   The screen reports how many published items it found.
+6. Show the menu anywhere with `[platepilot_menu slug="your-restaurant"]`.
 
 == What this theme can and cannot do ==
 
-It carries the site, stores the credentials, reads published menus live
-from your hosted database, and links visitors into the app. The ordering
-engine itself (checkout verification, kitchen display, reports) is the
-PlatePilot Node application and needs Node hosting — free PHP hosting
-cannot run it. Point "PlatePilot app address" at wherever the app runs.
+It carries the site, reads published menus live from Supabase, and links
+into the ordering app when you have one. Checkout, the kitchen display and
+the reports are the PlatePilot Node application and need a Node host;
+free PHP hosting cannot run them. Without the app the site still publishes
+your real menu — the ordering buttons stay off rather than pretending.
 
 == Notes ==
 
-- No vendor names appear anywhere on the public site; the settings
-  labels are vendor-neutral.
 - All strings are translatable (`platepilot` text domain).
-- The theme contains no mock or demo data: pages render your copy or
-  nothing.
-- Motion respects the visitor's reduced-motion preference; on devices
-  without WebGL the hero falls back to the gradient.
+- No mock or demo data: pages render your copy, and menus come from your
+  database or not at all.
+- Prices live in one array in `inc/content.php` (`$c['pricing']['plans']`).
+- Motion respects the visitor's reduced-motion preference; without WebGL
+  the hero falls back to the gradient.
+- Keys are stored server-side and never printed publicly. Never store the
+  database's service_role key here.

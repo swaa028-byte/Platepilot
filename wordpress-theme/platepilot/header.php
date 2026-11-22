@@ -32,7 +32,7 @@ $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 					<button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true"><?php esc_html_e( 'Product', 'platepilot' ); ?><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
 					<div class="nav-drop">
 						<?php foreach ( $nav['product'] as $item ) : ?>
-							<a href="<?php echo esc_url( $app_url ? $app_url . '/en/' . $item[0] : home_url( '/' ) ); ?>"><?php echo esc_html( $item[1] ); ?></a>
+							<a href="<?php echo esc_url( platepilot_link( $item[0] ) ); ?>"><?php echo esc_html( $item[1] ); ?></a>
 						<?php endforeach; ?>
 					</div>
 				</div>
@@ -40,14 +40,14 @@ $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 					<button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true"><?php esc_html_e( 'Resources', 'platepilot' ); ?><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
 					<div class="nav-drop">
 						<?php foreach ( $nav['resources'] as $item ) : ?>
-							<a href="<?php echo esc_url( $app_url ? $app_url . '/en/' . $item[0] : home_url( '/' ) ); ?>"><?php echo esc_html( $item[1] ); ?></a>
+							<a href="<?php echo esc_url( platepilot_link( $item[0] ) ); ?>"><?php echo esc_html( $item[1] ); ?></a>
 						<?php endforeach; ?>
 					</div>
 				</div>
 			</nav>
 			<nav class="main-nav main-nav--flat" aria-label="<?php esc_attr_e( 'Main navigation', 'platepilot' ); ?>">
 				<?php foreach ( array_merge( array( array( 'features', 'Product' ) ), $nav['product'], $nav['resources'] ) as $item ) : ?>
-					<a href="<?php echo esc_url( $app_url ? $app_url . '/en/' . $item[0] : home_url( '/' ) ); ?>"><?php echo esc_html( $item[1] ); ?></a>
+					<a href="<?php echo esc_url( platepilot_link( $item[0] ) ); ?>"><?php echo esc_html( $item[1] ); ?></a>
 				<?php endforeach; ?>
 			</nav>
 			<div class="header-actions">

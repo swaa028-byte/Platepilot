@@ -5,9 +5,37 @@ get_header();
 $c = platepilot_content()['pricing'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 $setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page=platepilot' );
+$contact_url = platepilot_contact_url();
 platepilot_render_info_page( 'pricing', $setup_url );
 ?>
 <section class="info-section info-section--tint">
+	<div class="shell">
+		<h2><?php echo esc_html( $c['plansTitle'] ); ?></h2>
+		<p class="info-lede"><?php echo esc_html( $c['plansBody'] ); ?></p>
+		<div class="plan-grid">
+			<?php foreach ( $c['plans'] as $plan ) : ?>
+				<div class="plan-card<?php echo ( isset( $plan['featured'] ) && $plan['featured'] ) ? ' plan-card--featured' : ''; ?>">
+					<?php if ( $plan['badge'] ) : ?><span class="plan-badge"><?php echo esc_html( $plan['badge'] ); ?></span><?php endif; ?>
+					<h3 class="plan-name"><?php echo esc_html( $plan['name'] ); ?></h3>
+					<p class="plan-amount"><?php echo esc_html( $plan['amount'] ); ?></p>
+					<p class="plan-cadence"><?php echo esc_html( $plan['cadence'] ); ?></p>
+					<p class="plan-pitch"><?php echo esc_html( $plan['pitch'] ); ?></p>
+					<ul class="plan-list">
+						<?php foreach ( $plan['features'] as $feature ) : ?>
+							<li><?php echo esc_html( $feature ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+					<p class="plan-cta">
+						<a class="button<?php echo 'contact' === $plan['cta_kind'] ? ' button--ghost' : ''; ?>" href="<?php echo esc_url( 'contact' === $plan['cta_kind'] ? $contact_url : $setup_url ); ?>"><?php echo esc_html( $plan['cta'] ); ?></a>
+					</p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<p class="price-note"><?php echo esc_html( $c['priceNote'] ); ?></p>
+	</div>
+</section>
+
+<section class="info-section">
 	<div class="shell">
 		<h2><?php echo esc_html( $c['includedTitle'] ); ?></h2>
 		<p class="info-lede"><?php echo esc_html( $c['includedBody'] ); ?></p>
@@ -22,7 +50,7 @@ platepilot_render_info_page( 'pricing', $setup_url );
 	</div>
 </section>
 
-<section class="info-section">
+<section class="info-section info-section--tint">
 	<div class="shell">
 		<h2><?php echo esc_html( $c['costsTitle'] ); ?></h2>
 		<p class="info-lede"><?php echo esc_html( $c['costsBody'] ); ?></p>
@@ -34,7 +62,7 @@ platepilot_render_info_page( 'pricing', $setup_url );
 	</div>
 </section>
 
-<section class="info-section info-section--tint">
+<section class="info-section">
 	<div class="shell">
 		<h2><?php echo esc_html( $c['compareTitle'] ); ?></h2>
 		<table class="compare-table">
@@ -45,10 +73,11 @@ platepilot_render_info_page( 'pricing', $setup_url );
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+		<p class="compare-note"><?php echo esc_html( $c['compareNote'] ); ?></p>
 	</div>
 </section>
 
 <?php
-platepilot_render_faq( platepilot_content()['home']['faq'], $c['faqTitle'] );
+platepilot_render_faq( $c['faq'], $c['faqTitle'] );
 platepilot_render_closing( $c['ctaTitle'], $c['ctaBody'], $c['cta'], $setup_url );
 get_footer();
