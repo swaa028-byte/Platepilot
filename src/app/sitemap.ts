@@ -20,6 +20,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const locale of routing.locales) {
     entries.push({ url: `${origin}/${locale}`, changeFrequency: "weekly", priority: 0.8 });
     entries.push({ url: `${origin}/${locale}/onboarding`, changeFrequency: "monthly", priority: 0.4 });
+    // Marketing pages: static content, so they are strong index targets.
+    for (const page of ["pricing", "features", "how-it-works", "integrations", "white-label", "about", "security", "locations", "floor-planner", "operations", "login"]) {
+      entries.push({ url: `${origin}/${locale}/${page}`, changeFrequency: "monthly", priority: 0.6 });
+    }
   }
   for (const location of locations) {
     for (const locale of routing.locales) {

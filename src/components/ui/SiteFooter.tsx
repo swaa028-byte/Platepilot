@@ -1,9 +1,14 @@
 import { useTranslations } from "next-intl";
-import { ArrowUpRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
+/**
+ * Footer on the reference-site pattern: brand column plus three link
+ * columns (the ordering system, the product, and support), with the
+ * language switcher and the legal line below. Every link points at a page
+ * or section that actually exists in the app.
+ */
 export function SiteFooter() {
   const t = useTranslations("Footer");
   return (
@@ -15,16 +20,28 @@ export function SiteFooter() {
           <span className="footer-status"><i />{t("status")}</span>
         </div>
         <div className="footer-links">
-          <strong>{t("product")}</strong>
-          <Link href="/onboarding">{t("onboarding")}</Link>
-          <Link href="/floor-planner">{t("floor")}</Link>
-          <Link href="/operations">{t("operations")}</Link>
+          <strong>{t("orderingSystem")}</strong>
+          <Link href="/locations">{t("pickup")}</Link>
+          <Link href="/locations">{t("delivery")}</Link>
+          <Link href="/#product">{t("dineIn")}</Link>
+          <Link href="/#product">{t("reservations")}</Link>
         </div>
         <div className="footer-links">
-          <strong>{t("resources")}</strong>
-          <a href="https://github.com/MarcusK-ai/rea-cloudwaitress">{t("repository")}<ArrowUpRight size={13} /></a>
+          <strong>{t("product")}</strong>
+          <Link href="/features">{t("features")}</Link>
+          <Link href="/pricing">{t("pricing")}</Link>
+          <Link href="/how-it-works">{t("howItWorks")}</Link>
+          <Link href="/integrations">{t("integrations")}</Link>
+          <Link href="/white-label">{t("whiteLabel")}</Link>
+        </div>
+        <div className="footer-links">
+          <strong>{t("support")}</strong>
+          <Link href="/about">{t("about")}</Link>
+          <Link href="/about#contact">{t("contact")}</Link>
+          <Link href="/security">{t("securityPage")}</Link>
+          <Link href="/locations">{t("locations")}</Link>
+          <a href="https://github.com/MarcusK-ai/rea-cloudwaitress">{t("docs")}</a>
           <Link href="/login">{t("signIn")}</Link>
-          <a href="mailto:privacy@example.invalid">{t("privacy")}</a>
         </div>
         <div className="footer-locale"><LanguageSwitcher /></div>
       </div>

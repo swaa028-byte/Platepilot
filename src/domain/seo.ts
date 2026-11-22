@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 /**
  * Structured data for search engines and AI systems.
  *
@@ -241,4 +243,40 @@ export function ogAlternateLocales(locale: string): string[] {
 /** Absolute URL for a locale-scoped path, safe against a trailing slash in APP_URL. */
 export function appBaseUrl(): string {
   return (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+}
+
+/**
+ * Standard page metadata for a locale-scoped marketing page: canonical URL,
+ * hreflang alternates, and Open Graph/Twitter cards per https://ogp.me/.
+ * The og:image comes from the generated brand card at [locale]/opengraph-image.
+ */
+export function buildPageMetadata(options: {
+  locale: string;
+  title: string;
+  description: string;
+  path: string;
+}): Pick<Metadata, "title" | "description" | "alternates" | "openGraph" | "twitter"> {
+  const { locale, title, description, path } = options;
+  const base = appBaseUrl();
+  const url = `${base}/${locale}`;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+      languages: Object.fromEntries(
+        Object.keys(ogLocales).map((item) => [item, [`${base}`, item, path].filter(Boolean).join("/")]),
+      ),
+    },
+    openGraph: {
+      type: "website",
+      siteName: "PlatePilot",
+      locale: ogLocale(locale),
+      alternateLocale: ogAlternateLocales(locale),
+      url,
+      title,
+      description,
+    },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
