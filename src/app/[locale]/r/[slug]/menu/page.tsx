@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { buildMenuJsonLd, currencySymbol, exponent } from "@/domain/seo";
+import { buildMenuJsonLd, currencySymbol, exponent, appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
 import { getPublicMenuBySlug } from "@/server/storefront/menu";
 import { getDbClient } from "@/server/db/client";
 
@@ -10,15 +10,24 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const origin = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const base = appBaseUrl();
   const menu = await getPublicMenuBySlug(slug, locale);
   if (!menu) return { title: "Menu" };
-  const url = `${origin}/${locale}/r/${slug}/menu`;
+  const url = `${base}/${locale}/r/${slug}/menu`;
   return {
     title: `Menu — ${menu.location.name}`,
     description: `The full menu of ${menu.location.name}, ${menu.location.address}, with prices and allergens.`,
     alternates: { canonical: url },
-    openGraph: { type: "website", title: `Menu — ${menu.location.name}`, description: `Menu and prices for ${menu.location.name}.`, url },
+    openGraph: {
+      type: "website",
+      siteName: "PlatePilot",
+      locale: ogLocale(locale),
+      alternateLocale: ogAlternateLocales(locale),
+      title: `Menu — ${menu.location.name}`,
+      description: `Menu and prices for ${menu.location.name}.`,
+      url,
+    },
+    twitter: { card: "summary_large_image", title: `Menu — ${menu.location.name}`, description: `Menu and prices for ${menu.location.name}.` },
   };
 }
 

@@ -2,31 +2,39 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getDbClient } from "@/server/db/client";
-import { routing } from "@/i18n/routing";
-import { buildMenuJsonLd, buildRestaurantJsonLd, currencySymbol, exponent, openingHoursSpecification } from "@/domain/seo";
 import { getPublicMenuBySlug } from "@/server/storefront/menu";
 import { CampaignPopup, type Campaign } from "@/components/storefront/CampaignPopup";
+import { routing } from "@/i18n/routing";
+import { buildMenuJsonLd, buildRestaurantJsonLd, currencySymbol, exponent, openingHoursSpecification, appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const origin = process.env.APP_URL || "http://localhost:3000";
+  const base = appBaseUrl();
   const menu = await getPublicMenuBySlug(slug, locale);
   if (!menu) return { title: "Storefront" };
-  const url = `${origin.replace(/\/$/, "")}/${locale}/r/${slug}`;
+  const url = `${base}/${locale}/r/${slug}`;
   return {
     title: `${menu.location.name} — ${menu.location.address}`,
     description: `Menu, prices and opening hours for ${menu.location.name}, ${menu.location.address}.`,
     alternates: {
       canonical: url,
-      languages: Object.fromEntries(routing.locales.map((item) => [item, `${origin.replace(/\/$/, "")}/${item}/r/${slug}`])),
+      languages: Object.fromEntries(routing.locales.map((item) => [item, `${base}/${item}/r/${slug}`])),
     },
     openGraph: {
       type: "website",
+      siteName: "PlatePilot",
+      locale: ogLocale(locale),
+      alternateLocale: ogAlternateLocales(locale),
       title: menu.location.name,
       description: `Menu and opening hours for ${menu.location.name}, ${menu.location.address}.`,
       url,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: menu.location.name,
+      description: `Menu and opening hours for ${menu.location.name}.`,
     },
   };
 }

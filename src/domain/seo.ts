@@ -211,3 +211,34 @@ export function buildPlainSummary(menu: PublicMenu, options: { origin: string; l
   lines.push(`${options.origin.replace(/\/$/, "")}/${options.locale}/r/${location.slug ?? location.id}`);
   return lines.join("\n");
 }
+
+/* ---------------------------------------------------------------------------
+ * Open Graph helpers.
+ *
+ * Social crawlers (Facebook, WhatsApp, X, LinkedIn, iMessage) read the
+ * og:* / twitter:* meta tags. Locales are mapped to the region tags the
+ * Open Graph protocol expects (og:locale uses underscore, e.g. en_US) and
+ * alternateLocale lists the other languages the same page is served in.
+ * See https://ogp.me/.
+ * ------------------------------------------------------------------------ */
+
+export const ogLocales: Record<string, string> = {
+  en: "en_US",
+  fr: "fr_FR",
+  es: "es_ES",
+  pt: "pt_PT",
+  ar: "ar_AE",
+};
+
+export function ogLocale(locale: string): string {
+  return ogLocales[locale] ?? "en_US";
+}
+
+export function ogAlternateLocales(locale: string): string[] {
+  return Object.keys(ogLocales).filter((item) => item !== locale).map((item) => ogLocales[item]);
+}
+
+/** Absolute URL for a locale-scoped path, safe against a trailing slash in APP_URL. */
+export function appBaseUrl(): string {
+  return (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+}

@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { SiteFooter } from "@/components/ui/SiteFooter";
+import { appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -19,13 +20,35 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
+  const base = appBaseUrl();
   return {
-    metadataBase: new URL((process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "")),
+    metadataBase: new URL(base),
     title: t("title"),
     description: t("description"),
     applicationName: "PlatePilot",
     robots: { index: true, follow: true },
     manifest: "/manifest.webmanifest",
+    alternates: {
+      canonical: `${base}/${locale}`,
+      // hreflang alternates so search engines serve the right language.
+      languages: Object.fromEntries(routing.locales.map((item) => [item, `${base}/${item}`])),
+    },
+    // Open Graph (https://ogp.me/): filled for every locale-scoped page;
+    // the og:image itself comes from opengraph-image.tsx in this segment.
+    openGraph: {
+      type: "website",
+      siteName: "PlatePilot",
+      locale: ogLocale(locale),
+      alternateLocale: ogAlternateLocales(locale),
+      url: `${base}/${locale}`,
+      title: t("title"),
+      description: t("description"),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+    },
     icons: {
       icon: [
         { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
