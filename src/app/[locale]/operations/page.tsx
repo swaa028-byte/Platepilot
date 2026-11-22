@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { createClient } from "@/server/auth/server";
+import { requireUser } from "@/server/auth/server";
 
 export const dynamic = "force-dynamic";
 
@@ -22,14 +22,18 @@ export default async function OperationsPage({ params }: { params: Promise<{ loc
   const t = await getTranslations("Operations");
   // The page must reflect the merchant's reality: a signed-in owner with a
   // workspace sees their restaurant, not a pitch to create one.
-  const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
+  // requireUser() serves both hosted (Supabase Auth) and local (embedded
+  // database, cookie session) mode — the raw Supabase client would throw
+  // SUPABASE_NOT_CONFIGURED in local mode.
+  let user: { id: string } | null = null;
   let workspaces: { locationId: string; name: string; address: string; role: string }[] = [];
-  if (auth.user) {
-    // Must run as the user's session — the RPC checks auth.uid() — so the
-    // cookie-scoped client, never the service role.
-    const result = await supabase.rpc("app_my_locations", { p_actor: auth.user.id });
-    if (!result.error) workspaces = (result.data ?? []) as typeof workspaces;
+  try {
+    const auth = await requireUser();
+    user = auth.user;
+    const { data } = await auth.supabase.rpc("app_my_locations", { p_actor: user.id });
+    workspaces = (data ?? []) as typeof workspaces;
+  } catch {
+    user = null;
   }
   const modules = [
     [ShoppingBag, t("orders"), t("ordersBody")],
@@ -54,7 +58,7 @@ export default async function OperationsPage({ params }: { params: Promise<{ loc
       </section>
       <section className="section operations-content">
         <div className="shell">
-          {auth.user && workspaces.length > 0 ? (
+          {user && workspaces.length > 0 ? (
             <div className="workspace-callout workspace-callout--live">
               <div>
                 <span className="status-badge">YOUR WORKSPACE</span>
@@ -66,7 +70,7 @@ export default async function OperationsPage({ params }: { params: Promise<{ loc
                 <Link className="button button--ghost" href="/settings">Settings</Link>
               </div>
             </div>
-          ) : auth.user ? (
+          ) : user ? (
             <div className="workspace-callout">
               <div><span className="status-badge">EMPTY BY DEFAULT</span><h2>{t("workspaceTitle")}</h2><p>{t("workspaceBody")}</p></div>
               <div className="button-row"><Link className="button" href="/onboarding">{t("setupCta")}<ArrowRight size={16} /></Link></div>
