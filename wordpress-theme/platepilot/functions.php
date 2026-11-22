@@ -70,13 +70,13 @@ add_action( 'wp_enqueue_scripts', 'platepilot_assets' );
 function platepilot_settings_fields() {
 	return array(
 		'db_url'       => array(
-			'label'    => __( 'Supabase project URL', 'platepilot' ),
-			'hint'     => __( 'Supabase dashboard → Project Settings → API → Project URL. Paste it with no trailing slash, for example https://abcdefgh.supabase.co', 'platepilot' ),
+			'label'    => __( 'Database URL', 'platepilot' ),
+			'hint'     => __( 'In your database dashboard: Project Settings → API → Project URL. Paste it with no trailing slash, for example https://abcdefgh.supabase.co', 'platepilot' ),
 			'type'     => 'url',
 			'required' => true,
 		),
 		'db_anon_key'  => array(
-			'label'    => __( 'Supabase anon public key', 'platepilot' ),
+			'label'    => __( 'Database public key', 'platepilot' ),
 			'hint'     => __( 'Same screen, the key marked anon public. It can only read what your row-level security allows, so it is safe to keep here — and it is never printed on the public site.', 'platepilot' ),
 			'type'     => 'text',
 			'required' => true,
@@ -349,7 +349,12 @@ function platepilot_render_settings() {
 		<h1>PlatePilot</h1>
 		<?php if ( $missing ) : ?>
 			<div class="notice notice-warning"><p>
-				<?php printf( esc_html( 'Waiting for credentials: %s', 'platepilot' ), esc_html( implode( ', ', $missing ) ) ); ?>
+				<strong><?php esc_html_e( 'Not connected yet.', 'platepilot' ); ?></strong>
+				<?php printf( esc_html( 'Fill in %s below, then save. Until then the site shows your marketing pages and the menu shortcode says so.', 'platepilot' ), esc_html( implode( ', ', $missing ) ) ); ?>
+			</p>
+			<p>
+				<?php esc_html_e( 'The first two come from your database dashboard (Project Settings → API). The third is the slug of the restaurant you published in the ordering app.', 'platepilot' ); ?>
+				<a href="#platepilot-credentials"><?php esc_html_e( 'Go to the fields', 'platepilot' ); ?></a>
 			</p></div>
 		<?php elseif ( is_wp_error( platepilot_fetch_menu( platepilot_value( 'menu_slug' ) ) ) ) : ?>
 			<div class="notice notice-error"><p><?php echo esc_html( (string) $probe ); ?></p></div>
@@ -370,7 +375,7 @@ function platepilot_render_settings() {
 			<?php wp_nonce_field( 'platepilot_create_pages' ); ?>
 			<?php submit_button( 'Create the missing pages', 'secondary', 'submit', false ); ?>
 		</form>
-		<h2>Credentials</h2>
+		<h2 id="platepilot-credentials">Credentials</h2>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'platepilot' ); ?>
 			<table class="form-table" role="presentation">
