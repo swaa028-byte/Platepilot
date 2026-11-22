@@ -15,6 +15,16 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/* The site's copy lives in inc/content.php and the shared FAQ/closing
+ * renderers in inc/render.php; both must load before any template runs,
+ * otherwise the front end fatals on an undefined function. */
+foreach ( array( '/inc/content.php', '/inc/render.php' ) as $platepilot_inc ) {
+	$platepilot_path = get_theme_file_path( $platepilot_inc );
+	if ( is_readable( $platepilot_path ) ) {
+		require $platepilot_path;
+	}
+}
+
 /* ------------------------------------------------------------------ */
 /* Theme setup                                                         */
 /* ------------------------------------------------------------------ */
