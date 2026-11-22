@@ -46,14 +46,14 @@ async function seedVendor(db: PGlite, name: string, actorSeed: number) {
   return { organizationId, locationId: location.rows[0].id, actor };
 }
 
-async function placeOrder(db: PGlite, locationId: string, totalMinor: number, status = "received") {
+async function placeOrder(db: PGlite, locationId: string, totalMinor: number, status = "received", payment = "paid") {
   const order = await db.query<{ id: string; platform_fee_minor: string }>(
     `insert into orders(organization_id, location_id, tracking_token, service_type, customer_locale, currency,
-                        subtotal_minor, discount_minor, tax_minor, tip_minor, total_minor, fulfillment_status)
-     select organization_id, id, $2, 'pickup', 'fr', 'XAF', $1, 0, 0, 0, $1, $3
+                        subtotal_minor, discount_minor, tax_minor, tip_minor, total_minor, fulfillment_status, payment_status)
+     select organization_id, id, $2, 'pickup', 'fr', 'XAF', $1, 0, 0, 0, $1, $3, $5
        from locations where id = $4
      returning id, platform_fee_minor`,
-    [totalMinor, `tok-${Math.random().toString(36).slice(2)}`, status, locationId],
+    [totalMinor, `tok-${Math.random().toString(36).slice(2)}`, status, locationId, payment],
   );
   return order.rows[0];
 }
@@ -133,6 +133,45 @@ describe("multivendor platform", () => {
     await db.query("select set_config('request.jwt.claim.sub',$1,false)", [bob.actor]);
     await expect(
       db.query("select app_platform_revenue(now() - interval '1 day', now()) as result"),
+    ).rejects.toThrow(/FORBIDDEN/);
+  });
+
+  it("produces a settlement statement per vendor for a single collecting account", async () => {
+    const db = await freshDatabase();
+    const vendor = await seedVendor(db, "La Divine Eden", 47);
+    const operator = uuid(93);
+    await db.query("insert into platform_admins(user_id) values ($1)", [operator]);
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [operator]);
+    await db.query("select app_set_commission($1, 200)", [vendor.organizationId]);
+
+    // Two paid orders and one unpaid: only the paid money is payable.
+    await db.query("update organizations set legal_country='CM' where id=$1", [vendor.organizationId]);
+    await placeOrder(db, vendor.locationId, 20000);
+    await placeOrder(db, vendor.locationId, 10000);
+    await placeOrder(db, vendor.locationId, 5000, "received", "unpaid");
+
+    const statement = await db.query<{ result: {
+      status: string;
+      vendors: { organization_name: string; collected_minor: number; platform_fee_minor: number; netPayableMinor: number }[];
+      totals: { collectedMinor: number; platformFeeMinor: number; netPayableMinor: number };
+    } }>("select app_vendor_settlement(now() - interval '1 day', now() + interval '1 day') as result");
+
+    const data = statement.rows[0].result;
+    expect(data.status).toBe("manual_settlement");
+    expect(data.vendors[0].organization_name).toBe("La Divine Eden");
+    // 30,000 collected at 2% = 600 to the platform, 29,400 payable to the vendor.
+    expect(Number(data.totals.collectedMinor)).toBe(30000);
+    expect(Number(data.totals.platformFeeMinor)).toBe(600);
+    expect(Number(data.totals.netPayableMinor)).toBe(29400);
+    expect(Number(data.vendors[0].netPayableMinor)).toBe(29400);
+  });
+
+  it("keeps the settlement statement closed to vendors", async () => {
+    const db = await freshDatabase();
+    const vendor = await seedVendor(db, "Nosy Vendor", 48);
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [vendor.actor]);
+    await expect(
+      db.query("select app_vendor_settlement(now() - interval '1 day', now()) as result"),
     ).rejects.toThrow(/FORBIDDEN/);
   });
 });

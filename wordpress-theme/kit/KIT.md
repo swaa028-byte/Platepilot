@@ -5,7 +5,9 @@ This kit is built for exactly four accounts: **WordPress** (the website),
 database). No Vercel, no Render, no server of your own.
 
 Deploying the app to Cloudflare Workers is covered in `CLOUDFLARE.md` in this
-folder — Workers free plan, built from GitHub on every push.
+folder — Workers free plan, built from GitHub on every push. Taking card
+payments, and settling each vendor from one account, is covered in
+`PAYSTACK.md`.
 
 ## What runs where
 

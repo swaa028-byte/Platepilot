@@ -8,6 +8,26 @@ export function verifyPaystackSignature(rawBody: Uint8Array, signature: string |
   return timingSafeEqual(expected, Buffer.from(signature, "hex"));
 }
 
+/**
+ * The currencies Paystack processes, from their API reference. Amounts travel
+ * in each currency's subunit, which is what everything here already uses.
+ *
+ * XAF and the other CFA francs are deliberately absent: Paystack settles in
+ * NGN, USD, GHS, ZAR and KES only. A restaurant priced in XAF needs a different
+ * provider, and it should learn that here rather than from a provider 400.
+ */
+export const PAYSTACK_CURRENCIES = ["NGN", "USD", "GHS", "ZAR", "KES"] as const;
+
+export function paystackSupportsCurrency(currency: string): boolean {
+  return (PAYSTACK_CURRENCIES as readonly string[]).includes(currency.toUpperCase());
+}
+
+function assertPaystackCurrency(currency: string) {
+  if (!paystackSupportsCurrency(currency)) {
+    throw new Error(`PAYSTACK_CURRENCY_UNSUPPORTED:${currency}:${PAYSTACK_CURRENCIES.join("/")}`);
+  }
+}
+
 const verification = z.object({
   status: z.literal(true),
   data: z.object({
@@ -21,6 +41,7 @@ type Expected = { reference: string; currency: string; providerAmountMinor: bigi
 
 export async function initializePaystack(secret: string, input: { reference: string; email: string; amountMinor: bigint; currency: string; callbackUrl: string; mode: "test" | "live" }) {
   if (!secret.startsWith(`sk_${input.mode}_`)) throw new Error("PAYSTACK_CREDENTIAL_MODE_MISMATCH");
+  assertPaystackCurrency(input.currency);
   if (!Number.isSafeInteger(Number(input.amountMinor)) || input.amountMinor <= 0n) throw new Error("PAYSTACK_AMOUNT_OUT_OF_RANGE");
   const response = await fetch("https://api.paystack.co/transaction/initialize", {
     method: "POST", headers: { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" },

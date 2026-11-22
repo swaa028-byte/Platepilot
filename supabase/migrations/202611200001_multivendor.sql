@@ -92,8 +92,16 @@ returns trigger language plpgsql security definer set search_path = public, pg_t
 declare
   v_bps integer := 0;
 begin
-  -- Cancelled orders earn nothing.
-  if new.fulfillment_status = 'cancelled' then
+  -- Cancelled orders earn nothing, and neither do orders whose money never
+  -- reached the platform account: the fee follows collected payment, so a cash
+  -- order at the counter carries no commission.
+  if new.fulfillment_status = 'cancelled'
+     or new.payment_status not in ('paid', 'partially_refunded', 'refunded') then
+    new.platform_fee_minor := 0;
+    return new;
+  end if;
+  -- A fully refunded order returns the money, so it returns the fee as well.
+  if new.payment_status = 'refunded' then
     new.platform_fee_minor := 0;
     return new;
   end if;
@@ -105,13 +113,17 @@ $$;
 
 drop trigger if exists orders_platform_fee on orders;
 create trigger orders_platform_fee
-  before insert or update of total_minor, fulfillment_status, organization_id on orders
+  before insert or update of total_minor, fulfillment_status, payment_status, organization_id on orders
   for each row execute function app_apply_platform_fee();
 
 -- Backfill existing rows at today's rate so the report has no holes.
 update orders o
-   set platform_fee_minor = case when o.fulfillment_status = 'cancelled' then 0
-                                else (o.total_minor * coalesce(org.commission_bps, 0)) / 10000 end
+   set platform_fee_minor = case
+         when o.fulfillment_status = 'cancelled' then 0
+         when o.payment_status in ('paid', 'partially_refunded')
+           then (o.total_minor * coalesce(org.commission_bps, 0)) / 10000
+         else 0
+       end
   from organizations org
  where org.id = o.organization_id
    and o.platform_fee_minor = 0
