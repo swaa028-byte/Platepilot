@@ -32,6 +32,14 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // The deployed Worker answers on *.workers.dev, which is an app
+          // address rather than a site to be found. This header keeps its
+          // pages (and the sitemap) out of search results. Set
+          // NOINDEX_WORKER=false to index it, for when the app gets a domain
+          // of its own that should be crawled.
+          ...(process.env.CLOUDFLARE_WORKERS === "true" && process.env.NOINDEX_WORKER !== "false"
+            ? [{ key: "X-Robots-Tag", value: "noindex, nofollow" }]
+            : []),
         ],
       },
     ];

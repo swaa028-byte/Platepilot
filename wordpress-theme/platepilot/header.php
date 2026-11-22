@@ -5,6 +5,15 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 $nav = platepilot_nav();
+// This site is the public one. An entry whose page has not been created yet is
+// left out rather than falling through to the ordering app on another host,
+// which would send a visitor to a different site with different words.
+foreach ( array( 'product', 'resources' ) as $group ) {
+	if ( ! isset( $nav[ $group ] ) || ! is_array( $nav[ $group ] ) ) continue;
+	$nav[ $group ] = array_values( array_filter( $nav[ $group ], function ( $item ) {
+		return platepilot_page_exists( $item[0] );
+	} ) );
+}
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 ?>
 <!DOCTYPE html>

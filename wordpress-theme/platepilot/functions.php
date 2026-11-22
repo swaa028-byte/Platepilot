@@ -126,6 +126,11 @@ function platepilot_value( $key ) {
  * the app when it is hosted, and the home page as a last resort. Keeps the
  * navigation honest instead of printing links that go nowhere.
  */
+/** Whether the page for a template exists. Creation is automatic, but a menu can never assume it ran. */
+function platepilot_page_exists( $slug ) {
+	return get_page_by_path( sanitize_title( $slug ) ) instanceof WP_Post;
+}
+
 function platepilot_link( $slug ) {
 	$page = get_page_by_path( sanitize_title( $slug ) );
 	if ( $page instanceof WP_Post ) {
@@ -253,11 +258,60 @@ function platepilot_ensure_pages() {
 }
 add_action( 'after_switch_theme', 'platepilot_ensure_pages' );
 
+/**
+ * Runs on every wp-admin page load until it has done its job once.
+ *
+ * Activation alone is not enough: a theme that is already active when it
+ * gains this code never fires after_switch_theme, and asking the owner to
+ * find a button is a step that gets missed. Logging in IS the trigger.
+ */
+function platepilot_maybe_create_pages() {
+	if ( ! current_user_can( 'manage_options' ) || get_option( 'platepilot_pages_ready' ) ) return;
+
+	if ( ! function_exists( 'got_url_rewrite' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/misc.php';
+	}
+
+	// Plain permalinks mean /pricing can only ever 404, no matter how many
+	// pages exist. Only touched when the site is still on the WordPress
+	// default and the server can actually rewrite.
+	$switched_permalinks = false;
+	if ( '' === (string) get_option( 'permalink_structure' ) && got_url_rewrite() ) {
+		update_option( 'permalink_structure', '/%postname%/' );
+		$switched_permalinks = true;
+	}
+
+	$created = platepilot_ensure_pages();
+	flush_rewrite_rules( false );
+	update_option( 'platepilot_pages_ready', 1 );
+
+	if ( $created || $switched_permalinks ) {
+		set_transient( 'platepilot_pages_notice', max( 1, $created ), 300 );
+	}
+}
+add_action( 'admin_init', 'platepilot_maybe_create_pages' );
+
+/** Tells the owner what happened, wherever they land in wp-admin. */
+function platepilot_pages_notice() {
+	$created = (int) get_transient( 'platepilot_pages_notice' );
+	if ( ! $created ) return;
+	delete_transient( 'platepilot_pages_notice' );
+	echo '<div class="notice notice-success is-dismissible"><p>';
+	printf(
+		esc_html( _n( 'PlatePilot created %d site page. The menus now work.', 'PlatePilot created %d site pages. The menus now work.', $created, 'platepilot' ) ),
+		$created
+	);
+	echo '</p></div>';
+}
+add_action( 'admin_notices', 'platepilot_pages_notice' );
+
 /** The "create the pages" button on the settings screen. */
 function platepilot_handle_create_pages() {
 	if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Forbidden' );
 	check_admin_referer( 'platepilot_create_pages' );
+	delete_option( 'platepilot_pages_ready' );
 	$created = platepilot_ensure_pages();
+	flush_rewrite_rules( false );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'platepilot', 'created' => $created ), admin_url( 'admin.php' ) ) );
 	exit;
 }
