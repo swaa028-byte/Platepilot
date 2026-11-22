@@ -21,7 +21,7 @@ payment. Both read the same database.
 
 ## 1. Before you deploy
 
-- The repository is on GitHub (`rea-cloudwaitress`, branch `feature/platepilot-core`).
+- The repository is on GitHub, branch `main` (everything is merged there).
 - Your Supabase project exists with the schema applied (`supabase/migrations/`,
   date order) and `kit/supabase-public-menu.sql` run once.
 - You have from **Supabase → Project Settings → API**: the Project URL, the
@@ -31,7 +31,7 @@ payment. Both read the same database.
 
 1. Open the Cloudflare dashboard → **Workers & Pages** → **Create** →
    **Workers** → **Import a repository** (connect GitHub the first time).
-2. Choose `rea-cloudwaitress`, branch `feature/platepilot-core`.
+2. Choose the `platepilot` repository, branch `main`.
 3. Build settings:
 
    | Field | Value |
