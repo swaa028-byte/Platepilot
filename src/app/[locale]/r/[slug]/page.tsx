@@ -5,7 +5,8 @@ import { getDbClient } from "@/server/db/client";
 import { getPublicMenuBySlug } from "@/server/storefront/menu";
 import { CampaignPopup, type Campaign } from "@/components/storefront/CampaignPopup";
 import { routing } from "@/i18n/routing";
-import { buildMenuJsonLd, buildRestaurantJsonLd, currencySymbol, exponent, openingHoursSpecification, appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
+import { appBaseUrl } from "@/domain/app-url";
+import { buildMenuJsonLd, buildRestaurantJsonLd, currencySymbol, exponent, ogAlternateLocales, ogLocale, openingHoursSpecification } from "@/domain/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
   const { locale, slug } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Storefront");
-  const origin = process.env.APP_URL || "http://localhost:3000";
+  const origin = appBaseUrl();
   const menu = await getPublicMenuBySlug(slug, locale);
   if (!menu) notFound();
 

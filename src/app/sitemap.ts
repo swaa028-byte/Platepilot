@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { listPublishedLocations } from "@/server/storefront/menu";
+import { appBaseUrl } from "@/domain/app-url";
 
 // The sitemap lists the restaurants that exist right now, so it is generated
 // per request rather than baked into the build.
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
  * onboarded restaurant with no published menu is not advertised.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const origin = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const origin = appBaseUrl();
   const locations = await listPublishedLocations();
   const entries: MetadataRoute.Sitemap = [];
 

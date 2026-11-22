@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { buildMenuJsonLd, currencySymbol, exponent, appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
+import { appBaseUrl } from "@/domain/app-url";
+import { buildMenuJsonLd, currencySymbol, exponent, ogAlternateLocales, ogLocale } from "@/domain/seo";
 import { getPublicMenuBySlug } from "@/server/storefront/menu";
 import { getDbClient } from "@/server/db/client";
 
@@ -48,7 +49,7 @@ export default async function MenuPage({
   const { locale, slug } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Storefront");
-  const origin = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const origin = appBaseUrl();
   const menu = await getPublicMenuBySlug(slug, locale);
   if (!menu) notFound();
 

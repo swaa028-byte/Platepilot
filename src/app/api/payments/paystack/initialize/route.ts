@@ -5,6 +5,7 @@ import { initializePaystack } from "@/server/payments/paystack";
 import { resolveProviderSecret } from "@/server/payments/secrets";
 import { checkRateLimit } from "@/server/security/rate-limit";
 import { apiError } from "@/server/security/http";
+import { appBaseUrl } from "@/domain/app-url";
 
 const input = z.object({ orderId: z.string().uuid(), trackingToken: z.string().min(32).max(128), email: z.string().email().max(320) });
 
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     if (attemptError || !attempt) throw new Error("PAYMENT_ATTEMPT_NOT_PERSISTED");
 
     try {
-      const appUrl = new URL(process.env.APP_URL || "http://localhost:3000");
+      const appUrl = new URL(appBaseUrl());
       if (appUrl.protocol !== "https:" && !["localhost", "127.0.0.1"].includes(appUrl.hostname)) throw new Error("INVALID_APP_URL");
       const checkout = await initializePaystack(resolveProviderSecret(connection.secret_ref), {
         reference, email: body.email, amountMinor: BigInt(order.total_minor), currency: order.currency,

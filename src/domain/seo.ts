@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { appBaseUrl } from "./app-url";
+
 /**
  * Structured data for search engines and AI systems.
  *
@@ -240,10 +242,8 @@ export function ogAlternateLocales(locale: string): string[] {
   return Object.keys(ogLocales).filter((item) => item !== locale).map((item) => ogLocales[item]);
 }
 
-/** Absolute URL for a locale-scoped path, safe against a trailing slash in APP_URL. */
-export function appBaseUrl(): string {
-  return (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
-}
+/** Absolute URL for a locale-scoped path; see src/domain/app-url.ts. */
+export { appBaseUrl };
 
 /**
  * Standard page metadata for a locale-scoped marketing page: canonical URL,

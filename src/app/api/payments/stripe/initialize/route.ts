@@ -5,6 +5,7 @@ import { createStripeCheckoutSession, stripeClient } from "@/server/payments/str
 import { resolveProviderSecret } from "@/server/payments/secrets";
 import { checkRateLimit } from "@/server/security/rate-limit";
 import { apiError } from "@/server/security/http";
+import { appBaseUrl } from "@/domain/app-url";
 
 const input = z.object({ orderId: z.string().uuid(), trackingToken: z.string().min(32).max(128), locale: z.enum(["en", "fr", "es", "pt", "ar"]).default("en") });
 
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     if (attemptError || !attempt) throw new Error("PAYMENT_ATTEMPT_NOT_PERSISTED");
 
     try {
-      const appUrl = new URL(process.env.APP_URL || "http://localhost:3000");
+      const appUrl = new URL(appBaseUrl());
       if (appUrl.protocol !== "https:" && !["localhost", "127.0.0.1"].includes(appUrl.hostname)) throw new Error("INVALID_APP_URL");
       const stripe = stripeClient(resolveProviderSecret(connection.secret_ref));
       const checkout = await createStripeCheckoutSession(stripe, {

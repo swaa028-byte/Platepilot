@@ -5,9 +5,10 @@ import { staffError } from "@/server/staff/errors";
 import { apiError } from "@/server/security/http";
 import { checkRateLimit } from "@/server/security/rate-limit";
 import { checkDomainPointsAtUs } from "@/server/domains/verify";
+import { appBaseUrl } from "@/domain/app-url";
 
 function targetHost(): string {
-  return new URL(process.env.APP_URL || "http://localhost:3000").hostname;
+  return new URL(appBaseUrl()).hostname;
 }
 
 /**

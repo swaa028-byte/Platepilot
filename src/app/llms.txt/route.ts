@@ -1,4 +1,5 @@
 import { getDbClient } from "@/server/db/client";
+import { appBaseUrl } from "@/domain/app-url";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   // Same origin rule as every other SEO surface: APP_URL when pinned (behind a
   // tunnel or proxy the internal request host is not the public address).
-  const origin = (process.env.APP_URL || new URL(request.url).origin).replace(/\/$/, "");
+  const origin = (process.env.APP_URL ? appBaseUrl() : new URL(request.url).origin).replace(/\/$/, "");
   const lines = [
     "# PlatePilot",
     "",

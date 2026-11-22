@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import QRCode from "qrcode";
 import { requireUser } from "@/server/auth/server";
 import { PrintButton } from "@/components/staff/PrintButton";
+import { appBaseUrl } from "@/domain/app-url";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +57,7 @@ export default async function QrCodesPage({
     slug = (locationResult.data as { slug: string | null } | null)?.slug ?? null;
   }
 
-  const origin = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const origin = appBaseUrl();
   const codes = slug
     ? await Promise.all(
         tables.map(async (table) => ({

@@ -1,6 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
+import { appBaseUrl } from "@/domain/app-url";
 
 const intl = createMiddleware(routing);
 
@@ -58,7 +59,7 @@ function geoLocaleRedirect(request: NextRequest): NextResponse | null {
  * localhost in development, so local dev is unaffected by construction.
  */
 export default function proxy(request: NextRequest) {
-  const canonical = process.env.APP_URL ? new URL(process.env.APP_URL).host : null;
+  const canonical = process.env.APP_URL ? new URL(appBaseUrl()).host : null;
   const host = request.headers.get("host");
   const proto = request.headers.get("x-forwarded-proto") ?? "https";
   if (canonical && host && host !== canonical && proto === "https") {

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { appBaseUrl } from "@/domain/app-url";
 
 /**
  * Robots policy.
@@ -8,7 +9,7 @@ import type { MetadataRoute } from "next";
  * not.
  */
 export default function robots(): MetadataRoute.Robots {
-  const origin = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const origin = appBaseUrl();
   return {
     rules: [
       {
