@@ -62,6 +62,23 @@ export default function proxy(request: NextRequest) {
   const canonical = process.env.APP_URL ? new URL(appBaseUrl()).host : null;
   const host = request.headers.get("host");
   const proto = request.headers.get("x-forwarded-proto") ?? "https";
+  // One public website, one set of words. The WordPress site owns the
+  // marketing pages; this app owns ordering, staff and the storefront. When the
+  // Worker is reached on its *.workers.dev address, hand the marketing routes
+  // over instead of rendering a second, differently-worded copy of them - that
+  // duplication is what makes two sites disagree. PUBLIC_SITE_URL empty (local,
+  // tests) leaves everything as it was.
+  const publicSite = (process.env.PUBLIC_SITE_URL ?? "").trim().replace(/\/+$/, "");
+  if (publicSite && host && host.endsWith(".workers.dev")) {
+    const marketing = request.nextUrl.pathname.match(
+      /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(about|features|how-it-works|integrations|pricing|white-label|status)?\/?$/,
+    );
+    if (marketing) {
+      const slug = marketing[1] ?? "";
+      return NextResponse.redirect(new URL(slug ? `/${slug}` : "/", publicSite), 301);
+    }
+  }
+
   if (canonical && host && host !== canonical && proto === "https") {
     return NextResponse.redirect(new URL(request.nextUrl.pathname + request.nextUrl.search, `https://${canonical}`));
   }

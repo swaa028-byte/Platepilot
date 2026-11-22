@@ -65,6 +65,7 @@ platepilot_render_info_page( 'pricing', $setup_url );
 <section class="info-section">
 	<div class="shell">
 		<h2><?php echo esc_html( $c['compareTitle'] ); ?></h2>
+		<div class="compare-scroll">
 		<table class="compare-table">
 			<thead><tr><th scope="col" aria-label="&nbsp;"></th><th scope="col"><?php echo esc_html( $c['compareHosted'] ); ?></th><th scope="col"><?php echo esc_html( $c['comparePlatepilot'] ); ?></th></tr></thead>
 			<tbody>
@@ -73,6 +74,7 @@ platepilot_render_info_page( 'pricing', $setup_url );
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+		</div>
 		<p class="compare-note"><?php echo esc_html( $c['compareNote'] ); ?></p>
 	</div>
 </section>

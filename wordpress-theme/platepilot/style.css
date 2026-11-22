@@ -9,23 +9,23 @@ Text Domain: platepilot
 
 
 :root {
-  --ink: #1d2a25;
-  --muted: #66716b;
-  --green: #173f35;
-  --green-deep: #102f28;
-  --green-soft: #dce9df;
-  --cream: #f5f1e8;
-  --paper: #fffdf8;
+  --ink: #0b1f1a;
+  --muted: #5b6b63;
+  --green: #0b1f1a;
+  --green-deep: #07130f;
+  --green-soft: #e8f2ec;
+  --cream: #f5f8f6;
+  --paper: #ffffff;
   --white: #ffffff;
   --orange: #cf6f3c;
   --orange-soft: #f4dfcf;
   --gold: #e8b567;
   /* CloudWaitress-style vivid accent, in green (their red equivalent). */
-  --accent: #16a34a;
-  --accent-deep: #0e7c39;
-  --accent-bright: #5fd68f;
-  --accent-soft: #e0f4e7;
-  --line: #dcded6;
+  --accent: #0e8f5a;
+  --accent-deep: #0a6b44;
+  --accent-bright: #4ecf92;
+  --accent-soft: #eaf7f0;
+  --line: #e4e9e6;
   --red: #a4493f;
   --blue: #426e91;
   --purple: #796185;
@@ -36,7 +36,7 @@ Text Domain: platepilot
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 90px; }
-body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 button, select { cursor: pointer; }
@@ -970,3 +970,159 @@ body { font-size: 16.5px; }
 .cw-faq-item p { font-size: 16px; }
 .compare-table td, .compare-table th { font-size: 15px; }
 .site-footer a, .footer-col h4 { font-size: 15px; }
+
+/* ------------------------------------------------------------------ */
+/* Design layer                                                        */
+/* White surfaces, one green, and the spacing rhythm of a product site. */
+/* Appended last on purpose: it refines what the sections above set     */
+/* rather than replacing them, so every template keeps working.        */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --container: 1240px;
+  --gutter: 24px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --ring: 0 0 0 1px var(--line);
+  --lift: 0 18px 40px -24px rgba(11, 31, 26, 0.28);
+}
+
+img { max-width: 100%; height: auto; }
+
+.shell {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  box-sizing: border-box;
+}
+
+/* Headings: large, tight, dark. Body: comfortable, never smaller than 16px. */
+h1, h2, h3, h4 { color: var(--ink); letter-spacing: -0.022em; }
+h1 { font-size: clamp(2.4rem, 5.4vw, 4rem); line-height: 1.04; font-weight: 750; margin: 0 0 20px; }
+h2 { font-size: clamp(1.75rem, 3.4vw, 2.7rem); line-height: 1.1; font-weight: 720; margin: 0 0 14px; }
+h3 { font-size: clamp(1.15rem, 1.6vw, 1.4rem); line-height: 1.25; font-weight: 680; margin: 0 0 10px; }
+p { margin: 0 0 16px; }
+
+.cw-lede, .info-lede, .hero-lede, section > p {
+  font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.eyebrow, .eyebrow--light {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin-bottom: 18px;
+}
+
+/* Sections breathe; alternating bands stay white with a hairline. */
+section, .cw-section, .info-section, .pricing-section, .faq-section {
+  padding-block: clamp(56px, 7vw, 104px);
+}
+section + section { border-top: 1px solid var(--line); }
+
+/* Buttons: pill, confident, one green. */
+.button, .btn, button.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+.button:hover, .btn:hover, button.button:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: var(--lift); }
+.button--ghost, .button--light, .button--outline {
+  background: #fff;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.button--ghost:hover, .button--light:hover, .button--outline:hover { background: var(--cream); color: var(--ink); border-color: var(--accent); }
+
+/* Cards: quiet border, real radius, lift on hover. */
+.cw-mode-card, .info-card, .cw-step, .faq-item, .plan-card, .step-row, .flow-row, .int-group {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.cw-mode-card:hover, .info-card:hover, .cw-step:hover, .plan-card:hover, .int-group:hover {
+  transform: translateY(-3px);
+  border-color: #cfe3d8;
+  box-shadow: var(--lift);
+}
+
+/* Pricing: the chosen plan is marked by the green border, not a heavier frame. */
+.plan-card[data-featured="true"], .plan-card.is-featured, .plan-card--featured {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), var(--lift);
+}
+.plan-badge {
+  /* Inside the card, in the flow: a badge that straddles the border reads as
+     a collision at every width. */
+  position: static;
+  align-self: flex-start;
+  margin-bottom: 4px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Header: white, hairline, sticky, and compact on small screens. */
+.site-header { background: rgba(255, 255, 255, 0.92); backdrop-filter: saturate(180%) blur(10px); border-bottom: 1px solid var(--line); }
+.main-nav a, .nav-drop a { color: var(--ink); }
+.nav-drop { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--lift); }
+.nav-drop a:hover, .main-nav a:hover { color: var(--accent-deep); background: var(--accent-soft); }
+
+/* Grids collapse the way a modern site does: 3 -> 2 -> 1. */
+@media (max-width: 991px) {
+  h1 { font-size: clamp(2.1rem, 7vw, 3rem); }
+  .cw-mode-grid, .info-grid, .plan-grid, .step-grid, .int-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  :root { --gutter: 20px; }
+  .cw-mode-grid, .info-grid, .plan-grid, .step-grid, .int-grid { grid-template-columns: 1fr; }
+  section, .cw-section, .info-section { padding-block: 56px; }
+  .button, .btn { width: 100%; }
+}
+@media (max-width: 479px) {
+  h1 { font-size: 2rem; line-height: 1.08; }
+  .eyebrow { font-size: 0.72rem; }
+}
+
+/* Respect the system preference: no movement anywhere. */
+@media (prefers-reduced-motion: reduce) {
+  .cw-mode-card, .info-card, .cw-step, .plan-card, .int-group, .button, .btn { transition: none; }
+  .cw-mode-card:hover, .info-card:hover, .cw-step:hover, .plan-card:hover, .int-group:hover, .button:hover { transform: none; }
+}
+
+/* Equal plan cards: the button always sits on the same line. */
+.plan-card > *:last-child, .plan-card form { margin-top: auto; }
+
+/* Wide tables scroll inside their own box instead of pushing the page. */
+.compare-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-md); }
+.compare-table { min-width: 520px; }

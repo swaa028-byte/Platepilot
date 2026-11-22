@@ -19,6 +19,13 @@ payment. Both read the same database.
 
 ---
 
+## Two variables that decide what the Worker is
+
+| Variable | Value | Effect |
+|---|---|---|
+| `PUBLIC_SITE_URL` | `https://platepilot.ct.ws` | Marketing routes on `*.workers.dev` (`/`, `/en/pricing`, `/en/about`, …) answer with a 301 to the WordPress page instead of rendering a second copy. Ordering, staff and storefront routes are untouched. |
+| `NOINDEX_WORKER` | `false` (optional) | The deployed Worker sends `X-Robots-Tag: noindex, nofollow` and a `Disallow: /` robots.txt by default, because it is an application rather than a website. Set this to `false` only when the app has its own domain that should be crawled. |
+
 ## 1. Before you deploy
 
 - The repository is on GitHub, branch `main` (everything is merged there).
