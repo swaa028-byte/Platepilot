@@ -26,3 +26,7 @@ allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
   esbuild: true
+  # wrangler depends on workerd, whose install script fetches the platform
+  # binary. Unapproved, pnpm fails the whole install with
+  # ERR_PNPM_IGNORED_BUILDS, which is what the first Cloudflare build died on.
+  workerd: true
