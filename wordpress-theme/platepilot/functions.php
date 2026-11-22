@@ -211,6 +211,58 @@ function platepilot_money( $amount_minor, $currency ) {
 	return trim( $amount . ' ' . (string) $currency );
 }
 
+
+/* ------------------------------------------------------------------ */
+/* Site pages                                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The pages the navigation points at, and the template each one carries.
+ * Slugs match the routes the copy was written for.
+ */
+function platepilot_page_map() {
+	return array(
+		'pricing'      => array( 'Pricing', 'template-pricing.php' ),
+		'features'     => array( 'Features', 'template-features.php' ),
+		'how-it-works' => array( 'How it works', 'template-how-it-works.php' ),
+		'integrations' => array( 'Integrations', 'template-integrations.php' ),
+		'white-label'  => array( 'White label', 'template-white-label.php' ),
+		'about'        => array( 'About', 'template-about.php' ),
+		'status'       => array( 'Connection status', 'template-status.php' ),
+	);
+}
+
+/**
+ * Creates any missing page with its template. Idempotent: an existing page
+ * with the same slug is left exactly as the site owner left it.
+ */
+function platepilot_ensure_pages() {
+	$created = 0;
+	foreach ( platepilot_page_map() as $slug => $page ) {
+		if ( get_page_by_path( $slug ) instanceof WP_Post ) continue;
+		$page_id = wp_insert_post( array(
+			'post_type'     => 'page',
+			'post_status'   => 'publish',
+			'post_title'    => $page[0],
+			'post_name'     => $slug,
+			'page_template' => $page[1],
+		) );
+		if ( $page_id && ! is_wp_error( $page_id ) ) $created++;
+	}
+	return $created;
+}
+add_action( 'after_switch_theme', 'platepilot_ensure_pages' );
+
+/** The "create the pages" button on the settings screen. */
+function platepilot_handle_create_pages() {
+	if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Forbidden' );
+	check_admin_referer( 'platepilot_create_pages' );
+	$created = platepilot_ensure_pages();
+	wp_safe_redirect( add_query_arg( array( 'page' => 'platepilot', 'created' => $created ), admin_url( 'admin.php' ) ) );
+	exit;
+}
+add_action( 'admin_post_platepilot_create_pages', 'platepilot_handle_create_pages' );
+
 /* ------------------------------------------------------------------ */
 /* Settings screen                                                     */
 /* ------------------------------------------------------------------ */
@@ -238,6 +290,21 @@ function platepilot_render_settings() {
 		<?php else : ?>
 			<div class="notice notice-success"><p><?php echo esc_html( (string) $probe ); ?></p></div>
 		<?php endif; ?>
+		<?php if ( isset( $_GET['created'] ) ) : ?>
+			<div class="notice notice-success is-dismissible"><p>
+				<?php echo esc_html( sprintf( '%d page(s) created. Visit the site and the menus work.', (int) $_GET['created'] ) ); ?>
+			</p></div>
+		<?php endif; ?>
+		<h2>Site pages</h2>
+		<p>
+			<?php esc_html_e( 'Creates any missing page with its template: Pricing, Features, How it works, Integrations, White label, About and a private Connection status page.', 'platepilot' ); ?>
+		</p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-bottom:28px">
+			<input type="hidden" name="action" value="platepilot_create_pages" />
+			<?php wp_nonce_field( 'platepilot_create_pages' ); ?>
+			<?php submit_button( 'Create the missing pages', 'secondary', 'submit', false ); ?>
+		</form>
+		<h2>Credentials</h2>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'platepilot' ); ?>
 			<table class="form-table" role="presentation">
