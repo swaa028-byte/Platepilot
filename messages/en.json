@@ -16,7 +16,8 @@
     "reports": "Reports",
     "settings": "Settings",
     "tableCodes": "Table codes",
-    "findUs": "Find a restaurant"
+    "findUs": "Find a restaurant",
+    "resources": "Resources"
   },
   "Footer": {
     "tagline": "Your restaurant, from first order to close.",

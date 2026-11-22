@@ -16,7 +16,8 @@
     "reports": "Informes",
     "settings": "Ajustes",
     "tableCodes": "Códigos de mesa",
-    "findUs": "Encontrar un restaurante"
+    "findUs": "Encontrar un restaurante",
+    "resources": "Recursos"
   },
   "Footer": {
     "tagline": "Tu restaurante, del primer pedido al cierre.",
