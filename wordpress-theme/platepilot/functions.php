@@ -234,6 +234,14 @@ function platepilot_page_map() {
 		'white-label'  => array( 'White label', 'template-white-label.php' ),
 		'about'        => array( 'About', 'template-about.php' ),
 		'status'       => array( 'Connection status', 'template-status.php' ),
+		// The app-feature pages: one template, one content shape, seven pages.
+		'operations'   => array( 'Operations dashboard', 'template-detail.php' ),
+		'kitchen'      => array( 'Kitchen display', 'template-detail.php' ),
+		'qr-codes'     => array( 'Table QR codes', 'template-detail.php' ),
+		'floor-planner' => array( 'Live floor planner', 'template-detail.php' ),
+		'security'     => array( 'Security and payments', 'template-detail.php' ),
+		'locations'    => array( 'Restaurant pages', 'template-detail.php' ),
+		'reports'      => array( 'Reports', 'template-detail.php' ),
 	);
 }
 
@@ -266,7 +274,11 @@ add_action( 'after_switch_theme', 'platepilot_ensure_pages' );
  * find a button is a step that gets missed. Logging in IS the trigger.
  */
 function platepilot_maybe_create_pages() {
-	if ( ! current_user_can( 'manage_options' ) || get_option( 'platepilot_pages_ready' ) ) return;
+	// The stored value is a signature of the page list, not a "done" flag: when
+	// a later version of the theme adds pages, the signature changes and the
+	// missing ones are created on the next wp-admin load.
+	$signature = md5( implode( ',', array_keys( platepilot_page_map() ) ) );
+	if ( ! current_user_can( 'manage_options' ) || get_option( 'platepilot_pages_ready' ) === $signature ) return;
 
 	if ( ! function_exists( 'got_url_rewrite' ) ) {
 		require_once ABSPATH . 'wp-admin/includes/misc.php';
@@ -283,7 +295,7 @@ function platepilot_maybe_create_pages() {
 
 	$created = platepilot_ensure_pages();
 	flush_rewrite_rules( false );
-	update_option( 'platepilot_pages_ready', 1 );
+	update_option( 'platepilot_pages_ready', $signature );
 
 	if ( $created || $switched_permalinks ) {
 		set_transient( 'platepilot_pages_notice', max( 1, $created ), 300 );

@@ -304,6 +304,118 @@ function platepilot_content() {
 		),
 	);
 
+/* ------------------------------------------------------------------ */
+/* App feature pages                                                   */
+/* One content shape, rendered by template-detail.php. Every sentence  */
+/* describes something the shipped software does.                      */
+/* ------------------------------------------------------------------ */
+$content['operations'] = array(
+	'eyebrow'  => 'OPERATIONS',
+	'title'    => 'Every order on one board.',
+	'lede'     => 'New, preparing, ready, served. Staff see the same board from any screen, and nothing is typed twice.',
+	'sections' => array(
+		array( 'The board', 'Orders arrive by themselves, from the storefront, a table code or the counter. Moving an order is one tap, and the guest is told at each step.', array( 'Colour and time on every ticket', 'Filter by service: pickup, delivery, dine-in', 'A sound when a new order lands' ) ),
+		array( 'Who did what', 'Every change records the person and the time. When money goes missing it is a list, not an argument.', array( 'Staff accounts with roles', 'Void, refund and discount reasons', 'Day-end and anti-theft reports' ) ),
+	),
+	'cards'    => array(
+		array( 'One board, every screen', 'The kitchen, the counter and the phone show the same state. Nothing waits to be synced by hand.' ),
+		array( 'Opening hours that hold', 'Orders outside your hours are refused by the server, not by a note on the door.' ),
+		array( 'Built for a busy night', 'The order is priced and stored before the guest sees a payment screen, so a crash never loses a ticket.' ),
+	),
+);
+
+$content['kitchen'] = array(
+	'eyebrow'  => 'KITCHEN DISPLAY',
+	'title'    => 'The ticket the kitchen asked for.',
+	'lede'     => 'Large type, one screen, and the station it belongs to. No printer, no paper, no shouting.',
+	'sections' => array(
+		array( 'Routed to the right station', 'Each item carries the station that makes it, so the grill sees the grill.', array( 'Per-station views', 'Modifiers shown with the item, always', 'Allergens called out' ) ),
+		array( 'Time you can see', 'Every ticket carries its age. Old tickets rise to the top before a guest has to ask.', array( 'Age on every ticket', 'Bump a ticket when it leaves', 'Ready orders move to the counter by themselves' ) ),
+	),
+	'cards'    => array(
+		array( 'Runs on what you have', 'A tablet on the wall or the screen behind the pass. No driver to install.' ),
+		array( 'Readable across a kitchen', 'Type sized to be read at arm’s length, in gloves.' ),
+		array( 'Stays honest', 'A ticket cannot be marked ready from a device that is not signed in.' ),
+	),
+);
+
+$content['qr-codes'] = array(
+	'eyebrow'  => 'TABLE QR CODES',
+	'title'    => 'The table knows itself.',
+	'lede'     => 'One code per table. The guest scans, the menu opens, and the order arrives with the table already on it.',
+	'sections' => array(
+		array( 'Print the sheet', 'Choose your tables, print the sheet, put the codes down. The code carries the table for good.', array( 'One printable sheet per location', 'Table name on every order', 'Dine-in orders priced by the server' ) ),
+		array( 'In the guest’s language', 'The menu opens in the language the guest reads, and prices in your currency.', array( 'Five languages', 'Right-to-left Arabic', 'Prices in the currency you set' ) ),
+	),
+	'cards'    => array(
+		array( 'No app to install', 'The code opens the browser. Nothing is downloaded to order a coffee.' ),
+		array( 'No table swapping', 'Staff move a table in one tap, and the ticket follows the guest.' ),
+		array( 'Anti-theft by design', 'Every table order is recorded against a table and a server.' ),
+	),
+);
+
+$content['floor-planner'] = array(
+	'eyebrow'  => 'FLOOR PLANNER',
+	'title'    => 'The room, as it is tonight.',
+	'lede'     => 'Tables, seats and areas laid out once, then used by the table codes, the reservations and the anti-theft report.',
+	'sections' => array(
+		array( 'Lay it out once', 'Place tables and keep the arrangement. It is the same room every service, not a new drawing.', array( 'Areas and table numbers', 'Seat counts per table', 'Saved per location' ) ),
+		array( 'One source of truth', 'The floor plan is what the table codes and the reservations read from.', array( 'Table codes generated from the plan', 'Reservations checked against real tables', 'Moves recorded against a server' ) ),
+	),
+	'cards'    => array(
+		array( 'Change it in a minute', 'A table added for a party is placed once and works immediately.' ),
+		array( 'For staff, not for show', 'Built for speed during service, on a phone behind the bar.' ),
+		array( 'Nothing to install', 'Opens in the browser that is already on the counter.' ),
+	),
+);
+
+$content['security'] = array(
+	'eyebrow'  => 'SECURITY AND PAYMENTS',
+	'title'    => 'The price comes from your server.',
+	'lede'     => 'A browser can ask for an order. It cannot decide what the order costs.',
+	'sections' => array(
+		array( 'Pricing is never trusted from the browser', 'Every total is calculated again on the server from your published prices. A tampered request is refused, not discounted.', array( 'Server-side price calculation', 'Stripe, Paystack or PayPal, confirmed by webhook', 'Refunds recorded against the order' ) ),
+		array( 'Keys stay on the server', 'Payment keys are held server-side and referenced, never printed into a page.', array( 'Keys never reach the browser', 'Webhooks verified before an order is marked paid', 'Card data never touches PlatePilot' ) ),
+		array( 'Every restaurant is walled off', 'Each restaurant reads only its own rows. The database enforces it, not the screens.', array( 'Row-level access rules per restaurant', 'Platform reports kept separate from vendor data', 'Staff actions recorded with a name and a time' ) ),
+	),
+	'cards'    => array(
+		array( 'Card data stays with the provider', 'Stripe and Paystack handle the card. We receive a result, not a card number.' ),
+		array( 'Payments you can switch', 'Stripe, Paystack and PayPal are wired the same way, so changing provider is not a rewrite.' ),
+		array( 'Data you can leave with', 'Your orders, menu and customers export as CSV and as tax figures.' ),
+	),
+);
+
+$content['locations'] = array(
+	'eyebrow'  => 'RESTAURANT PAGES',
+	'title'    => 'Every restaurant, its own address.',
+	'lede'     => 'One platform, many restaurants. Each one has its own page, its own prices and its own name on the door.',
+	'sections' => array(
+		array( 'What a guest sees', 'A menu with photos, allergens and prices, opening hours, and the ways to order.', array( 'Its own page on your domain', 'Menu in five languages', 'Pickup, delivery and dine-in' ) ),
+		array( 'How guests arrive', 'A link you share, a code on the table, or a search for the restaurant name.', array( 'A short link per restaurant', 'Table codes that open the menu', 'Search-friendly menu pages' ) ),
+	),
+	'cards'    => array(
+		array( 'Reads like the restaurant', 'Its name, its colours, its food. Not a marketplace with somebody else’s logo on top.' ),
+		array( 'One database, separate books', 'Restaurant A can never read restaurant B’s orders, by construction.' ),
+		array( 'Open your own shop', 'Any restaurant can publish a page and start taking orders the same day.' ),
+	),
+);
+
+$content['reports'] = array(
+	'eyebrow'  => 'REPORTS',
+	'title'    => 'The numbers after service.',
+	'lede'     => 'Takings by service, what was refunded, what was voided and who did it. Ready before the till is counted.',
+	'sections' => array(
+		array( 'Day end', 'One page per day: gross, refunds, tips, tax and what is left.', array( 'Takings by service', 'Refunds and voids listed with reasons', 'Tax figures ready to export' ) ),
+		array( 'Anti-theft', 'Orders that were voided, discounted or refunded, with the person and the time.', array( 'Voids and discounts by staff member', 'Orders closed without payment', 'A weekly summary by email' ) ),
+		array( 'Marketplace settlement', 'If you run a multi-restaurant platform, the platform sees gross and commission per restaurant, per currency.', array( 'Commission per restaurant', 'Fees recorded only on money actually collected', 'Per-currency totals' ) ),
+	),
+	'cards'    => array(
+		array( 'Numbers you can defend', 'Every figure traces back to an order a guest placed.' ),
+		array( 'Cash and card together', 'A cash order that was never paid carries no commission.' ),
+		array( 'Export without a spreadsheet', 'CSV for accounting, and a tax summary per period.' ),
+	),
+);
+
 	return $content;
 }
 
@@ -327,7 +439,7 @@ function platepilot_nav() {
 		'resources' => array(
 			array( 'about', 'About PlatePilot' ),
 			array( 'security', 'Security and payments' ),
-			array( 'locations', 'Find a restaurant' ),
+			array( 'locations', 'Restaurant pages' ),
 			array( 'reports', 'Reports' ),
 		),
 	);
