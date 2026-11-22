@@ -54,8 +54,10 @@ $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 				<?php if ( $app_url ) : ?>
 					<a class="text-link sign-in-link" href="<?php echo esc_url( $app_url . '/en/login' ); ?>"><?php esc_html_e( 'Sign in', 'platepilot' ); ?></a>
 					<a class="button button--small" href="<?php echo esc_url( $app_url . '/en/onboarding' ); ?>"><?php esc_html_e( 'Start setup', 'platepilot' ); ?><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
-				<?php else : ?>
+				<?php elseif ( current_user_can( 'manage_options' ) ) : ?>
 					<a class="button button--small" href="<?php echo esc_url( admin_url( 'admin.php?page=platepilot' ) ); ?>"><?php esc_html_e( 'Connect', 'platepilot' ); ?></a>
+				<?php else : ?>
+					<a class="text-link" href="<?php echo esc_url( platepilot_link( 'pricing' ) ); ?>"><?php esc_html_e( 'See pricing', 'platepilot' ); ?></a>
 				<?php endif; ?>
 			</div>
 		</div>

@@ -46,13 +46,20 @@ function platepilot_setup() {
 add_action( 'after_setup_theme', 'platepilot_setup' );
 
 function platepilot_assets() {
-	wp_enqueue_style( 'platepilot', get_stylesheet_uri(), array(), '1.0.0' );
+	// Version every asset by its own modification time. A fixed version string
+	// means a browser keeps the previous stylesheet after a theme update and
+	// the site looks broken to the one person who has visited before.
+	$style_path = get_theme_file_path( '/style.css' );
+	$script_path = get_theme_file_path( '/inc/main.js' );
+	$style_version = is_readable( $style_path ) ? (string) filemtime( $style_path ) : '1.0.0';
+	$script_version = is_readable( $script_path ) ? (string) filemtime( $script_path ) : '1.0.0';
+	wp_enqueue_style( 'platepilot', get_stylesheet_uri(), array(), $style_version );
 	// Motion layer: GSAP for scroll reveals, three.js for the hero room.
 	// Both come from a CDN so the theme stays dependency-free on disk.
 	wp_enqueue_script( 'gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', array(), '3.12.5', true );
 	wp_enqueue_script( 'gsap-scrolltrigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', array( 'gsap' ), '3.12.5', true );
 	wp_enqueue_script( 'three', 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js', array(), '0.160.0', true );
-	wp_enqueue_script( 'platepilot-main', get_theme_file_uri( '/inc/main.js' ), array( 'gsap', 'gsap-scrolltrigger', 'three' ), '1.0.0', true );
+	wp_enqueue_script( 'platepilot-main', get_theme_file_uri( '/inc/main.js' ), array( 'gsap', 'gsap-scrolltrigger', 'three' ), $script_version, true );
 }
 add_action( 'wp_enqueue_scripts', 'platepilot_assets' );
 

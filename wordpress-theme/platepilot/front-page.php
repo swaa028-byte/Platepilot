@@ -48,6 +48,24 @@ $setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page
 	</div>
 </section>
 
+<section class="section cw-modes">
+	<div class="shell">
+		<div class="cw-center-head">
+			<h2><?php echo esc_html( $c['vendorTitle'] ); ?></h2>
+			<p><?php echo esc_html( $c['vendorBody'] ); ?></p>
+		</div>
+		<div class="cw-mode-grid">
+			<?php foreach ( $c['vendorPoints'] as $point ) : ?>
+				<article class="cw-mode-card">
+					<span class="cw-mode-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg></span>
+					<h3><?php echo esc_html( $point[0] ); ?></h3>
+					<p><?php echo esc_html( $point[1] ); ?></p>
+				</article>
+			<?php endforeach; ?>
+		</div>
+	</div>
+</section>
+
 <section class="section cw-steps">
 	<div class="shell">
 		<div class="cw-center-head"><h2><?php esc_html_e( 'Less switching. More serving.', 'platepilot' ); ?></h2></div>

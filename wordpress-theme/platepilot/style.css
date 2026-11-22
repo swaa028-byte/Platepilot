@@ -729,7 +729,7 @@ p { text-wrap: pretty; }
 .cw-hero .button-row { justify-content: center; }
 .cw-hero-note { display: flex; align-items: center; gap: 8px; margin-block: 20px 0; color: #9db3a4; font-size: 12px; }
 .cw-hero-note svg { color: var(--accent-bright); }
-.cw-hero-rotate { display: flex; align-items: center; justify-content: center; gap: 9px; margin-block: 6px 24px; color: #b8cac0; font-size: 15px; font-weight: 700; }
+.cw-hero-rotate { display: flex; align-items: center; justify-content: center; gap: 9px; margin-block: 14px 30px; color: #b8cac0; font-size: 15px; font-weight: 700; }
 .cw-hero-rotate-lead { color: #7fa393; font-weight: 600; }
 .cw-rotate { position: relative; display: inline-flex; min-width: 11ch; justify-content: flex-start; color: var(--accent-bright); }
 [dir="rtl"] .cw-rotate { justify-content: flex-end; }
@@ -946,3 +946,27 @@ p { text-wrap: pretty; }
 .price-note, .compare-note { margin-top: 18px; font-size: 12.5px; line-height: 1.6; color: #6b7a72; }
 @media (max-width: 1080px) { .plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 620px) { .plan-grid { grid-template-columns: 1fr; } }
+
+/* Menus also open on hover and keyboard focus, so the navigation works even
+   when scripts are blocked or a CDN is unreachable. */
+.nav-group:hover .nav-drop,
+.nav-group:focus-within .nav-drop { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* Larger, easier reading: the copy is short, so it can be big. */
+body { font-size: 16.5px; }
+.cw-lede { font-size: 20px; line-height: 1.7; }
+.cw-hero-rotate { font-size: 18px; }
+.cw-mode-card p { font-size: 15.5px; }
+.cw-mode-card h3 { font-size: 19px; }
+.step-row p { font-size: 16px; }
+.cw-tab-panel p, .cw-tab-intro { font-size: 16px; }
+.info-lede { font-size: 19px; }
+.info-card p { font-size: 15.5px; }
+.info-card h3 { font-size: 18px; }
+.plan-pitch { font-size: 15.5px; }
+.plan-list { font-size: 15px; }
+.plan-name { font-size: 18px; }
+.cw-faq-item summary { font-size: 16.5px; }
+.cw-faq-item p { font-size: 16px; }
+.compare-table td, .compare-table th { font-size: 15px; }
+.site-footer a, .footer-col h4 { font-size: 15px; }
