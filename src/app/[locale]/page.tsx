@@ -17,6 +17,8 @@ import { routing } from "@/i18n/routing";
 import { appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
 import FeatureTabs from "@/components/home/FeatureTabs";
 import { RotatingWord, RotatingWordLabel } from "@/components/home/RotatingWord";
+import { ScrollMotion } from "@/components/home/ScrollMotion";
+import HeroScene from "@/components/home/HeroScene";
 
 const modeIcons = [ShoppingBag, UtensilsCrossed, Bike, CalendarCheck];
 
@@ -78,7 +80,9 @@ export default async function HomePage({
     <>
       {/* Hero: a CloudWaitress-style statement band, in green. */}
       <section className="cw-hero">
+        <HeroScene />
         <div className="cw-hero-glow" aria-hidden="true" />
+        <ScrollMotion />
         <div className="shell cw-hero-inner">
           <p className="eyebrow eyebrow--light eyebrow--center"><span />{t("eyebrow")}</p>
           <h1>{t("title")}<em>{t("titleAccent")}</em></h1>
