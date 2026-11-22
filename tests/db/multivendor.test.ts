@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 /**
  * The marketplace layer: many vendors on one platform.
@@ -11,8 +11,19 @@ import { describe, expect, it } from "vitest";
  *   - a vendor cannot change its own commission rate
  *   - the cross-vendor revenue report is closed to everyone but the operator
  */
+// Each case gets its own database. WASM instances are heavy, so the previous
+// one is closed rather than left for the collector.
+let openDb: PGlite | null = null;
+afterEach(async () => {
+  if (openDb) {
+    await openDb.close();
+    openDb = null;
+  }
+});
+
 async function freshDatabase() {
   const db = new PGlite({ extensions: { pgcrypto } });
+  openDb = db;
   await db.exec(`
     create role anon;
     create role authenticated;
