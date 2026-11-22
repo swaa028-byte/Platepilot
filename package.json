@@ -17,7 +17,11 @@
     "test:e2e": "playwright test",
     "worker": "tsx worker/index.ts",
     "messages:check": "tsx scripts/check-messages.ts",
-    "e2e:clean": "node scripts/clean-e2e-data.mjs"
+    "e2e:clean": "node scripts/clean-e2e-data.mjs",
+    "cf:build": "CLOUDFLARE_WORKERS=true opennextjs-cloudflare build",
+    "preview": "pnpm run cf:build && opennextjs-cloudflare preview",
+    "deploy": "pnpm run cf:build && opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.16",
@@ -37,6 +41,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.18",
     "@playwright/test": "1.65.1",
     "@tailwindcss/postcss": "4.3.5",
     "@testing-library/jest-dom": "8.0.0",
@@ -52,6 +57,7 @@
     "tailwindcss": "4.3.5",
     "tsx": "4.23.15",
     "typescript": "5.9.3",
-    "vitest": "4.1.12"
+    "vitest": "4.1.12",
+    "wrangler": "^4.166.0"
   }
 }

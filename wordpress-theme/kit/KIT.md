@@ -1,8 +1,11 @@
-# PlatePilot kit — WordPress + GitHub + Supabase
+# PlatePilot kit — WordPress + GitHub + Cloudflare + Supabase
 
-This kit is built for exactly three accounts: **WordPress** (your host),
-**GitHub** (the code) and **Supabase** (the database). No Vercel, no Render,
-no Node host, no build step.
+This kit is built for exactly four accounts: **WordPress** (the website),
+**GitHub** (the code), **Cloudflare** (the ordering app) and **Supabase** (the
+database). No Vercel, no Render, no server of your own.
+
+Deploying the app to Cloudflare Workers is covered in `CLOUDFLARE.md` in this
+folder — Workers free plan, built from GitHub on every push.
 
 ## What runs where
 

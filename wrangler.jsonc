@@ -1,0 +1,34 @@
+/**
+ * Cloudflare Workers deployment for PlatePilot.
+ *
+ * Deploy with:  pnpm run deploy
+ * Preview:      pnpm run preview
+ *
+ * Secrets (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+ * SUPABASE_SERVICE_ROLE_KEY, CRON_SECRET, payment keys) are set in the
+ * Cloudflare dashboard under Workers & Pages → platepilot → Settings →
+ * Variables and Secrets. They are deliberately absent from this file.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "platepilot",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  // Required by the Next.js adapter: provides node:crypto, node:buffer and
+  // friends inside the Workers runtime.
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // The order worker cannot keep a timer alive inside a Worker, so retries are
+  // drained by a scheduled fetch instead: see kit/cloudflare-cron-worker.js
+  // (a tiny separate Worker on Cloudflare's free plan) or any external
+  // scheduler calling POST /api/cron/drain with the CRON_SECRET bearer token.
+  "vars": {
+    "CLOUDFLARE_WORKERS": "true"
+  }
+}

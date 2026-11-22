@@ -12,7 +12,14 @@
  * accepting orders into a database that evaporates.
  */
 export function isServerlessHost(env: NodeJS.ProcessEnv = process.env) {
-  return env.NETLIFY === "true" || env.VERCEL === "1" || Boolean(env.AWS_LAMBDA_FUNCTION_NAME);
+  return env.NETLIFY === "true"
+    || env.VERCEL === "1"
+    || Boolean(env.AWS_LAMBDA_FUNCTION_NAME)
+    // Cloudflare Workers: the platform mounts no writable filesystem, and the
+    // generated worker sets CLOUDFLARE_WORKERS for us. `navigator.userAgent`
+    // is the runtime's own signal when the variable is not set.
+    || env.CLOUDFLARE_WORKERS === "true"
+    || (typeof navigator !== "undefined" && navigator.userAgent === "Cloudflare-Workers");
 }
 
 /** True when the embedded database may be used on this host. */

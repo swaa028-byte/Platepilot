@@ -35,3 +35,8 @@ android/local.properties
 android-build.log
 android-build.pid
 .android-tools/
+
+# Cloudflare Workers build output
+.open-next/
+.wrangler/
+.dev.vars
