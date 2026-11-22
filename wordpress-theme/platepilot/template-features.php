@@ -1,6 +1,7 @@
 <?php
 /** Template Name: Features */
 if ( ! defined( 'ABSPATH' ) ) exit;
+get_header();
 $c = platepilot_content()['features'];
 $home = platepilot_content()['home'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
@@ -48,3 +49,4 @@ platepilot_render_info_page( 'features', $setup_url );
 </section>
 
 <?php platepilot_render_closing( $c['ctaTitle'], $c['ctaBody'], $c['cta'], $setup_url ); ?>
+<?php get_footer(); ?>

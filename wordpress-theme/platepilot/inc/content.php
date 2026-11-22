@@ -15,7 +15,7 @@ function platepilot_content() {
 		'home' => array(
 			'eyebrow'   => 'THE RESTAURANT OPERATING SYSTEM',
 			'title'     => 'Service has enough moving parts.',
-			'titleAccent' => "Your system shouldn\u2019t.",
+			'titleAccent' => "Your system shouldn’t.",
 			'rotate'    => array( 'take orders', 'run the room', 'get paid' ),
 			'lede'      => 'PlatePilot brings ordering, payments, tables and the kitchen into one clear rhythm—so your team can focus on the people in front of them.',
 			'primaryCta' => 'Set up your restaurant',
@@ -25,7 +25,7 @@ function platepilot_content() {
 			'modes' => array(
 				array( 'Pickup', 'Timed slots, service rules and honest availability, priced from your published menu.' ),
 				array( 'Dine-in', 'The classic room, plus QR ordering from the table when you want it.' ),
-				array( 'Delivery', 'Your own zones, fees and minimums—kept on your books, not a marketplace\u2019s.' ),
+				array( 'Delivery', 'Your own zones, fees and minimums—kept on your books, not a marketplace’s.' ),
 				array( 'Reservations', 'Book real tables from your floor plan, with the room in charge of every seat.' ),
 			),
 			'steps' => array(
@@ -34,7 +34,7 @@ function platepilot_content() {
 				array( '03', 'Payments with a paper trail', 'Hosted checkout, authentic webhooks, independent verification and reconciliation that separates payment from fulfillment.' ),
 			),
 			'tabs' => array(
-				array( 'Table QR', 'Ordering that starts at the table', "Ease up your staff. The guest\u2019s phone becomes a till that prices from your published menu, on the server.", array(
+				array( 'Table QR', 'Ordering that starts at the table', "Ease up your staff. The guest’s phone becomes a till that prices from your published menu, on the server.", array(
 					'The table arrives with the scan—no numbers to type',
 					'Prices, hours and minimums come from your rules, never the browser',
 					'One code per table, so a scan at another restaurant shows nothing',
@@ -81,7 +81,7 @@ function platepilot_content() {
 			'costsBody'  => 'Running a restaurant already costs money. PlatePilot adds none of its own.',
 			'costs' => array(
 				array( 'Hosting', 'A small server or a database free tier gets you started. Scale when the orders say so.' ),
-				array( 'Payment processing', "Your provider\u2019s standard rate on your own account. Funds settle to you directly." ),
+				array( 'Payment processing', "Your provider’s standard rate on your own account. Funds settle to you directly." ),
 				array( 'Custom domain', 'Optional, and usually a few dollars a year. Point it and publish.' ),
 			),
 			'compareTitle' => 'How that compares',
@@ -101,7 +101,7 @@ function platepilot_content() {
 		),
 		'features' => array(
 			'eyebrow' => 'FEATURES',
-			'title'   => "Everything a service needs. Nothing it doesn\u2019t.",
+			'title'   => "Everything a service needs. Nothing it doesn’t.",
 			'lede'    => 'One system carries the whole day: the menu your guests order from, the room your team reads, the kitchen that cooks it, and the money trail behind all of it.',
 			'modesTitle' => 'One system that does it all.',
 			'modesBody'  => 'Pickup, delivery, dine-in and reservations run on the same menu, the same money and the same kitchen.',
@@ -149,7 +149,7 @@ function platepilot_content() {
 				array( 'out', 'Out: a ticket reaches the kitchen screen, routed by station' ),
 				array( 'in', 'In: the payment provider confirms by signed webhook' ),
 				array( 'in', 'Verified: the payment is applied only after independent checks' ),
-				array( 'out', 'Out: the guest\u2019s status page updates, and the day-end report collects it' ),
+				array( 'out', 'Out: the guest’s status page updates, and the day-end report collects it' ),
 			),
 			'faqTitle' => 'Questions, answered',
 			'ctaTitle' => 'Start the journey.',
@@ -165,7 +165,7 @@ function platepilot_content() {
 				array( 'Discovery', 'Find your restaurant without typing an address, and prove the place is yours without handing over an API key to the page that shows it.', array( 'Google Places' ) ),
 				array( 'Messages', 'Reach your guests through your own accounts: order and booking confirmations by email, campaigns by SMS through your gateway credentials.', array( 'Email (SMTP)', 'SMS gateway' ) ),
 				array( 'Data', 'Run on a hosted Postgres you control or on the embedded database that ships with the app. Same schema, same behaviour, no vendor lock-in.', array( 'Hosted Postgres', 'Embedded database' ) ),
-				array( 'Your brand', 'Publish under your own domain with your own identity. Nothing on the guest\u2019s screen says PlatePilot.', array( 'Custom domains', 'Storefront & menus' ) ),
+				array( 'Your brand', 'Publish under your own domain with your own identity. Nothing on the guest’s screen says PlatePilot.', array( 'Custom domains', 'Storefront & menus' ) ),
 			),
 			'docsNote' => 'Machine-readable documentation ships with every install, so search engines and assistants can read your menus directly.',
 			'ctaTitle' => 'Connect yours.',
@@ -175,7 +175,7 @@ function platepilot_content() {
 		'whitelabel' => array(
 			'eyebrow' => 'WHITE LABEL',
 			'title'   => 'Your brand, end to end.',
-			'lede'    => 'The ordering site, the menus, the emails and the domain all wear your restaurant\u2019s name. The platform stays invisible to your guests.',
+			'lede'    => 'The ordering site, the menus, the emails and the domain all wear your restaurant’s name. The platform stays invisible to your guests.',
 			'points' => array(
 				array( 'Your domain', 'Add your own domain in settings, verify it, and your storefront publishes there. Certificates handled by your hosting.' ),
 				array( 'Your identity', 'Your name, address and photos on every page the guest sees. Orders come from your restaurant, not from a marketplace.' ),

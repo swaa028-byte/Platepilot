@@ -5,6 +5,7 @@
  * integrations, FAQ, and the green closing banner.
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
+get_header();
 $c = platepilot_content()['home'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 $setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page=platepilot' );
@@ -122,3 +123,4 @@ $setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page
 		<a class="button button--light button--hero" href="<?php echo esc_url( $setup_url ); ?>"><?php echo esc_html( $c['closingCta'] ); ?><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
 	</div>
 </section>
+<?php get_footer(); ?>

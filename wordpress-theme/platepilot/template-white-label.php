@@ -1,6 +1,7 @@
 <?php
 /** Template Name: White label */
 if ( ! defined( 'ABSPATH' ) ) exit;
+get_header();
 $c = platepilot_content()['whitelabel'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 $setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page=platepilot' );
@@ -29,3 +30,4 @@ platepilot_render_info_page( 'whitelabel', $setup_url );
 </section>
 
 <?php platepilot_render_closing( $c['ctaTitle'], $c['ctaBody'], $c['cta'], $setup_url ); ?>
+<?php get_footer(); ?>

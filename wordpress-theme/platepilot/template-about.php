@@ -1,6 +1,7 @@
 <?php
 /** Template Name: About */
 if ( ! defined( 'ABSPATH' ) ) exit;
+get_header();
 $c = platepilot_content()['about'];
 platepilot_render_info_page( 'about', admin_url( 'admin.php?page=platepilot' ) );
 ?>
@@ -31,3 +32,4 @@ platepilot_render_info_page( 'about', admin_url( 'admin.php?page=platepilot' ) )
 		</div>
 	</div>
 </section>
+<?php get_footer(); ?>

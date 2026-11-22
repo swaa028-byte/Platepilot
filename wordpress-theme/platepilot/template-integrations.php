@@ -1,6 +1,7 @@
 <?php
 /** Template Name: Integrations */
 if ( ! defined( 'ABSPATH' ) ) exit;
+get_header();
 $c = platepilot_content()['integrations'];
 platepilot_render_info_page( 'integrations', admin_url( 'admin.php?page=platepilot' ) );
 ?>
@@ -24,3 +25,4 @@ platepilot_render_info_page( 'integrations', admin_url( 'admin.php?page=platepil
 </section>
 
 <?php platepilot_render_closing( $c['ctaTitle'], $c['ctaBody'], $c['cta'], admin_url( 'admin.php?page=platepilot' ) ); ?>
+<?php get_footer(); ?>

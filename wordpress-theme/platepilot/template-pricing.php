@@ -1,6 +1,7 @@
 <?php
 /** Template Name: Pricing */
 if ( ! defined( 'ABSPATH' ) ) exit;
+get_header();
 $c = platepilot_content()['pricing'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
 $setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page=platepilot' );
@@ -50,3 +51,4 @@ platepilot_render_info_page( 'pricing', $setup_url );
 <?php
 platepilot_render_faq( platepilot_content()['home']['faq'], $c['faqTitle'] );
 platepilot_render_closing( $c['ctaTitle'], $c['ctaBody'], $c['cta'], $setup_url );
+get_footer();
