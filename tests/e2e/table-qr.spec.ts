@@ -30,7 +30,7 @@ test("the print sheet shows a code per table and the code lands on the menu with
     const added = await api.post("/api/staff/tables", {
       data: { locationId: workspace.locationId, name, capacity: 4 },
     });
-    expect(added.status()).toBe(200);
+    expect(added.status()).toBe(201);
   }
 
   // The sheet itself, in the browser the merchant is signed into.

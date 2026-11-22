@@ -12,9 +12,13 @@ export default async function LoginPage({ params, searchParams }: { params: Prom
   setRequestLocale(locale);
   // A merchant who is already signed in must never see the sign-in form —
   // clicking "Staff sign in" used to park them here with no way forward.
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  if (data.user) redirect(`/${locale}/operations`);
+  // The check only makes sense when Supabase is configured; in local mode the
+  // session lives in a cookie and the form below handles it.
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    if (data.user) redirect(`/${locale}/operations`);
+  }
   const t = await getTranslations("Login");
   return (
     <section className="login-section">

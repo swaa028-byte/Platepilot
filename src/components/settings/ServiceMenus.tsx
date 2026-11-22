@@ -150,7 +150,7 @@ export function ServiceMenus({ locationId, organizationId, currency }: { locatio
         {DAY_KEYS.map((key) => (
           <label key={key} className={`op-day ${days.includes(key) ? "is-on" : ""}`}>
             <input type="checkbox" checked={days.includes(key)} onChange={(event) => setDays((current) => event.target.checked ? [...current, key] : current.filter((day) => day !== key))} />
-            {t(`menus.day.${key}`)}
+            {t(`days.${key}`)}
           </label>
         ))}
       </div>

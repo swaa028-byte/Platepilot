@@ -25,7 +25,7 @@ begin
   v_slug := left(v_slug, 60) || '-' || substr(replace(v_organization_id::text, '-', ''), 1, 6);
 
   insert into locations(organization_id, name, address, timezone, currency, slug, ordering_enabled, service_settings)
-    values (v_organization_id, p_name, p_address, p_timezone, p_currency, v_slug, true, jsonb_build_object(
+    values (v_organization_id, p_name, p_address, p_timezone, p_currency, v_slug, false, jsonb_build_object(
       'openingHours', jsonb_build_object(
         '0', jsonb_build_array(jsonb_build_array('09:00', '21:00')),
         '1', jsonb_build_array(jsonb_build_array('09:00', '21:00')),

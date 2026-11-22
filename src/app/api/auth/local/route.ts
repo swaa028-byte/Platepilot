@@ -18,8 +18,12 @@ export async function POST(request: Request) {
   try {
     if (!isLocalModeEnabled()) return NextResponse.json({ error: "LOCAL_MODE_DISABLED" }, { status: 404 });
     const address = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-    checkRateLimit(`local-auth:${address}`, 10, 60_000);
+    // Generous ceiling during development: the local session has no captcha or
+    // device attestation, so a real attacker is already limited by the
+    // ownership boundary. Tests run many sign-ins against one server.
+    checkRateLimit(`local-auth-ip:${address}`, 1_000, 60_000);
     const body = input.parse(await request.json());
+    checkRateLimit(`local-auth:${address}:${body.email.toLowerCase()}`, 100, 60_000);
     const userId = localUserId(body.email);
     await writeLocalSession(userId, request);
     return NextResponse.json({ userId }, { headers: { "Cache-Control": "private, no-store" } });

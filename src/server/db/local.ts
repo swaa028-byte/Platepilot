@@ -32,8 +32,20 @@ function cleanMessage(message: string) {
   return (match?.[1] ?? message).trim();
 }
 
-let instance: Promise<PGlite> | null = null;
 const setReturning = new Map<string, boolean>();
+
+/**
+ * The open database, shared across every bundle in this process.
+ *
+ * Next bundles route handlers and server components as separate module
+ * graphs, so a module-level cache exists once per graph and two embedded
+ * PostgreSQL instances end up open over the same directory — each with its
+ * own buffer cache, so a page render could miss rows a route handler had
+ * already committed. Storing the promise on globalThis makes the singleton
+ * genuinely process-wide.
+ */
+const GLOBAL_KEY = Symbol.for("platepilot.localDatabase");
+type GlobalWithDb = typeof globalThis & { [GLOBAL_KEY]?: Promise<PGlite> };
 
 async function applyMigrations(db: PGlite) {
   await db.exec(`
@@ -75,8 +87,9 @@ async function openDatabase() {
 }
 
 export function getLocalDatabase() {
-  if (!instance) instance = openDatabase();
-  return instance;
+  const store = globalThis as GlobalWithDb;
+  if (!store[GLOBAL_KEY]) store[GLOBAL_KEY] = openDatabase();
+  return store[GLOBAL_KEY];
 }
 
 /**
@@ -110,12 +123,16 @@ class LocalQuery {
   private limitCount: number | null = null;
   private headOnly = false;
   private wantsSingle = false;
+  private wantsMaybeSingle = false;
+  /** The staff member this query acts as; row-level security keys off it. */
+  private readonly actorId: string | null;
 
-  constructor(db: PGlite, table: string, action: "select" | "insert" | "update" | "delete") {
+  constructor(db: PGlite, table: string, action: "select" | "insert" | "update" | "delete", actorId: string | null = null) {
     assertIdentifier(table, "table");
     this.db = db;
     this.table = table;
     this.action = action;
+    this.actorId = actorId;
   }
 
   select(columns?: string, options?: { count?: string; head?: boolean }) {
@@ -156,7 +173,7 @@ class LocalQuery {
 
   maybeSingle() {
     this.wantsSingle = false;
-    this.limitCount = 1;
+    this.wantsMaybeSingle = true;
     return this;
   }
 
@@ -215,13 +232,29 @@ class LocalQuery {
       const columns = this.columns ?? "*";
       let sql = `select ${columns} from ${this.table}${where.sql}`;
       if (this.limitCount !== null) sql += ` limit ${this.limitCount}`;
-      const result = await this.db.query<Row>(sql, values);
+      // Row-level security keys off the request claim, so every statement — not
+      // just rpc calls — runs inside the transaction that binds the acting
+      // user. A bare query used to run on the shared connection with whatever
+      // claim a finished transaction left behind, which made a signed-in
+      // merchant's own rows invisible until the next write settled.
+      const result = this.actorId
+        ? await this.db.transaction(async (tx) => {
+            await (tx as unknown as PGlite).query("select set_config('request.jwt.claim.sub', $1, true)", [this.actorId]);
+            return (tx as unknown as PGlite).query<Row>(sql, values);
+          })
+        : await this.db.query<Row>(sql, values);
       if (this.headOnly) return { data: null, error: null };
       if (this.wantsSingle) {
         if (result.rows.length !== 1) {
           return { data: null, error: { message: "JSON object requested, multiple (or no) rows returned", code: "PGRST116" } };
         }
         return { data: result.rows[0], error: null };
+      }
+      if (this.wantsMaybeSingle) {
+        if (result.rows.length > 1) {
+          return { data: null, error: { message: "JSON object requested, multiple (or no) rows returned", code: "PGRST116" } };
+        }
+        return { data: result.rows[0] ?? null, error: null };
       }
       return { data: result.rows, error: null };
     } catch (error) {
@@ -267,7 +300,7 @@ class LocalClient {
   }
 
   from(table: string) {
-    return new LocalQuery(this.db, table, "select");
+    return new LocalQuery(this.db, table, "select", this.actorId);
   }
 
   async rpc(name: string, params: Record<string, unknown> = {}): Promise<DbResult> {
@@ -313,11 +346,13 @@ class LocalClient {
   }
 }
 
-let client: Promise<LocalClient> | null = null;
+const CLIENT_KEY = Symbol.for("platepilot.localClient");
+type GlobalWithClient = typeof globalThis & { [CLIENT_KEY]?: Promise<LocalClient> };
 
 export function getLocalClient() {
-  if (!client) {
-    client = getLocalDatabase().then(async (db) => {
+  const store = globalThis as GlobalWithClient;
+  if (!store[CLIENT_KEY]) {
+    store[CLIENT_KEY] = getLocalDatabase().then(async (db: PGlite) => {
       // The embedded database allows a single writer, so the job loop lives in
       // this process. The import is dynamic so the standalone worker, which
       // does not share this directory, never loads the Next-only module.
@@ -328,5 +363,5 @@ export function getLocalClient() {
       return new LocalClient(db);
     });
   }
-  return client;
+  return store[CLIENT_KEY];
 }

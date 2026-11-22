@@ -92,6 +92,9 @@ begin
 end $$;
 
 -- The public menu now picks the book that is serving at this moment.
+-- The old two-argument version must go: leaving both would make every
+-- two-argument call ambiguous between the overloads.
+drop function if exists app_published_menu(uuid, text);
 create or replace function app_published_menu(p_location_id uuid, p_locale text default 'en', p_at timestamptz default null)
 returns jsonb
 language plpgsql security definer set search_path = public, pg_temp as $$

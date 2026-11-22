@@ -34,7 +34,18 @@ export default defineConfig({
       ? "npm run e2e:clean && npm run start"
       : "npm run build && npm run e2e:clean && npm run start",
     url: "http://127.0.0.1:3000/en",
-    env: { LOCAL_DB_DIR: path.resolve(__dirname, ".data/e2e") },
+    env: {
+      LOCAL_DB_DIR: path.resolve(__dirname, ".data/e2e"),
+      // The checks exercise local-mode auth and the embedded database, so the
+      // developer's Supabase variables must not leak into this run — they
+      // would silently switch the server to hosted mode and fail every
+      // sign-in with a 404.
+      NEXT_PUBLIC_SUPABASE_URL: "",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "",
+      SUPABASE_SERVICE_ROLE_KEY: "",
+      SUPABASE_ACCESS_TOKEN: "",
+      DATABASE_URL: "",
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,
     stdout: "pipe",

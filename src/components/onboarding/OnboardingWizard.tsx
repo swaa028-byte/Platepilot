@@ -23,7 +23,7 @@ export function OnboardingWizard({ persistenceConfigured, googleConfigured, loca
   const [published, setPublished] = useState(false);
   // Without a Places key the search button would only ever be disabled, so the
   // wizard opens on the manual form and mentions why discovery is absent.
-  const [step, setStep] = useState(googleConfigured ? 1 : 2);
+  const [step, setStep] = useState(1);
   const [session, setSession] = useState<"unknown" | "signedIn" | "signedOut">("unknown");
   const [email, setEmail] = useState("");
   const [form, setForm] = useState({ name: "", legalCountry: "", currency: "", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", locale, address: "" });
