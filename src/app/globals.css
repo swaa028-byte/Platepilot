@@ -699,17 +699,48 @@ p { text-wrap: pretty; }
   body { background: #fff; }
 }
 .kitchen-notice--offline { background: #fdf3dd; color: #7a5a17; }
-.locations-page .hero h1 { font-size: clamp(30px, 5vw, 44px); margin: 0 0 10px; }
-.locations-page .hero p { color: var(--muted); max-width: 640px; }
-.locations-brand h2 { margin: 26px 0 12px; font-size: 20px; }
-.locations-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.locations-card { display: flex; justify-content: space-between; gap: 16px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); flex-wrap: wrap; }
-.locations-card h3 { margin: 0 0 6px; font-size: 17px; }
-.locations-card h3 a { color: inherit; }
-.locations-address { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; color: var(--muted); font-size: 14px; }
-.locations-hours { list-style: none; margin: 0; padding: 0; font-size: 13px; color: var(--muted); }
-.locations-walkin { font-size: 13px; color: var(--muted); align-self: center; }
-.locations-empty { color: var(--muted); }
+/* --------------------------------------------------------------------------
+   Restaurant directory
+   The public listing, shared in shape with the WordPress theme's template so a
+   guest meets the same card on either site. A photograph from the restaurant's
+   own menu, the address, its hours, and one honest action.
+   -------------------------------------------------------------------------- */
+.dir-hero { padding-block: clamp(48px, 7vw, 96px) 24px; }
+.dir-hero h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.04; letter-spacing: -0.02em; margin: 0 0 16px; max-width: 18ch; }
+.dir-lede { font-size: clamp(16px, 1.4vw, 18px); color: var(--muted); max-width: 58ch; margin: 0 0 18px; }
+.dir-count { display: inline-block; margin: 0; font-size: 13px; font-weight: 650; color: var(--accent-deep); background: var(--accent-soft); border-radius: 999px; padding: 6px 12px; }
+.dir-body { padding-block: 12px var(--section-y, 72px); }
+.dir-grid { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: clamp(16px, 2vw, 24px); }
+.dir-card { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease; }
+.dir-card:hover { transform: translateY(-3px); border-color: var(--accent-soft); box-shadow: 0 18px 40px -24px rgba(16, 47, 40, 0.3); }
+.dir-card-media { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--cream); }
+.dir-card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 600ms ease; }
+.dir-card:hover .dir-card-media img { transform: scale(1.04); }
+.dir-card-plate { display: grid; place-items: center; width: 100%; height: 100%; font-size: 42px; font-weight: 800; color: var(--accent-deep); background: radial-gradient(circle at 30% 25%, var(--accent-soft), rgba(232, 181, 103, 0.18) 60%, transparent 78%), var(--cream); }
+.dir-card-body { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px 20px; flex: 1; }
+.dir-card-title { margin: 0; font-size: 20px; line-height: 1.2; letter-spacing: -0.015em; }
+.dir-card-title a { color: var(--ink); text-decoration: none; }
+.dir-card-title a:hover { color: var(--accent-deep); }
+.dir-card-address { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; color: var(--muted); }
+.dir-card-hours { list-style: none; margin: 2px 0 0; padding: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.dir-card-meta { margin: 0; font-size: 13px; font-weight: 600; color: var(--ink); }
+.dir-card-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: auto; padding-top: 12px; }
+.dir-card-cta { min-height: 42px; padding: 10px 18px; font-size: 14px; }
+.dir-card-link { font-size: 14px; font-weight: 600; color: var(--accent-deep); text-decoration: none; }
+.dir-card-link:hover { text-decoration: underline; }
+.dir-card-closed { font-size: 13px; color: var(--muted); }
+.dir-empty { border: 1px dashed var(--line); border-radius: 18px; padding: 32px; background: var(--cream); }
+.dir-empty h2 { font-size: 21px; margin: 0 0 8px; }
+.dir-empty p { margin: 0; color: var(--muted); }
+.dir-note { margin: 20px 0 0; font-size: 13px; color: var(--muted); }
+.dir-invite { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-top: clamp(32px, 4vw, 56px); padding: clamp(22px, 3vw, 34px); border-radius: 22px; background: var(--green); color: #fff; }
+.dir-invite h2 { color: #fff; font-size: clamp(21px, 2.4vw, 27px); margin: 0 0 6px; }
+.dir-invite p { margin: 0; color: rgba(255, 255, 255, 0.78); max-width: 46ch; }
+@media (max-width: 767px) {
+  .dir-grid { grid-template-columns: 1fr; }
+  .dir-invite { flex-direction: column; align-items: flex-start; }
+  .dir-invite .button { width: 100%; }
+}
 
 /* --------------------------------------------------------------------------
    Landing v2 — CloudWaitress-style structure with the PlatePilot green accent.

@@ -713,7 +713,17 @@
     "description": "Tous les restaurants PlatePilot avec un menu en ligne, leur adresse et leurs horaires.",
     "empty": "Aucun restaurant n'a encore publié de vitrine.",
     "orderOnline": "Commander en ligne",
-    "walkInOnly": "Sur place uniquement"
+    "walkInOnly": "Sur place uniquement",
+    "count": "{count, plural, one {# restaurant prend des commandes} other {# restaurants prennent des commandes}}",
+    "dishes": "{count, plural, one {# plat} other {# plats}}",
+    "fromPrice": "à partir de {price}",
+    "seeMenu": "Voir le menu",
+    "inviteTitle": "Pas encore sur la liste ?",
+    "inviteBody": "Ouvrez votre boutique en deux minutes. Deux cents commandes par mois sont gratuites, et nous ne prenons aucune commission.",
+    "inviteCta": "Ouvrir mon restaurant",
+    "eyebrow": "Les restaurants sur PlatePilot",
+    "emptyHint": "Publiez un menu dans l'application de commande et votre restaurant apparaîtra ici.",
+    "notPublishedYet": "Le nombre de plats et les prix apparaissent dès qu'un restaurant publie un menu."
   },
   "Pricing": {
     "eyebrow": "TARIFS",

@@ -72,6 +72,14 @@ $places    = $is_error ? array() : $directory;
 								<a href="<?php echo esc_url( $menu_url ? $menu_url : '#' ); ?>"><?php echo esc_html( (string) ( $place['name'] ?? '' ) ); ?></a>
 							</h2>
 							<p class="dir-card-address"><?php echo esc_html( (string) ( $place['address'] ?? '' ) ); ?></p>
+							<?php $hours = platepilot_hours_lines( $place['hours'] ?? null ); ?>
+							<?php if ( $hours ) : ?>
+								<ul class="dir-card-hours">
+									<?php foreach ( $hours as $line ) : ?>
+										<li><?php echo esc_html( $line ); ?></li>
+									<?php endforeach; ?>
+								</ul>
+							<?php endif; ?>
 							<p class="dir-card-meta">
 								<?php
 								if ( $items > 0 ) {

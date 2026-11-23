@@ -713,7 +713,17 @@
     "description": "Every PlatePilot restaurant with a live menu, its address and its hours.",
     "empty": "No restaurants have published a storefront yet.",
     "orderOnline": "Order online",
-    "walkInOnly": "Walk-in only"
+    "walkInOnly": "Walk-in only",
+    "count": "{count, plural, one {# restaurant taking orders} other {# restaurants taking orders}}",
+    "dishes": "{count, plural, one {# dish} other {# dishes}}",
+    "fromPrice": "from {price}",
+    "seeMenu": "See the menu",
+    "inviteTitle": "Not on the list yet?",
+    "inviteBody": "Open your own shop in two minutes. Two hundred orders a month are free, and we never take a commission.",
+    "inviteCta": "Open your restaurant",
+    "eyebrow": "Restaurants on PlatePilot",
+    "emptyHint": "Publish a menu in the ordering app and your restaurant appears here.",
+    "notPublishedYet": "Dish counts and prices appear once a restaurant publishes a menu."
   },
   "Pricing": {
     "eyebrow": "PRICING",

@@ -271,6 +271,37 @@ function platepilot_initial( $text ) {
 	return function_exists( 'mb_substr' ) ? mb_substr( $text, 0, 1 ) : substr( $text, 0, 1 );
 }
 
+/**
+ * The opening hours a restaurant declared, as "Mon 09:00-21:00" lines.
+ *
+ * Stored Sunday-first because that is how the settings screen writes them;
+ * printed Monday-first because that is how people read a week. A window whose
+ * opens and closes are the same means "closed" and is dropped, matching the
+ * storefront so the directory never advertises a door that is shut.
+ */
+function platepilot_hours_lines( $hours ) {
+	if ( ! is_array( $hours ) ) return array();
+	$lines = array();
+	foreach ( array( 1, 2, 3, 4, 5, 6, 0 ) as $day ) {
+		$windows = isset( $hours[ $day ] ) ? $hours[ $day ] : null;
+		if ( ! is_array( $windows ) ) continue;
+		$rendered = array();
+		foreach ( $windows as $window ) {
+			if ( ! is_array( $window ) || count( $window ) < 2 ) continue;
+			$values = array_values( $window );
+			$opens  = (string) $values[0];
+			$closes = (string) $values[1];
+			if ( '' === $opens || $opens === $closes ) continue;
+			$rendered[] = $opens . ' - ' . $closes;
+		}
+		if ( ! $rendered ) continue;
+		// 2024-01-07 was a Sunday, so day 0 lands on Sunday and 1 on Monday.
+		$weekday = date_i18n( 'D', gmmktime( 12, 0, 0, 1, 7 + $day, 2024 ), true );
+		$lines[] = $weekday . ' ' . implode( ', ', $rendered );
+	}
+	return $lines;
+}
+
 /** Money is stored in minor units; print it the way the shop prices it. */
 function platepilot_money( $amount_minor, $currency ) {
 	$amount = number_format( (float) $amount_minor / 100, 2, '.', ',' );

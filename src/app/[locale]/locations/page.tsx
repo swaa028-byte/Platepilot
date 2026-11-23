@@ -2,31 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MapPin } from "lucide-react";
-import { getDbClient } from "@/server/db/client";
+import { getPublicDirectory, type DirectoryEntry } from "@/server/storefront/directory";
+import { appBaseUrl } from "@/domain/app-url";
 import { routing } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
 
-type LocatorLocation = {
-  name: string;
-  slug: string;
-  address: string;
-  ordering_enabled: boolean;
-  service_settings: Record<string, unknown> | null;
-  organizations: { name: string } | null;
-};
-
-type DayWindows = [string, string][];
-
-/** The hours a location declared, as "Mon 09:00–22:00" lines in the visitor's language. */
-function hoursLines(settings: Record<string, unknown> | null, locale: string): string[] {
-  const hours = settings?.openingHours;
-  if (!hours || typeof hours !== "object") return [];
+/** The hours a restaurant declared, as "Mon 09:00–22:00" lines in the visitor's language. */
+function hoursLines(hours: Record<string, unknown> | null, locale: string): string[] {
+  if (!hours) return [];
   const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
   const lines: string[] = [];
   // Monday-first for people, even though the stored keys are Sunday-first.
   for (const day of [1, 2, 3, 4, 5, 6, 0]) {
-    const windows = (hours as Record<string, unknown>)[String(day)];
+    const windows = hours[String(day)];
     if (!Array.isArray(windows) || windows.length === 0) continue;
     const rendered = windows
       .filter((w): w is [string, string] => Array.isArray(w) && w.length === 2)
@@ -39,20 +28,32 @@ function hoursLines(settings: Record<string, unknown> | null, locale: string): s
   return lines;
 }
 
+/** Prices are stored in minor units, but not every currency uses two decimals. */
+function priceLabel(entry: DirectoryEntry, locale: string): string | null {
+  if (!entry.fromMinor || !entry.currency) return null;
+  const amount = Number(entry.fromMinor) / 100;
+  if (!Number.isFinite(amount)) return null;
+  try {
+    return new Intl.NumberFormat(locale, { style: "currency", currency: entry.currency }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${entry.currency}`;
+  }
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Locations" });
-  return {
-    title: t("title"),
-    description: t("description"),
-  };
+  return { title: t("title"), description: t("description") };
 }
 
 /**
- * The store locator: every restaurant with a published storefront, in one
- * place. Each entry links straight to that restaurant's menu, states whether
- * online ordering is open, and shows the hours the merchant declared — read
- * from the same published data the storefront itself shows.
+ * The public directory: every restaurant taking orders, as a card you can open.
+ *
+ * Ordered by restaurant name rather than grouped by brand, because a guest is
+ * looking for one place they already have in mind. A restaurant with no photo
+ * shows the first letter of its name instead of a grey rectangle, and a
+ * restaurant that has not opened online ordering says so rather than hiding the
+ * button it cannot honour.
  */
 export default async function LocationsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -60,74 +61,85 @@ export default async function LocationsPage({ params }: { params: Promise<{ loca
   setRequestLocale(locale);
   const t = await getTranslations("Locations");
 
-  let locations: LocatorLocation[] = [];
-  try {
-    const db = await getDbClient();
-    const { data, error } = await db
-      .from("locations")
-      .select("name,slug,address,ordering_enabled,service_settings,organizations(name)");
-    if (!error && data) {
-      locations = (data as unknown as LocatorLocation[])
-        .filter((entry) => entry.slug)
-        .sort((a, b) => a.name.localeCompare(b.name));
-    }
-  } catch {
-    locations = [];
-  }
-
-  const brands = new Map<string, LocatorLocation[]>();
-  for (const location of locations) {
-    const brand = location.organizations?.name ?? location.name;
-    const list = brands.get(brand) ?? [];
-    list.push(location);
-    brands.set(brand, list);
-  }
+  const places = await getPublicDirectory();
+  const startUrl = `${appBaseUrl()}/en/start`;
+  const hasPublished = places.some((place) => place.items > 0);
 
   return (
-    <div className="locations-page">
-      <section className="hero">
+    <div className="dir-page">
+      <section className="dir-hero">
         <div className="shell">
+          <p className="eyebrow"><span />{t("eyebrow")}</p>
           <h1>{t("title")}</h1>
-          <p>{t("description")}</p>
+          <p className="dir-lede">{t("description")}</p>
+          {places.length > 0 && <p className="dir-count">{t("count", { count: places.length })}</p>}
         </div>
       </section>
-      <section className="section">
+
+      <section className="dir-body">
         <div className="shell">
-          {locations.length === 0 ? (
-            <p className="locations-empty">{t("empty")}</p>
+          {places.length === 0 ? (
+            <div className="dir-empty">
+              <h2>{t("empty")}</h2>
+              <p>{t("emptyHint")}</p>
+            </div>
           ) : (
-            [...brands.entries()].map(([brand, entries]) => (
-              <div className="locations-brand" key={brand}>
-                <h2>{brand}</h2>
-                <ul className="locations-list">
-                  {entries.map((entry) => (
-                    <li className="locations-card" key={entry.slug}>
-                      <div className="locations-card-main">
-                        <h3>
-                          <Link href={`/${locale}/r/${entry.slug}`}>{entry.name}</Link>
-                        </h3>
-                        <p className="locations-address"><MapPin size={14} aria-hidden="true" />{entry.address}</p>
-                        {hoursLines(entry.service_settings, locale).length > 0 && (
-                          <ul className="locations-hours">
-                            {hoursLines(entry.service_settings, locale).map((line) => (
-                              <li key={line}>{line}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                      <div className="locations-card-actions">
-                        {entry.ordering_enabled ? (
-                          <Link className="button-primary" href={`/${locale}/r/${entry.slug}/menu`}>{t("orderOnline")}</Link>
+            <ul className="dir-grid">
+              {places.map((place) => {
+                const menuHref = `/${locale}/r/${place.slug}`;
+                const hours = hoursLines(place.hours, locale);
+                const price = priceLabel(place, locale);
+                return (
+                  <li className="dir-card" key={place.slug}>
+                    <Link className="dir-card-media" href={menuHref} aria-hidden="true" tabIndex={-1}>
+                      {place.leadImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={place.leadImage} alt="" loading="lazy" decoding="async" />
+                      ) : (
+                        <span className="dir-card-plate" aria-hidden="true">{place.name.slice(0, 1).toUpperCase()}</span>
+                      )}
+                    </Link>
+                    <div className="dir-card-body">
+                      <h2 className="dir-card-title"><Link href={menuHref}>{place.name}</Link></h2>
+                      {place.address && (
+                        <p className="dir-card-address"><MapPin size={14} aria-hidden="true" />{place.address}</p>
+                      )}
+                      {hours.length > 0 && (
+                        <ul className="dir-card-hours">
+                          {hours.map((line) => <li key={line}>{line}</li>)}
+                        </ul>
+                      )}
+                      {(place.items > 0 || price) && (
+                        <p className="dir-card-meta">
+                          {place.items > 0 && t("dishes", { count: place.items })}
+                          {place.items > 0 && price && " · "}
+                          {price && t("fromPrice", { price })}
+                        </p>
+                      )}
+                      <div className="dir-card-actions">
+                        {place.ordering ? (
+                          <Link className="button dir-card-cta" href={`${menuHref}/menu`}>{t("orderOnline")}</Link>
                         ) : (
-                          <span className="locations-walkin">{t("walkInOnly")}</span>
+                          <span className="dir-card-closed">{t("walkInOnly")}</span>
                         )}
+                        <Link className="dir-card-link" href={menuHref}>{t("seeMenu")}</Link>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
+
+          {!hasPublished && places.length > 0 && <p className="dir-note">{t("notPublishedYet")}</p>}
+
+          <div className="dir-invite">
+            <div>
+              <h2>{t("inviteTitle")}</h2>
+              <p>{t("inviteBody")}</p>
+            </div>
+            <Link className="button" href={startUrl}>{t("inviteCta")}</Link>
+          </div>
         </div>
       </section>
     </div>

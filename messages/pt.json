@@ -713,7 +713,17 @@
     "description": "Todos os restaurantes PlatePilot com ementa online, morada e horários.",
     "empty": "Ainda nenhum restaurante publicou a sua ementa.",
     "orderOnline": "Encomendar online",
-    "walkInOnly": "Apenas no local"
+    "walkInOnly": "Apenas no local",
+    "count": "{count, plural, one {# restaurante a receber pedidos} other {# restaurantes a receber pedidos}}",
+    "dishes": "{count, plural, one {# prato} other {# pratos}}",
+    "fromPrice": "desde {price}",
+    "seeMenu": "Ver o menu",
+    "inviteTitle": "Ainda não está na lista?",
+    "inviteBody": "Abra a sua loja em dois minutos. Duzentos pedidos por mês são gratuitos e nunca cobramos comissão.",
+    "inviteCta": "Abrir o meu restaurante",
+    "eyebrow": "Restaurantes na PlatePilot",
+    "emptyHint": "Publique um menu na aplicação de pedidos e o seu restaurante aparece aqui.",
+    "notPublishedYet": "O número de pratos e os preços aparecem quando um restaurante publica um menu."
   },
   "Pricing": {
     "eyebrow": "PREÇOS",

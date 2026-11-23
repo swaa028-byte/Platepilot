@@ -25,6 +25,9 @@ as $$
       'address',    l.address,
       'currency',   l.currency,
       'ordering',   l.ordering_enabled,
+      -- Opening hours are already public: the storefront prints them. Kept as
+      -- the merchant wrote them so each surface can render them its own way.
+      'hours',      coalesce(l.service_settings->'openingHours', 'null'::jsonb),
       'brand',      o.name,
       'items',      (
         select count(*)
