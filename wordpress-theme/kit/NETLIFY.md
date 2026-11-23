@@ -10,6 +10,24 @@ https://app.platepilot.ct.ws     Netlify     ordering, staff, /r/<slug> storefro
                                  workers.dev optional staging alias
 ```
 
+## The repository, and who is allowed to deploy it
+
+Netlify only builds a **private** repository when the commit author is a member
+of the Netlify team whose GitHub identity is linked. A commit authored by
+anybody else is answered with *"Build blocked: Unrecognized Git contributor"* -
+the build never starts, so environment-variable changes appear to do nothing.
+
+Either make the repository public (the check does not apply) or make sure the
+committing address is the GitHub account's own address:
+
+```bash
+git config user.name  "swaa028-byte"
+git config user.email "swaa028@gmail.com"
+```
+
+Netlify matches on the head commit's author email, so one commit authored by the
+right address is enough to unblock the next deploy.
+
 ## 1. The site
 
 Netlify → **Add new site → Import an existing project → GitHub → Platepilot**.
