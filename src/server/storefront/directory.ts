@@ -40,6 +40,33 @@ function toEntry(row: Row): DirectoryEntry | null {
 }
 
 /**
+ * Opening hours by slug, read straight from the locations table.
+ *
+ * The directory function carries hours, but a project that installed an earlier
+ * version of it does not - and a directory that lists a restaurant while
+ * claiming it never opens is worse than one that omits the line. One small
+ * read fills the gap without asking the site owner to re-run any SQL.
+ */
+async function hoursBySlug(): Promise<Map<string, Record<string, unknown> | null>> {
+  const map = new Map<string, Record<string, unknown> | null>();
+  try {
+    const db = await getDbClient();
+    const { data, error } = await db.from("locations").select("slug,service_settings");
+    if (error || !data) return map;
+    for (const row of data as Row[]) {
+      const slug = typeof row.slug === "string" ? row.slug : "";
+      if (!slug) continue;
+      const settings = row.service_settings as Record<string, unknown> | null;
+      const hours = settings?.openingHours;
+      map.set(slug, hours && typeof hours === "object" ? (hours as Record<string, unknown>) : null);
+    }
+  } catch {
+    // Hours are a nicety; a directory without them still works.
+  }
+  return map;
+}
+
+/**
  * Every restaurant a guest can order from.
  *
  * Reads the database's public_directory() function, which lists only locations
@@ -57,9 +84,10 @@ export async function getPublicDirectory(): Promise<DirectoryEntry[]> {
     const db = await getDbClient();
     const { data, error } = await db.rpc("public_directory");
     if (!error && Array.isArray(data)) {
-      return (data as Row[])
-        .map(toEntry)
-        .filter((entry): entry is DirectoryEntry => entry !== null)
+      const entries = (data as Row[]).map(toEntry).filter((entry): entry is DirectoryEntry => entry !== null);
+      const hours = entries.some((entry) => entry.hours) ? null : await hoursBySlug();
+      return entries
+        .map((entry) => (entry.hours || !hours ? entry : { ...entry, hours: hours.get(entry.slug) ?? null }))
         .sort((a, b) => a.name.localeCompare(b.name));
     }
   } catch {
