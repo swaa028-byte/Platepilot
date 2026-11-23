@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 get_header();
 $c = platepilot_content()['home'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
-$setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page=platepilot' );
+$setup_url = platepilot_start_url();
 ?>
 <section class="cw-hero">
 	<div class="cw-hero-glow" aria-hidden="true"></div>

@@ -126,6 +126,20 @@ function platepilot_value( $key ) {
  * the app when it is hosted, and the home page as a last resort. Keeps the
  * navigation honest instead of printing links that go nowhere.
  */
+/**
+ * Where "open your shop" goes.
+ *
+ * This is a public call to action, so it may never resolve to wp-admin: a
+ * visitor who is not signed in would be bounced to wp-login.php and asked for
+ * credentials they do not have. With an ordering app configured it goes to that
+ * app's onboarding; without one it becomes an enquiry.
+ */
+function platepilot_start_url() {
+	$app_url = untrailingslashit( platepilot_value( 'app_url' ) );
+	if ( '' !== $app_url ) return $app_url . '/en/onboarding';
+	return platepilot_contact_url();
+}
+
 /** Whether the page for a template exists. Creation is automatic, but a menu can never assume it ran. */
 function platepilot_page_exists( $slug ) {
 	return get_page_by_path( sanitize_title( $slug ) ) instanceof WP_Post;

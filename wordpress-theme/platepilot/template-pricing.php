@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 get_header();
 $c = platepilot_content()['pricing'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
-$setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page=platepilot' );
+$setup_url = platepilot_start_url();
 $contact_url = platepilot_contact_url();
 platepilot_render_info_page( 'pricing', $setup_url );
 ?>

@@ -3,7 +3,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 get_header();
 $c = platepilot_content()['about'];
-platepilot_render_info_page( 'about', admin_url( 'admin.php?page=platepilot' ) );
+platepilot_render_info_page( 'about', platepilot_start_url() );
 ?>
 <section class="info-section info-section--tint">
 	<div class="shell">

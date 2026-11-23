@@ -5,7 +5,7 @@ get_header();
 $c = platepilot_content()['features'];
 $home = platepilot_content()['home'];
 $app_url = untrailingslashit( platepilot_value( 'app_url' ) );
-$setup_url = $app_url ? $app_url . '/en/onboarding' : admin_url( 'admin.php?page=platepilot' );
+$setup_url = platepilot_start_url();
 platepilot_render_info_page( 'features', $setup_url );
 ?>
 <section class="info-section info-section--tint">

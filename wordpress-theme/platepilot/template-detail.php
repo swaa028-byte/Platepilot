@@ -32,7 +32,7 @@ if ( ! isset( $c[ $slug ] ) || empty( $c[ $slug ]['sections'] ) ) {
 }
 
 $page = $c[ $slug ];
-platepilot_render_info_page( $slug, admin_url( 'admin.php?page=platepilot' ) );
+platepilot_render_info_page( $slug, platepilot_start_url() );
 
 foreach ( $page['sections'] as $index => $section ) :
 	$tinted = 0 === $index % 2;
