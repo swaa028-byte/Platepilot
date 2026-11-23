@@ -224,6 +224,53 @@ function platepilot_fetch_menu( $slug, $locale = 'en' ) {
 	return $menu;
 }
 
+/**
+ * Every restaurant with a published menu, read through the database's public
+ * directory function. Cached for five minutes so a directory page under load
+ * does not become a database page: a menu published today appears within that
+ * window, which is short enough to feel immediate and long enough to matter.
+ *
+ * @return array|WP_Error List of restaurants, each with slug, name, address.
+ */
+function platepilot_fetch_directory() {
+	$cached = get_transient( 'platepilot_directory' );
+	if ( is_array( $cached ) ) return $cached;
+
+	$response = platepilot_db_request( '/rest/v1/rpc/public_directory', array(
+		'method' => 'POST',
+		'body'   => (object) array(),
+	) );
+	if ( is_wp_error( $response ) ) return $response;
+	if ( 404 === $response['code'] ) {
+		return new WP_Error( 'platepilot_no_directory', 'The public_directory function is missing. Run kit/supabase-directory.sql in the Supabase SQL editor.' );
+	}
+	if ( $response['code'] < 200 || $response['code'] >= 300 ) {
+		return new WP_Error( 'platepilot_bad_status', 'The database answered HTTP ' . $response['code'] . '.' );
+	}
+	$places = json_decode( $response['body'], true );
+	if ( ! is_array( $places ) ) {
+		return new WP_Error( 'platepilot_bad_json', 'The directory response was not readable.' );
+	}
+	set_transient( 'platepilot_directory', $places, 300 ); // five minutes
+	return $places;
+}
+
+/** Forget the cached directory - used by the "check again" action on the settings screen. */
+function platepilot_flush_directory() {
+	delete_transient( 'platepilot_directory' );
+}
+
+/**
+ * First character of a name, for the placeholder a card shows when a restaurant
+ * has no photograph. Guarded: mbstring is an extension a shared host may not
+ * have enabled, and an unguarded mb_substr is a fatal error on those hosts.
+ */
+function platepilot_initial( $text ) {
+	$text = trim( (string) $text );
+	if ( '' === $text ) return 'P';
+	return function_exists( 'mb_substr' ) ? mb_substr( $text, 0, 1 ) : substr( $text, 0, 1 );
+}
+
 /** Money is stored in minor units; print it the way the shop prices it. */
 function platepilot_money( $amount_minor, $currency ) {
 	$amount = number_format( (float) $amount_minor / 100, 2, '.', ',' );
@@ -254,7 +301,7 @@ function platepilot_page_map() {
 		'qr-codes'     => array( 'Table QR codes', 'template-detail.php' ),
 		'floor-planner' => array( 'Live floor planner', 'template-detail.php' ),
 		'security'     => array( 'Security and payments', 'template-detail.php' ),
-		'locations'    => array( 'Restaurant pages', 'template-detail.php' ),
+		'locations'    => array( 'Restaurants', 'template-locations.php' ),
 		'reports'      => array( 'Reports', 'template-detail.php' ),
 	);
 }
@@ -266,7 +313,19 @@ function platepilot_page_map() {
 function platepilot_ensure_pages() {
 	$created = 0;
 	foreach ( platepilot_page_map() as $slug => $page ) {
-		if ( get_page_by_path( $slug ) instanceof WP_Post ) continue;
+		$existing = get_page_by_path( $slug );
+		if ( $existing instanceof WP_Post ) {
+			// A page made by an earlier version of this theme keeps the template
+			// it was created with, so an upgrade that moves a page onto a better
+			// template would silently do nothing. Only theme templates are
+			// re-pointed: a template the owner chose themselves is left alone.
+			$current = (string) get_post_meta( $existing->ID, '_wp_page_template', true );
+			if ( $current !== $page[1] && ( '' === $current || 0 === strpos( $current, 'template-' ) ) ) {
+				update_post_meta( $existing->ID, '_wp_page_template', $page[1] );
+				$created++;
+			}
+			continue;
+		}
 		$page_id = wp_insert_post( array(
 			'post_type'     => 'page',
 			'post_status'   => 'publish',
@@ -336,6 +395,7 @@ function platepilot_handle_create_pages() {
 	if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Forbidden' );
 	check_admin_referer( 'platepilot_create_pages' );
 	delete_option( 'platepilot_pages_ready' );
+	platepilot_flush_directory();
 	$created = platepilot_ensure_pages();
 	flush_rewrite_rules( false );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'platepilot', 'created' => $created ), admin_url( 'admin.php' ) ) );

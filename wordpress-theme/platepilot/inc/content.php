@@ -439,7 +439,7 @@ function platepilot_nav() {
 		'resources' => array(
 			array( 'about', 'About PlatePilot' ),
 			array( 'security', 'Security and payments' ),
-			array( 'locations', 'Restaurant pages' ),
+			array( 'locations', 'Restaurants' ),
 			array( 'reports', 'Reports' ),
 		),
 	);
