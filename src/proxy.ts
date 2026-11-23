@@ -69,7 +69,11 @@ export default function proxy(request: NextRequest) {
   // duplication is what makes two sites disagree. PUBLIC_SITE_URL empty (local,
   // tests) leaves everything as it was.
   const publicSite = (process.env.PUBLIC_SITE_URL ?? "").trim().replace(/\/+$/, "");
-  if (publicSite && host && host.endsWith(".workers.dev")) {
+  const publicHost = publicSite ? new URL(publicSite).host : "";
+  // Any host that is not the public website - the Worker's workers.dev alias,
+  // Netlify's *.netlify.app alias or the app's own domain - hands marketing
+  // routes to the public site. Only the app's own routes stay here.
+  if (publicSite && host && host !== publicHost) {
     const marketing = request.nextUrl.pathname.match(
       /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(about|features|how-it-works|integrations|pricing|white-label|status)?\/?$/,
     );

@@ -3,6 +3,12 @@
 # The site must be configured with a hosted database. Without it the app refuses
 # to start rather than writing orders to a filesystem that is discarded between
 # requests (see src/server/db/hosting.ts).
+#
+# Environment variables are listed in wordpress-theme/kit/NETLIFY.md. Three of
+# them decide behaviour:
+#   APP_URL          this app's public origin
+#   PUBLIC_SITE_URL  the marketing website; marketing routes here redirect to it
+#   NEXT_PUBLIC_*    inlined into the bundle at build time
 
 [build]
   command = "pnpm run build"
@@ -11,6 +17,22 @@
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
+  # pnpm is pinned by packageManager in package.json; Corepack reads it.
+  COREPACK_ENABLE_DOWNLOAD_PROMPT = "0"
 
+# The Next.js runtime, not a static export: route handlers, middleware and
+# server components all need it.
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Hashed build output is immutable; API responses carry order and payment state
+# and must never be cached by a CDN or a browser.
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
