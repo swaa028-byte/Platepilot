@@ -29,9 +29,15 @@ export async function GET(request: Request) {
     }
     return NextResponse.json(menu, {
       headers: {
-        // Public storefront data, revalidated so a price change shows up fast.
-        "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+        // Never share this response between restaurants. The slug lives in the
+        // query string, and a CDN that keys a cached entry on the path alone
+        // will happily serve the first restaurant's menu for every other slug -
+        // which is another merchant's prices and dishes on a stranger's page.
+        // The payload is small and the read is cheap; correctness wins.
+        "Cache-Control": "no-store",
+        "Netlify-CDN-Cache-Control": "no-store",
         "Access-Control-Allow-Origin": "*",
+        "Vary": "Accept-Encoding",
       },
     });
   } catch (error) { return apiError(error); }
