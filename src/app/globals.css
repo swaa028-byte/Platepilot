@@ -926,3 +926,164 @@ p { text-wrap: pretty; }
 .hero-room-mount { position: absolute; inset-block-start: 130px; inset-inline: 0; height: 460px; z-index: 0; pointer-events: none; }
 .hero-room-canvas { display: block; width: 100%; height: 460px; opacity: 0.42; }
 .cw-hero-inner { position: relative; z-index: 1; }
+
+/* ------------------------------------------------------------------ */
+/* /start — the vendor door                                            */
+/* ------------------------------------------------------------------ */
+
+.start-hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(56px, 8vw, 104px);
+  background: #ffffff;
+}
+.start-hero-glow {
+  position: absolute;
+  inset-block-start: -30%;
+  inset-inline-end: -10%;
+  width: 70vw;
+  height: 70vw;
+  max-width: 900px;
+  max-height: 900px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(14, 143, 90, 0.18), rgba(14, 143, 90, 0.05) 45%, transparent 70%);
+  animation: start-breathe 14s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes start-breathe {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.9; }
+  50% { transform: scale(1.12) translateY(2%); opacity: 0.65; }
+}
+.start-hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+}
+.start-hero-copy h1 { font-size: clamp(2.2rem, 4.6vw, 3.6rem); line-height: 1.05; margin-bottom: 18px; }
+.start-lede { font-size: clamp(1.02rem, 1.4vw, 1.18rem); color: var(--muted); max-width: 46ch; margin-bottom: 22px; }
+.start-points { list-style: none; margin: 0 0 28px; padding: 0; display: grid; gap: 10px; }
+.start-points li { position: relative; padding-inline-start: 26px; font-size: 0.97rem; }
+.start-points li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+.start-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.start-hero-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 70px -40px rgba(11, 31, 26, 0.45);
+  isolation: isolate;
+}
+.start-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+/* Shown when there is no clip yet: a warm, moving wash instead of a broken box. */
+.start-media-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(120% 90% at 15% 10%, rgba(14, 143, 90, 0.35), transparent 60%),
+    radial-gradient(90% 80% at 85% 30%, rgba(232, 181, 103, 0.45), transparent 65%),
+    linear-gradient(160deg, #123b2c 0%, #1d5b41 45%, #0b1f1a 100%);
+  animation: start-drift 22s ease-in-out infinite alternate;
+}
+@keyframes start-drift {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.09) translate3d(-2%, -2%, 0); }
+}
+.start-caption {
+  position: absolute;
+  inset-block-end: 14px;
+  inset-inline-start: 16px;
+  inset-inline-end: 16px;
+  z-index: 3;
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+.start-body { padding-block: clamp(48px, 6vw, 88px); background: var(--cream); border-top: 1px solid var(--line); }
+.start-body-inner { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
+.start-steps h2 { margin-bottom: 20px; }
+.start-steps ol { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 18px; counter-reset: start; }
+.start-steps li { position: relative; display: grid; grid-template-columns: 30px 26px minmax(0, 1fr); gap: 12px; align-items: start; }
+.start-step-number {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent-deep);
+}
+.start-steps h3 { margin: 2px 0 4px; font-size: 1.02rem; }
+.start-steps p { margin: 0; font-size: 0.95rem; color: var(--muted); }
+.start-signin-line { font-size: 0.95rem; color: var(--muted); }
+.start-signin-line a { color: var(--accent-deep); font-weight: 600; }
+
+.start-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 24px 60px -46px rgba(11, 31, 26, 0.5);
+}
+.start-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; background: var(--cream); border-radius: 999px; margin-bottom: 18px; }
+.start-tabs button {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 650;
+  font-size: 0.92rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.start-tabs button.is-active { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(11, 31, 26, 0.12); }
+.start-form { display: grid; gap: 14px; }
+.button--block { width: 100%; }
+.start-fineprint { margin: 0; font-size: 0.82rem; color: var(--muted); }
+.start-notice { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; font-size: 0.88rem; }
+.start-notice.is-good { background: var(--accent-soft); color: var(--accent-deep); }
+.start-notice.is-bad { background: #fdeceb; color: #a4493f; }
+.start-alt { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 0.82rem; color: var(--muted); }
+.start-alt span { display: inline-flex; align-items: center; gap: 6px; }
+.start-alt a { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-deep); font-weight: 600; }
+
+@media (max-width: 991px) {
+  .start-hero-inner, .start-body-inner { grid-template-columns: 1fr; }
+  .start-hero-media { order: -1; aspect-ratio: 16 / 10; }
+}
+@media (max-width: 767px) {
+  .start-hero-actions .button { width: 100%; }
+  .start-steps li { grid-template-columns: 30px minmax(0, 1fr); }
+  .start-steps li > svg { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .start-hero-glow, .start-media-fallback { animation: none; }
+}

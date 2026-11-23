@@ -870,5 +870,13 @@
     "contactTitle": "Get in touch",
     "contactBody": "Questions, hosting help or a walkthrough of the security model: write to the project team and you will hear back from the people who build it.",
     "contactCta": "Email the team"
+  },
+  "Start": {
+    "metaTitle": "Open your restaurant — PlatePilot",
+    "metaDescription": "Open a page for your restaurant, publish your menu and take orders. 200 orders a month free, 0% commission.",
+    "eyebrow": "FOR RESTAURANTS",
+    "title": "Open your shop. Keep your name.",
+    "lede": "Your page, your prices, your staff. Our server prices every order, so the basket a guest sends is never the basket they are charged for.",
+    "howTitle": "How it works"
   }
 }

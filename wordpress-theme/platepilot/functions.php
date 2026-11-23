@@ -136,7 +136,7 @@ function platepilot_value( $key ) {
  */
 function platepilot_start_url() {
 	$app_url = untrailingslashit( platepilot_value( 'app_url' ) );
-	if ( '' !== $app_url ) return $app_url . '/en/onboarding';
+	if ( '' !== $app_url ) return $app_url . '/en/start';
 	return platepilot_contact_url();
 }
 

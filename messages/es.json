@@ -870,5 +870,13 @@
     "contactTitle": "Escríbenos",
     "contactBody": "Preguntas, ayuda con el alojamiento o un recorrido por el modelo de seguridad: escribe al equipo del proyecto y responderá la gente que lo construye.",
     "contactCta": "Escribir al equipo"
+  },
+  "Start": {
+    "metaTitle": "Abre tu restaurante — PlatePilot",
+    "metaDescription": "Crea la página de tu restaurante, publica tu carta y recibe pedidos. 200 pedidos al mes gratis, 0 % de comisión.",
+    "eyebrow": "PARA RESTAURANTES",
+    "title": "Abre tu local. Conserva tu nombre.",
+    "lede": "Tu página, tus precios, tu equipo. Nuestro servidor recalcula cada pedido: la cesta que envía el cliente nunca es la que se le cobra.",
+    "howTitle": "Cómo funciona"
   }
 }
