@@ -80,6 +80,10 @@ export function LoginForm({ configured, localMode, expired = false }: { configur
       {state === "error" && <div className="notice notice--error"><AlertCircle size={18} />{t("sendFailed")}</div>}
       <button className="button" disabled={state === "sending"}>{mode === "password" ? <KeyRound size={17} /> : <Mail size={17} />}{state === "sending" ? t("sending") : localMode ? t("submitLocal") : mode === "password" ? t("passwordSubmit") : t("submit")}</button>
       {!localMode && <button type="button" className="linklike" onClick={() => { setMode(mode === "password" ? "link" : "password"); setState("idle"); }}>{mode === "password" ? t("passwordBack") : t("passwordToggle")}</button>}
+      {/* A sign-in form with no way to become a customer is a dead end: this
+          is the page the marketing site links to when it says "Sign in", and
+          most people who reach it have never had an account. */}
+      <p className="login-register">{t("noAccount")} <a href={`/${locale}/start`}>{t("createAccount")}</a></p>
     </form>
   );
 }

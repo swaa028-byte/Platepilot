@@ -170,7 +170,9 @@
     "passwordBack": "Enviarme un enlace por correo",
     "password": "Contraseña",
     "passwordSubmit": "Iniciar sesión",
-    "invalidCredentials": "Ese correo y contraseña no coinciden con ninguna cuenta."
+    "invalidCredentials": "Ese correo y contraseña no coinciden con ninguna cuenta.",
+    "noAccount": "¿Aún no tienes restaurante?",
+    "createAccount": "Créalo en dos minutos"
   },
   "Onboarding": {
     "eyebrow": "CONFIGURACIÓN DEL RESTAURANTE",

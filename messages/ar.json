@@ -170,7 +170,9 @@
     "passwordBack": "أرسل لي رابطًا بالبريد",
     "password": "كلمة المرور",
     "passwordSubmit": "تسجيل الدخول",
-    "invalidCredentials": "هذا البريد وكلمة المرور لا يتطابقان مع أي حساب."
+    "invalidCredentials": "هذا البريد وكلمة المرور لا يتطابقان مع أي حساب.",
+    "noAccount": "ليس لديك مطعم بعد؟",
+    "createAccount": "ابدأ خلال دقيقتين"
   },
   "Onboarding": {
     "eyebrow": "إعداد المطعم",

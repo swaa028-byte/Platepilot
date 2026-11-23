@@ -1099,3 +1099,7 @@ p { text-wrap: pretty; }
 @media (prefers-reduced-motion: reduce) {
   .start-hero-glow, .start-media-fallback { animation: none; }
 }
+/* Registration prompt under the sign-in form. */
+.login-register { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+.login-register a { color: var(--green-deep); font-weight: 600; text-decoration: none; }
+.login-register a:hover { text-decoration: underline; }

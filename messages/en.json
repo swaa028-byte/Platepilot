@@ -170,7 +170,9 @@
     "passwordBack": "Email me a link instead",
     "password": "Password",
     "passwordSubmit": "Sign in",
-    "invalidCredentials": "That email and password do not match an account."
+    "invalidCredentials": "That email and password do not match an account.",
+    "noAccount": "No restaurant yet?",
+    "createAccount": "Start one in two minutes"
   },
   "Onboarding": {
     "eyebrow": "RESTAURANT SETUP",

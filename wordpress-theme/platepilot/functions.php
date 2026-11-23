@@ -307,6 +307,25 @@ function platepilot_page_map() {
 }
 
 /**
+ * The theme decides which template its own pages use.
+ *
+ * WordPress resolves a page's template from post meta, and that meta outlives a
+ * theme update: a page created by an earlier version keeps pointing at the
+ * template it was born with. So shipping a better template for an existing page
+ * used to change nothing on the site - the file was on the server and no page
+ * ever loaded it. For pages this theme owns, the map wins over stale meta.
+ */
+function platepilot_force_page_template( $template ) {
+	if ( ! is_page() ) return $template;
+	$slug = get_post_field( 'post_name', get_queried_object_id() );
+	$map  = platepilot_page_map();
+	if ( ! isset( $map[ $slug ] ) ) return $template;
+	$own = locate_template( $map[ $slug ][1] );
+	return $own ? $own : $template;
+}
+add_filter( 'template_include', 'platepilot_force_page_template', 20 );
+
+/**
  * Creates any missing page with its template. Idempotent: an existing page
  * with the same slug is left exactly as the site owner left it.
  */
@@ -350,7 +369,10 @@ function platepilot_maybe_create_pages() {
 	// The stored value is a signature of the page list, not a "done" flag: when
 	// a later version of the theme adds pages, the signature changes and the
 	// missing ones are created on the next wp-admin load.
-	$signature = md5( implode( ',', array_keys( platepilot_page_map() ) ) );
+	// Hashed over the whole map, not just its slugs: a version that moves a
+	// page onto a different template changes no slug, and a slug-only check
+	// would decide there was nothing to do and leave the old template in place.
+	$signature = md5( wp_json_encode( platepilot_page_map() ) );
 	if ( ! current_user_can( 'manage_options' ) || get_option( 'platepilot_pages_ready' ) === $signature ) return;
 
 	if ( ! function_exists( 'got_url_rewrite' ) ) {

@@ -28,7 +28,7 @@ export function StartAuth({ configured, localMode }: { configured: boolean; loca
   function message(): string | null {
     switch (state) {
       case "sent":
-        return "Check your email: we sent a link that finishes the sign-in.";
+        return "Check your email for the link that finishes your account, then sign in.";
       case "exists":
         return "That email already has an account. Use Sign in instead.";
       case "badCredentials":
@@ -72,6 +72,35 @@ export function StartAuth({ configured, localMode }: { configured: boolean; loca
         setState("weakPassword");
         return;
       }
+
+      // Register through the server first: it can create an account that works
+      // right away, without waiting on an email the project may not be able to
+      // deliver yet. 501 means this host has no service role, so the browser
+      // falls through to Supabase's own signUp below.
+      const registration = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (registration.ok) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) {
+          setState("error");
+          return;
+        }
+        router.push(`/${locale}/onboarding`);
+        router.refresh();
+        return;
+      }
+      if (registration.status === 409) {
+        setState("exists");
+        return;
+      }
+      if (registration.status !== 501) {
+        setState("error");
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
