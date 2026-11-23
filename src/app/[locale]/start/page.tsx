@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, CalendarCheck, ChefHat, ScanLine } from "lucide-react";
 
 import { StartAuth } from "@/components/auth/StartAuth";
+import { StartMedia } from "@/components/auth/StartMedia";
 import { isSupabaseConfigured } from "@/server/auth/config";
 import { isLocalModeEnabled } from "@/server/auth/local-session";
 
@@ -46,7 +47,6 @@ export default async function StartPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Start");
-  const video = process.env.NEXT_PUBLIC_WELCOME_VIDEO ?? "/media/welcome.mp4";
 
   return (
     <>
@@ -68,21 +68,7 @@ export default async function StartPage({ params }: { params: Promise<{ locale: 
             </div>
           </div>
 
-          <div className="start-hero-media">
-            <video
-              className="start-video"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster="/media/welcome-poster.jpg"
-            >
-              <source src={video} type="video/mp4" />
-            </video>
-            <div className="start-media-fallback" aria-hidden="true" />
-            <p className="start-caption">A plate at La Divine Eden, Parow — photographed the day the menu went live.</p>
-          </div>
+          <StartMedia caption="La Divine Eden, Parow — the plate that starts the queue." />
         </div>
       </section>
 

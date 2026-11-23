@@ -1,2 +1,2 @@
-Put welcome.mp4 and welcome-poster.jpg here.
-The /start page plays the clip; without it the animated gradient shows instead.
+Drop gallery-1.jpg, gallery-2.jpg and gallery-3.jpg here (or set NEXT_PUBLIC_WELCOME_IMAGES to a comma-separated list of URLs).
+The /start hero crossfades them with a slow push-in.
