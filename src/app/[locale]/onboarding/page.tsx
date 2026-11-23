@@ -24,6 +24,10 @@ export default async function OnboardingPage({ params }: { params: Promise<{ loc
         .eq("user_id", session.user.id)
         .limit(1);
       if (memberships && memberships.length > 0) redirect(`/${locale}/operations`);
+    } else {
+      // The wizard ends by creating an organisation, which needs an account.
+      // A visitor without one is sent to the door that can create it.
+      redirect(`/${locale}/start`);
     }
   }
   return (
