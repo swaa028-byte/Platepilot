@@ -75,7 +75,7 @@ export default function proxy(request: NextRequest) {
   // routes to the public site. Only the app's own routes stay here.
   if (publicSite && host && host !== publicHost) {
     const marketing = request.nextUrl.pathname.match(
-      /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(about|features|how-it-works|integrations|pricing|white-label|status)?\/?$/,
+      /^\/(?:[a-z]{2}(?:-[a-z]{2})?)?\/?(about|features|how-it-works|integrations|pricing|white-label|status)?\/?$/,
     );
     if (marketing) {
       const slug = marketing[1] ?? "";
