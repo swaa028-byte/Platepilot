@@ -47,7 +47,7 @@ redeploy.
 ## 3. The custom domain
 
 Netlify → **Domain management → Add a domain** → `app.platepilot.ct.ws`.
-Netlify shows a CNAME target such as `platepilot-725.netlify.app`.
+Netlify shows a CNAME target such as `platepilot-kitchen.netlify.app`.
 
 In InfinityFree (the DNS host for `ct.ws`): **DNS Records → Add DNS Record**
 

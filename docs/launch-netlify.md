@@ -10,7 +10,7 @@ beyond confirming the branch.
 ## 1. Connect the repository
 
 Netlify → **Add new site** → **Import an existing project** → **GitHub** →
-`MarcusK-ai/rea-cloudwaitress`.
+`swaa028-byte/Platepilot`.
 
 | Setting | Value |
 | --- | --- |

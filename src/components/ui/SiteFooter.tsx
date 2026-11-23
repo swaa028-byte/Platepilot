@@ -40,7 +40,7 @@ export function SiteFooter() {
           <Link href="/about#contact">{t("contact")}</Link>
           <Link href="/security">{t("securityPage")}</Link>
           <Link href="/locations">{t("locations")}</Link>
-          <a href="https://github.com/MarcusK-ai/Platepilot">{t("docs")}</a>
+          <a href="https://github.com/swaa028-byte/Platepilot">{t("docs")}</a>
           <Link href="/login">{t("signIn")}</Link>
         </div>
         <div className="footer-locale"><LanguageSwitcher /></div>
