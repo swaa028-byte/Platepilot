@@ -54,7 +54,6 @@ export default async function StartPage({ params }: { params: Promise<{ locale: 
         <div className="start-hero-glow" aria-hidden="true" />
         <div className="shell start-hero-inner">
           <div className="start-hero-copy">
-            <p className="eyebrow"><span />{t("eyebrow")}</p>
             <h1>{t("title")}</h1>
             <p className="start-lede">{t("lede")}</p>
             <ul className="start-points">
@@ -68,7 +67,7 @@ export default async function StartPage({ params }: { params: Promise<{ locale: 
             </div>
           </div>
 
-          <StartMedia caption="La Divine Eden, Parow — the plate that starts the queue." />
+          <StartMedia caption="Illustrative service photography. Your own photographs replace these." />
         </div>
       </section>
 

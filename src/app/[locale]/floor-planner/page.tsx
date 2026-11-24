@@ -7,7 +7,7 @@ export default async function FloorPlannerPage({ params }: { params: Promise<{ l
   const t = await getTranslations("Floor");
   return (
     <div className="planner-page">
-      <section className="page-hero"><div className="shell"><p className="eyebrow"><span />{t("eyebrow")}</p><h1>{t("title")}</h1><p className="page-lede">{t("description")}</p></div></section>
+      <section className="page-hero"><div className="shell"><h1>{t("title")}</h1><p className="page-lede">{t("description")}</p></div></section>
       <FloorPlanner />
     </div>
   );

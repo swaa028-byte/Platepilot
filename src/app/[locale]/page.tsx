@@ -4,9 +4,9 @@ import {
   CalendarCheck,
   Check,
   Globe2,
+  Minus,
   ShieldCheck,
   ShoppingBag,
-  Sparkles,
   UtensilsCrossed,
 } from "lucide-react";
 import Image from "next/image";
@@ -16,11 +16,16 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
 import FeatureTabs from "@/components/home/FeatureTabs";
-import { RotatingWord, RotatingWordLabel } from "@/components/home/RotatingWord";
-import { ScrollMotion } from "@/components/home/ScrollMotion";
-import HeroScene from "@/components/home/HeroScene";
 
 const modeIcons = [ShoppingBag, UtensilsCrossed, Bike, CalendarCheck];
+
+const languages = [
+  { name: "English", code: "EN", rtl: false },
+  { name: "Français", code: "FR", rtl: false },
+  { name: "Español", code: "ES", rtl: false },
+  { name: "Português", code: "PT", rtl: false },
+  { name: "العربية", code: "AR", rtl: true },
+];
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -47,11 +52,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function HomePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+/**
+ * The landing page reads as one board: a stage with the room in it, the four
+ * service platforms, the route an order takes, and the live floor it lands on.
+ * Every line of copy comes from the Home namespace; the product views are
+ * labelled as illustrative, never presented as customer results.
+ */
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Home");
@@ -68,7 +75,18 @@ export default async function HomePage({
     { number: "02", title: t("kitchenTitle"), body: t("kitchenBody"), cta: t("secondaryCta"), href: "/kitchen", visual: "kitchen" as const },
     { number: "03", title: t("paymentsTitle"), body: t("paymentsBody"), cta: t("securityCta"), href: "/security", visual: "payment" as const },
   ];
-  const states = [t("available"), t("reserved"), t("seated"), t("resetting")];
+  const board = [
+    { table: "T1", state: t("available"), live: false },
+    { table: "T2", state: t("seated"), live: true },
+    { table: "T3", state: t("reserved"), live: false },
+  ];
+  const room = [
+    { table: "T1", state: t("available"), note: "2" },
+    { table: "T2", state: t("seated"), note: "4" },
+    { table: "T3", state: t("reserved"), note: "6" },
+    { table: "T4", state: t("resetting"), note: "2" },
+    { table: "T5", state: t("available"), note: "4" },
+  ];
   const faqs = [
     { q: t("faqOneQ"), a: t("faqOneA") },
     { q: t("faqTwoQ"), a: t("faqTwoA") },
@@ -78,253 +96,188 @@ export default async function HomePage({
 
   return (
     <>
-      {/* Hero: a CloudWaitress-style statement band, in green. */}
-      <section className="cw-hero">
-        <HeroScene />
-        <div className="cw-hero-glow" aria-hidden="true" />
-        <ScrollMotion />
-        <div className="shell cw-hero-inner">
-          <p className="eyebrow eyebrow--light eyebrow--center"><span />{t("eyebrow")}</p>
-          <h1>{t("title")}<em>{t("titleAccent")}</em></h1>
-          <p className="cw-hero-rotate">
-            <span className="cw-hero-rotate-lead">PlatePilot ·</span>
-            <RotatingWord />
-            <RotatingWordLabel />
-          </p>
-          <p className="cw-lede">{t("description")}</p>
-          <div className="button-row">
-            <Link href="/onboarding" className="button button--light button--hero">
-              {t("primaryCta")}<ArrowRight size={18} />
-            </Link>
-            <Link href="/operations" className="button button--outline-light">
-              {t("secondaryCta")}
-            </Link>
-          </div>
-          <p className="cw-hero-note"><Check size={15} />{t("note")}</p>
-
-          {/* Product view under the statement, like CloudWaitress's hero screenshot. */}
-          <div className="cw-hero-mockup">
-            <div className="stage-card">
-              <div className="floor-preview floor-preview--glass">
-                <div className="preview-topline">
-                  <span>{t("previewLabel")}</span>
-                  <span className="live-pill"><i />LIVE</span>
-                </div>
-                <div className="preview-copy">
-                  <h2>{t("previewTitle")}</h2>
-                  <p>{t("previewDescription")}</p>
-                </div>
-                <div className="illustrative-room" aria-label={t("previewLabel")}>
-                  <span className="room-table room-table--round room-table--available room-table--t1" aria-hidden="true">T1</span>
-                  <span className="room-table room-table--booth room-table--reserved room-table--t2" aria-hidden="true">T2</span>
-                  <span className="room-table room-table--round room-table--seated room-table--t3" aria-hidden="true">T3</span>
-                  <span className="room-table room-table--booth room-table--available room-table--t4" aria-hidden="true">T4</span>
-                  <span className="room-table room-table--round room-table--resetting room-table--t5" aria-hidden="true">T5</span>
-                  <div className="room-line room-line--one" />
-                  <div className="room-line room-line--two" />
-                  <span className="room-coordinate room-coordinate--x">X · m</span>
-                  <span className="room-coordinate room-coordinate--z">Z · m</span>
-                </div>
-                <div className="preview-bottom">
-                  <div className="state-legend" aria-label={t("previewLabel")}>
-                    {states.map((state, index) => (
-                      <span key={state}><i className={`state-dot state-dot--${index}`} />{state}</span>
-                    ))}
-                  </div>
-                  <Link href="/floor-planner" className="preview-link" aria-label={t("previewCta")}>
-                    <ArrowRight size={19} />
-                  </Link>
-                </div>
-              </div>
-              <div className="stage-note stage-note--top" aria-hidden="true"><Sparkles size={15} /> 2D + 3D</div>
-              <div className="stage-note stage-note--bottom" aria-hidden="true"><ShieldCheck size={15} /> ACCESSIBLE BY DESIGN</div>
+      <section className="lp-hero">
+        <div className="shell lp-hero__grid">
+          <div className="lp-hero__copy">
+            <h1>{t("title")}<span>{t("titleAccent")}</span></h1>
+            <p className="lp-hero__lede">{t("description")}</p>
+            <div className="lp-hero__actions">
+              <Link href="/onboarding" className="button button--hero">
+                {t("primaryCta")}<ArrowRight size={18} aria-hidden="true" />
+              </Link>
+              <Link href="/operations" className="button button--ghost">
+                {t("secondaryCta")}
+              </Link>
             </div>
+            <p className="lp-hero__note"><Check size={14} aria-hidden="true" />{t("note")}</p>
           </div>
+
+          <figure className="lp-stage">
+            <div className="lp-stage__frame">
+              <span className="lp-stage__tag">{t("previewTitle")}</span>
+              <Image
+                src="/images/hero-restaurant.jpg"
+                alt={t("previewTitle")}
+                fill
+                sizes="(max-width: 1024px) 100vw, 640px"
+                priority
+              />
+            </div>
+            <div className="lp-board">
+              <div className="lp-board__head">
+                <span>{t("previewLabel")}</span>
+                <span className="lp-live"><i aria-hidden="true" />LIVE</span>
+              </div>
+              <div className="lp-board__rows">
+                {board.map((row) => (
+                  <div key={row.table} className={`lp-board__row${row.live ? " is-live" : ""}`}>
+                    <span className="lp-board__no">{row.table}</span>
+                    <span className="lp-board__state" data-state={row.state.toLowerCase()}>{row.state}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="lp-board__foot">{t("floorPointThree")}</div>
+            </div>
+            <figcaption className="lp-stage__caption">
+              <span>2D / 3D</span>
+              <Link href="/floor-planner" className="text-link">{t("previewCta")} →</Link>
+            </figcaption>
+          </figure>
         </div>
+
+        <ul className="shell lp-strip">
+          <li><Check size={16} aria-hidden="true" />{t("stripOne")}</li>
+          <li><Globe2 size={16} aria-hidden="true" />{t("stripTwo")}</li>
+          <li><ShieldCheck size={16} aria-hidden="true" />{t("stripThree")}</li>
+        </ul>
       </section>
 
-      <section className="trust-strip" aria-label={t("productEyebrow")}>
-        <div className="shell trust-strip-inner">
-          <span><Check size={16} />{t("stripOne")}</span>
-          <span><Globe2 size={16} />{t("stripTwo")}</span>
-          <span><ShieldCheck size={16} />{t("stripThree")}</span>
-        </div>
-      </section>
+      <section className="section" id="product">
+      <div className="lp-interlude" aria-hidden="true">
+        <Image src="/images/menu/bobotie.jpg" alt="" fill sizes="100vw" />
+      </div>
 
-      {/* "One system that does it all": the four service modes. */}
-      <section className="section cw-modes">
         <div className="shell">
-          <div className="cw-center-head">
-            <p className="eyebrow eyebrow--center"><span />{t("modesEyebrow")}</p>
+          <div className="lp-head">
             <h2>{t("modesTitle")}</h2>
-            <p className="cw-section-lede">{t("modesBody")}</p>
+            <p>{t("modesBody")}</p>
           </div>
-          <div className="cw-mode-grid">
+          <div className="lp-modes">
             {modes.map((mode, index) => {
               const Icon = modeIcons[index];
               return (
-                <article className="cw-mode-card" key={mode.title}>
-                  <span className="cw-mode-icon"><Icon size={24} strokeWidth={1.7} /></span>
-                  <h3>{mode.title}</h3>
+                <Link href={mode.href} className="lp-mode" key={mode.title}>
+                  <h3>
+                    <span className="lp-mode__no">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="lp-mode__icon"><Icon size={18} strokeWidth={1.6} aria-hidden="true" /></span>
+                    {mode.title}
+                  </h3>
                   <p>{mode.body}</p>
-                  <Link href={mode.href} className="cw-mode-link">
-                    {t("modeCta")}<ArrowRight size={15} />
-                  </Link>
-                </article>
+                  <span className="lp-mode__go" aria-hidden="true"><ArrowRight size={14} /></span>
+                </Link>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* 01 / 02 / 03: the numbered walk-through. */}
-      <section className="section cw-steps" id="product">
+      <section className="section section--band">
         <div className="shell">
-          <div className="cw-center-head">
-            <p className="eyebrow eyebrow--center"><span />{t("productEyebrow")}</p>
+          <div className="lp-head">
             <h2>{t("productTitle")}</h2>
-            <p className="cw-section-lede">{t("productDescription")}</p>
+            <p>{t("productDescription")}</p>
           </div>
-          <div className="cw-step-list">
-            {steps.map((step, index) => (
-              <div className={`cw-step${index % 2 === 1 ? " cw-step--flip" : ""}`} key={step.number}>
-                <div className="cw-step-copy">
-                  <span className="cw-step-num">{step.number}</span>
+          <div className="lp-route">
+            {steps.map((step) => (
+              <article className="lp-stop" key={step.number}>
+                <span className="lp-stop__no">{step.number}</span>
+                <div className="lp-stop__copy">
                   <h3>{step.title}</h3>
                   <p>{step.body}</p>
-                  <Link href={step.href} className="button button--small">{step.cta}<ArrowRight size={15} /></Link>
+                  <Link href={step.href} className="text-link">{step.cta} →</Link>
                 </div>
-                <div className="cw-step-visual">
+                <div className="lp-stop__visual">
                   {step.visual === "photo" && (
-                    <div className="cw-step-photo">
-                      <Image
-                        src="/images/hero-restaurant.jpg"
-                        alt={step.title}
-                        width={900}
-                        height={600}
-                        sizes="(max-width: 820px) 100vw, 520px"
-                      />
-                    </div>
+                    <Image
+                      src="/images/menu/bobotie.jpg"
+                      alt={step.title}
+                      width={900}
+                      height={600}
+                      sizes="(max-width: 1024px) 100vw, 560px"
+                    />
                   )}
                   {step.visual === "kitchen" && (
-                    <div className="cw-step-photo cw-step-photo--kitchen">
-                      <Image
-                        src="/images/kitchen-pass.jpg"
-                        alt={step.title}
-                        width={900}
-                        height={600}
-                        sizes="(max-width: 820px) 100vw, 520px"
-                      />
-                      <div className="craft-chip craft-chip--orders" aria-hidden="true"><UtensilsCrossed size={14} /> 1042</div>
-                      <div className="craft-chip craft-chip--live" aria-hidden="true"><i />LIVE</div>
-                    </div>
+                    <Image
+                      src="/images/kitchen-pass.jpg"
+                      alt={step.title}
+                      width={900}
+                      height={600}
+                      sizes="(max-width: 1024px) 100vw, 560px"
+                    />
                   )}
                   {step.visual === "payment" && (
-                    <div className="pay-mock" role="presentation">
-                      <div className="pay-mock-row">
-                        <span>{s("reference")}</span>
-                        <strong>PP-1042</strong>
+                    <div className="lp-ticket">
+                      <div className="lp-ticket__head">
+                        <span>{s("kitchen")}</span>
+                        <span>{t("stripThree")}</span>
                       </div>
-                      <div className="pay-mock-row">
-                        <span>{s("total")}</span>
-                        <strong>4 800 XOF</strong>
-                      </div>
-                      <div className="pay-mock-row">
-                        <span>{s("payment")}</span>
-                        <span className="pay-badge">{s("paymentPaid")}</span>
-                      </div>
-                      <div className="pay-mock-flow" aria-hidden="true">
-                        <span className="pay-flow-step is-done">{s("received")}</span>
-                        <span className="pay-flow-step is-done">{s("preparing")}</span>
-                        <span className="pay-flow-step is-done">{s("ready")}</span>
-                        <span className="pay-flow-step">{s("completed")}</span>
-                      </div>
-                      <p className="pay-mock-note"><ShieldCheck size={14} />{t("stripThree")}</p>
+                      <div className="lp-ticket__row"><span>{s("received")}</span><Check size={16} aria-hidden="true" /></div>
+                      <div className="lp-ticket__row"><span>{s("preparing")}</span><Check size={16} aria-hidden="true" /></div>
+                      <div className="lp-ticket__row"><span>{s("ready")}</span><Check size={16} aria-hidden="true" /></div>
+                      <div className="lp-ticket__row"><span>{s("completed")}</span><Minus size={16} aria-hidden="true" /></div>
+                      <div className="lp-ticket__total"><span>{s("payment")}</span><b>{s("paymentPaid")}</b></div>
                     </div>
                   )}
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Signature feature: the live floor. */}
-      <section className="section floor-story">
-        <div className="shell floor-story-grid">
-          <div className="floor-story-visual" aria-hidden="true">
-            <div className="blueprint-grid">
-              <span className="blueprint-label">LIVE FLOOR / 2D FIRST</span>
-              <div className="blueprint-table blueprint-table--one"><i /><i /><i /><i /></div>
-              <div className="blueprint-table blueprint-table--two"><i /><i /></div>
-              <div className="blueprint-table blueprint-table--three"><i /><i /><i /></div>
-              <div className="blueprint-path" />
-              <span className="blueprint-scale">0 ─── 1 m</span>
+      <section className="lp-floor">
+        <div className="shell">
+          <div className="lp-floor__grid">
+            <div>
+              <h2>{t("floorSectionTitle")}</h2>
+              <p>{t("floorSectionBody")}</p>
+              <ul className="lp-floor__points">
+                <li><Check size={16} aria-hidden="true" />{t("floorPointOne")}</li>
+                <li><Check size={16} aria-hidden="true" />{t("floorPointTwo")}</li>
+                <li><Check size={16} aria-hidden="true" />{t("floorPointThree")}</li>
+              </ul>
+              <Link href="/floor-planner" className="button button--light">
+                {t("floorCta")}<ArrowRight size={16} aria-hidden="true" />
+              </Link>
             </div>
-            <div className="dimension-tag dimension-tag--width">12.0 m</div>
-            <div className="dimension-tag dimension-tag--depth">8.0 m</div>
-          </div>
-          <div className="floor-story-copy">
-            <p className="eyebrow eyebrow--light"><span />{t("floorEyebrow")}</p>
-            <h2>{t("floorSectionTitle")}</h2>
-            <p>{t("floorSectionBody")}</p>
-            <ul className="check-list">
-              <li><Check size={18} />{t("floorPointOne")}</li>
-              <li><Check size={18} />{t("floorPointTwo")}</li>
-              <li><Check size={18} />{t("floorPointThree")}</li>
-            </ul>
-            <Link href="/floor-planner" className="button button--cream">{t("floorCta")}<ArrowRight size={17} /></Link>
+            <div className="lp-floor__board">
+              <div className="lp-floor__board-head">
+                <span>{t("boardLive")}</span>
+                <span>{t("boardNote")}</span>
+              </div>
+              {room.map((row) => (
+                <div key={row.table} className="lp-floor__row" data-state={row.state.toLowerCase()}>
+                  <b>{row.table}</b>
+                  <span>{row.state}</span>
+                  <em>{row.note}</em>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       <FeatureTabs />
 
-      {/* Integrations, named honestly. */}
-      <section className="section cw-integrations">
+      <section className="section">
         <div className="shell">
-          <div className="cw-center-head">
-            <p className="eyebrow eyebrow--center"><span />{t("integrationsEyebrow")}</p>
-            <h2>{t("integrationsTitle")}</h2>
-            <p className="cw-section-lede">{t("integrationsBody")}</p>
-          </div>
-          <ul className="cw-integration-row" aria-label={t("integrationsTitle")}>
-            {["Stripe", "Paystack", "PayPal", "Google", "SMS"].map((name) => (
-              <li className="cw-integration-chip" key={name}>{name}</li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="section global-section">
-        <div className="shell global-grid">
-          <div>
-            <p className="eyebrow"><span />{t("globalEyebrow")}</p>
-            <h2>{t("globalTitle")}</h2>
-            <p className="section-lede">{t("globalBody")}</p>
-            <p className="language-line">{t("languageLabel")}</p>
-          </div>
-          <div className="currency-diagram" aria-label="USD · EUR · GBP · ZAR · NGN · JPY · KWD">
-            <div className="currency-center"><Globe2 size={32} /><span>ONE ORDER</span><strong>EXACT MONEY</strong></div>
-            {["USD", "EUR", "ZAR", "JPY", "KWD", "GBP"].map((currency, index) => (
-              <span className={`currency-chip currency-chip--${index + 1}`} key={currency}>{currency}</span>
-            ))}
-            <div className="currency-ring currency-ring--one" /><div className="currency-ring currency-ring--two" />
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ: native details/summary, keyboard and screen-reader friendly. */}
-      <section className="section cw-faq">
-        <div className="shell">
-          <div className="cw-center-head">
-            <p className="eyebrow eyebrow--center"><span />{t("faqEyebrow")}</p>
+          <div className="lp-head">
             <h2>{t("faqTitle")}</h2>
           </div>
           <div className="cw-faq-list">
             {faqs.map((faq) => (
               <details className="cw-faq-item" key={faq.q}>
-                <summary>{faq.q}<span aria-hidden="true" /></summary>
+                <summary>{faq.q}</summary>
                 <p>{faq.a}</p>
               </details>
             ))}
@@ -332,25 +285,57 @@ export default async function HomePage({
         </div>
       </section>
 
-      <section className="section security-section" id="security">
-        <div className="shell security-card">
-          <div className="security-icon"><ShieldCheck size={35} strokeWidth={1.4} /></div>
-          <div className="security-copy">
-            <p className="eyebrow"><span />{t("securityEyebrow")}</p>
-            <h2>{t("securityTitle")}</h2>
-            <p>{t("securityBody")}</p>
+      <section className="section section--band" id="security">
+        <div className="shell">
+          <div className="lp-global">
+            <div>
+              <h2>{t("globalTitle")}</h2>
+              <p>{t("globalBody")}</p>
+            </div>
+            <div>
+              <h3>{t("integrationsTitle")}</h3>
+              <p>{t("integrationsBody")}</p>
+              <ul className="lp-chips" aria-label={t("integrationsTitle")}>
+                {["Stripe", "Paystack", "PayPal", "Google", "SMS"].map((name) => (
+                  <li key={name}>{name}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <Link className="button button--outline" href="/security">{t("securityCta")}<ArrowRight size={17} /></Link>
+        </div>
+        <div className="lp-langband" aria-label={t("stripTwo")}>
+          {languages.map((language) => (
+            <div className={`lp-langband__item${language.rtl ? " is-rtl" : ""}`} key={language.code}>
+              <span className="lp-langband__code">{language.code}</span>
+              <b>{language.name}</b>
+            </div>
+          ))}
+        </div>
+        <div className="shell">
+          <div className="lp-security">
+            <div>
+              <h2>{t("securityTitle")}</h2>
+              <p>{t("securityBody")}</p>
+              <Link href="/security" className="button button--ghost">
+                {t("securityCta")}<ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+            <ul className="lp-security__panel">
+              <li className="lp-security__row"><span>{t("stripOne")}</span><Check size={16} aria-hidden="true" /></li>
+              <li className="lp-security__row"><span>{t("stripTwo")}</span><Globe2 size={16} aria-hidden="true" /></li>
+              <li className="lp-security__row"><span>{t("stripThree")}</span><ShieldCheck size={16} aria-hidden="true" /></li>
+            </ul>
+          </div>
         </div>
       </section>
 
-      {/* Closing banner: CloudWaitress's full-bleed CTA band, in green. */}
       <section className="closing-section">
         <div className="shell closing-inner">
-          <p className="eyebrow eyebrow--light eyebrow--center"><span />PLATEPILOT</p>
           <h2>{t("closingTitle")}</h2>
           <p>{t("closingBody")}</p>
-          <Link href="/onboarding" className="button button--light button--hero">{t("closingCta")}<ArrowRight size={18} /></Link>
+          <Link href="/onboarding" className="button button--light button--hero">
+            {t("closingCta")}<ArrowRight size={18} aria-hidden="true" />
+          </Link>
         </div>
       </section>
     </>

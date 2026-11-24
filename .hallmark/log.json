@@ -1,0 +1,44 @@
+[
+ {
+  "mode": "redesign",
+  "depth": "full",
+  "scope": "site",
+  "shape": "Route Board",
+  "theme": "Wayfind",
+  "axes": "light/mono/cool",
+  "hero": "Stage — copy in columns 1–6, a photographic plate carrying a live pass board in 7–12",
+  "nav": "signage bar: wordmark, two groups and one cobalt action",
+  "footer": "ink mast: wordmark above four ruled columns",
+  "imagery": "photographs, library 5, mono · product samples in hero, floor and ticket",
+  "entry": "the pass board",
+  "fingerprint": "Left-margin|Asymmetric spans|Double rule|Solid|Full-bleed|None",
+  "sections": [
+   "Hero",
+   "Modes",
+   "Route",
+   "Floor",
+   "Feature tabs",
+   "FAQ",
+   "Global and languages",
+   "Security and close"
+  ],
+  "signature": "the pass board — a working rail of tickets that updates in place",
+  "photos": [
+   "hero-restaurant",
+   "bobotie",
+   "kitchen-pass",
+   "boerewors-roll",
+   "bunny-chow",
+   "malva-pudding"
+  ],
+  "waived": [],
+  "prompt": "Rebuild the entire Platepilot webapp with a premium design, in and out (the full app, not just the landing page).",
+  "outcome": "sloplint 0 FAIL, 3 WARN, 1 NOTE (58); tsc 0; next build 0; vitest 39/39; eslint 0 errors",
+  "pages": [
+   "marketing",
+   "auth",
+   "operator",
+   "storefront"
+  ]
+ }
+]

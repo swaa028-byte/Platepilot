@@ -1,0 +1,90 @@
+/* ---------------------------------------------------------------------------
+   Guest storefront. The restaurant's own menu, set as a printed card: the
+   name at the top, hours in a ruled column, prices right-aligned on a leader.
+   --------------------------------------------------------------------------- */
+.storefront-page { min-height: 100vh; background: var(--color-paper-3); }
+.storefront-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-md);
+  padding: var(--space-sm) var(--gutter);
+  border-bottom: var(--rule-bar) solid var(--color-ink);
+  background: var(--color-paper);
+}
+.storefront-bar__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+.storefront-bar__brand { display: inline-flex; align-items: center;gap: var(--space-xs); font-size: var(--text-sm); font-weight: 700; text-decoration: none; }
+.storefront-bar__brand span { display: inline-grid; place-items: center; width: 26px; height: 26px; background: var(--color-ink); color: var(--color-paper); font-size: var(--text-2xs); font-weight: 800; }
+.storefront-bar__nav { display: flex; align-items: center; gap: var(--space-lg); }
+.storefront-bar__nav a { font-size: var(--text-sm); font-weight: 400; text-decoration: none; }
+.storefront-bar__nav a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.storefront-head { padding-block: clamp(32px, 5vw, 56px) var(--space-lg); border-bottom: var(--rule-bar) solid var(--color-ink); }
+.storefront-head h1 { font-size: clamp(2rem, 4vw + 0.5rem, 3.5rem); max-width: 20ch; }
+.storefront-head .page-lede { margin-block-start: var(--space-sm); }
+.storefront-head__meta { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); margin-block-start: var(--space-md); font-size: var(--text-sm); color: var(--color-muted); }
+.storefront-content { padding-block: var(--space-xl) var(--space-3xl); }
+.storefront-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8fr); gap: var(--space-2xl); align-items: start; }
+.storefront-aside { display: grid; gap: var(--space-md); position: sticky; inset-block-start: var(--space-lg); }
+.storefront-block { border: var(--rule-bar) solid var(--color-ink); background: var(--color-paper-3); padding: var(--space-md); }
+.storefront-block h2 { font-size: var(--text-sm); padding-block-end: var(--space-xs); border-bottom: var(--rule-hair) solid var(--color-rule); margin-block-end: var(--space-xs); }
+.storefront-hours { display: grid; gap: 0; }
+.storefront-hours li { display: flex; justify-content: space-between; gap: var(--space-sm); padding-block: var(--space-xs); border-bottom: var(--rule-hair) solid var(--color-rule); font-size: var(--text-xs); }
+.storefront-hours li:last-child { border-bottom: 0; }
+.storefront-hours span:first-child { color: var(--color-muted); }
+.storefront-category { padding-block: var(--space-md) var(--space-lg); }
+.storefront-category + .storefront-category { border-top: var(--rule-hair) solid var(--color-rule); }
+.storefront-category h3 { font-size: var(--text-lg); margin-block-end: var(--space-sm); }
+.storefront-items { display: grid; gap: 0; }
+.storefront-items li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-md); align-items: center;
+padding-block: var(--space-sm);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  font-size: var(--text-md);
+}
+.storefront-items li.has-photo { grid-template-columns: 56px minmax(0, 1fr) auto; }
+.storefront-item-photo { width: 56px; height: 56px; object-fit: cover; border: var(--rule-hair) solid var(--color-ink); grid-row: span 2; filter: saturate(0.88) contrast(1.1); }
+.storefront-item-name { font-weight: 400; min-width: 0; }
+.storefront-item-name small { display: block; margin-block-start: var(--space-3xs); font-size: var(--text-xs); color: var(--color-muted); }
+.storefront-item-price { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.menu-page { max-width: 900px; margin-inline: auto; padding: var(--space-lg) var(--gutter) var(--space-4xl); }
+.menu-page__head { padding-block: var(--space-xl) var(--space-lg); border-bottom: var(--rule-bar) solid var(--color-ink); margin-block-end: var(--space-md); }
+.menu-page__crumb { font-size: var(--text-sm); color: var(--color-muted); margin-block-end: var(--space-sm); }
+.menu-page__crumb a { text-decoration: underline; text-underline-offset: 0.2em; }
+.menu-page h1 { font-size: clamp(1.9rem, 3.4vw + 0.5rem, 3rem); }
+.menu-page__address { margin-block-start: var(--space-sm); color: var(--color-muted); font-size: var(--text-sm); }
+.menu-page__table { display: inline-block; margin-block-start: var(--space-md);padding: var(--space-xs) var(--space-sm); border: var(--rule-hair) solid var(--color-ink); background: var(--color-paper-2); font-size: var(--text-xs); font-weight: 700; }
+
+/* Campaigns --------------------------------------------------------------- */
+.campaign-banner { background: var(--color-ink); color: var(--color-paper); border-bottom: var(--rule-bar) solid var(--color-ink); }
+.campaign-banner strong { color: var(--color-accent-2); }
+.campaign-banner__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; padding-block: var(--space-sm); }
+.campaign-banner p { font-size: var(--text-sm); }
+.campaign-banner strong { font-weight: 800; }
+.campaign-banner__cta { font-size: var(--text-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; white-space: nowrap; }
+.campaign-popup {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: grid; place-items: center;
+  padding: var(--space-md);
+  background: color-mix(in oklab, var(--color-ink) 55%, transparent);
+}
+.campaign-popup__card {
+  position: relative;
+  width: min(100%, 420px);
+  border: var(--rule-bar) solid var(--color-ink);
+  background: var(--color-paper-3);
+  padding: var(--space-xl) var(--space-lg) var(--space-lg);
+  display: grid; gap: var(--space-sm);
+}
+.campaign-popup__close { position: absolute; inset-block-start: 8px; inset-inline-end: 8px; display: grid; place-items: center; width: 32px; height: 32px; border: var(--rule-hair) solid var(--color-ink); }
+.campaign-popup__eyebrow { color: var(--color-muted); font-size: var(--text-xs); font-weight: 400; }
+.campaign-popup__card h2 { font-size: var(--text-xl); }
+.campaign-popup__card p { color: var(--color-muted); font-size: var(--text-sm); }
+.campaign-popup__code { justify-self: start; padding: var(--space-xs) var(--space-sm); border: var(--rule-bar) dashed var(--color-ink); font-size: var(--text-md); font-weight: 800; }
+.campaign-popup__cta { justify-self: start; }
+
+@media (max-width: 64rem) {
+  .storefront-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
+  .storefront-aside { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 40rem) {
+  .storefront-aside { grid-template-columns: minmax(0, 1fr); }
+  .storefront-items li.has-photo { grid-template-columns: 48px minmax(0, 1fr) auto; }
+  .storefront-item-photo { width: 48px; height: 48px; }
+}

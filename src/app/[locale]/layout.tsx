@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { SiteHeader } from "@/components/ui/SiteHeader";
-import { SiteFooter } from "@/components/ui/SiteFooter";
+import { SiteChrome } from "@/components/ui/SiteChrome";
+import { chivoMono, notoSansArabic } from "../fonts";
 import { appBaseUrl, ogAlternateLocales, ogLocale } from "@/domain/seo";
 import "../globals.css";
 
@@ -77,13 +77,10 @@ export default async function LocaleLayout({
   const direction = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={direction}>
+    <html lang={locale} dir={direction} className={`${chivoMono.variable} ${notoSansArabic.variable}`}>
       <body>
         <NextIntlClientProvider>
-          <a href="#main-content" className="skip-link">Skip to content</a>
-          <SiteHeader />
-          <main id="main-content">{children}</main>
-          <SiteFooter />
+          <SiteChrome>{children}</SiteChrome>
         </NextIntlClientProvider>
       </body>
     </html>

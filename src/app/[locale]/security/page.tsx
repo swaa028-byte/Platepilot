@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Security model",
@@ -67,23 +66,40 @@ const sections: { title: string; points: string[] }[] = [
 export default function SecurityPage() {
   return (
     <div className="security-page">
-      <div className="shell">
-        <p className="eyebrow"><span />PLATEPILOT</p>
-        <h1><ShieldCheck size={30} strokeWidth={1.6} /> Security and privacy model</h1>
-        <p className="security-page__intro">
-          How PlatePilot protects restaurant data, handles money and treats personal
-          information — stated plainly, so you can hold us to it.
-        </p>
-        {sections.map((section) => (
-          <section key={section.title} className="security-page__section">
-            <h2>{section.title}</h2>
-            <ul>
-              {section.points.map((point) => (
-                <li key={point}>{point}</li>
-              ))}
-            </ul>
-          </section>
-        ))}
+      <div className="shell security-layout">
+        <aside className="security-index">
+          <p className="security-index__label">On this page</p>
+          <ol>
+            {sections.map((section, index) => (
+              <li key={section.title}>
+                <a href={`#security-${index}`}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  {section.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </aside>
+        <div className="security-body">
+          <h1>Security and privacy model</h1>
+          <p className="security-page__intro">
+            How PlatePilot protects restaurant data, handles money and treats personal
+            information — stated plainly, so you can hold us to it.
+          </p>
+          {sections.map((section, index) => (
+            <section key={section.title} className="security-page__section" id={`security-${index}`}>
+              <span className="security-page__no" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h2>{section.title}</h2>
+                <ul>
+                  {section.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          ))}
+        </div>
       </div>
     </div>
   );

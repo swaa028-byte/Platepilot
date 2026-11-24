@@ -16,7 +16,9 @@ import { useEffect, useState } from "react";
  * If none load, the animated gradient underneath stays, so the hero is never a
  * broken box.
  */
-const DEFAULT_SOURCES = ["/media/gallery-1.jpg", "/media/gallery-2.jpg", "/media/gallery-3.jpg"];
+// Shipped photographs, used when the deployment has not supplied its own.
+// They are staged product imagery, not a customer result; the caption says so.
+const DEFAULT_SOURCES = ["/images/hero-restaurant.jpg", "/images/kitchen-pass.jpg"];
 
 export function StartMedia({ caption }: { caption: string }) {
   const [sources, setSources] = useState<string[]>([]);

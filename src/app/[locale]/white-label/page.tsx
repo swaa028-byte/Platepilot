@@ -28,7 +28,6 @@ export default async function WhiteLabelPage({ params }: { params: Promise<{ loc
     <>
       <section className="info-hero">
         <div className="shell">
-          <p className="eyebrow"><span />{t("eyebrow")}</p>
           <h1>{t("title")}</h1>
           <p className="cw-lede">{t("lede")}</p>
         </div>
@@ -64,7 +63,6 @@ export default async function WhiteLabelPage({ params }: { params: Promise<{ loc
 
       <section className="closing-section">
         <div className="shell closing-inner">
-          <p className="eyebrow eyebrow--light eyebrow--center"><span />PLATEPILOT</p>
           <h2>{t("ctaTitle")}</h2>
           <p>{t("ctaBody")}</p>
           <Link href="/onboarding" className="button button--light button--hero">{h("primaryCta")}<ArrowRight size={18} /></Link>

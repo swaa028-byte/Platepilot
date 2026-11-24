@@ -58,6 +58,8 @@
     "secondaryCta": "Découvrir les opérations",
     "note": "Commencez avec vos vraies données. Aucun restaurant de démonstration.",
     "previewLabel": "SALLE EN DIRECT · VUE ILLUSTRATIVE",
+    "boardLive": "Salle en direct",
+    "boardNote": "Vue illustrative",
     "previewTitle": "Une salle facile à lire.",
     "previewDescription": "Construisez la vue à partir de votre plan. Chaque table reste liée au service, aux réservations et au POS.",
     "previewEmpty": "Votre salle commence ici",

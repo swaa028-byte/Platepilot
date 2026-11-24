@@ -24,7 +24,7 @@ export default async function LoginPage({ params, searchParams }: { params: Prom
     <section className="login-section">
       <AuthFragmentHandler locale={locale} />
       <div className="shell login-grid">
-        <div className="login-copy"><p className="eyebrow"><span />{t("eyebrow")}</p><h1>{t("title")}</h1><p>{t("description")}</p></div>
+        <div className="login-copy"><h1>{t("title")}</h1><p>{t("description")}</p></div>
         <div className="form-card login-card"><LoginForm configured={isSupabaseConfigured()} localMode={isLocalModeEnabled()} expired={error === "link_expired"} /></div>
       </div>
     </section>

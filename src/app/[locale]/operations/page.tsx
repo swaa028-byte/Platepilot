@@ -51,7 +51,6 @@ export default async function OperationsPage({ params }: { params: Promise<{ loc
     <div className="operations-page">
       <section className="page-hero page-hero--compact">
         <div className="shell">
-          <p className="eyebrow"><span />{t("eyebrow")}</p>
           <h1>{t("title")}</h1>
           <p className="page-lede">{t("description")}</p>
         </div>
@@ -61,7 +60,6 @@ export default async function OperationsPage({ params }: { params: Promise<{ loc
           {user && workspaces.length > 0 ? (
             <div className="workspace-callout workspace-callout--live">
               <div>
-                <span className="status-badge">YOUR WORKSPACE</span>
                 <h2>{workspaces[0].name}</h2>
                 <p>{workspaces[0].address}</p>
               </div>
@@ -72,12 +70,12 @@ export default async function OperationsPage({ params }: { params: Promise<{ loc
             </div>
           ) : user ? (
             <div className="workspace-callout">
-              <div><span className="status-badge">EMPTY BY DEFAULT</span><h2>{t("workspaceTitle")}</h2><p>{t("workspaceBody")}</p></div>
+              <div><h2>{t("workspaceTitle")}</h2><p>{t("workspaceBody")}</p></div>
               <div className="button-row"><Link className="button" href="/onboarding">{t("setupCta")}<ArrowRight size={16} /></Link></div>
             </div>
           ) : (
             <div className="workspace-callout">
-              <div><span className="status-badge">EMPTY BY DEFAULT</span><h2>{t("workspaceTitle")}</h2><p>{t("workspaceBody")}</p></div>
+              <div><h2>{t("workspaceTitle")}</h2><p>{t("workspaceBody")}</p></div>
               <div className="button-row"><Link className="button" href="/onboarding">{t("setupCta")}<ArrowRight size={16} /></Link><Link className="button button--ghost" href="/login">{t("signInCta")}</Link></div>
             </div>
           )}

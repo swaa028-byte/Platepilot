@@ -1,0 +1,100 @@
+@theme static {
+  /* Wayfind · platform colourway. Cool paper, blue-black ink, one cobalt for
+     what is live, amber for figures and only on ink. */
+  --color-paper: oklch(95.5% 0.006 250);
+  --color-paper-2: oklch(91% 0.009 250);
+  --color-paper-3: oklch(99.5% 0.005 250);
+  --color-ink: oklch(16% 0.014 262);
+  --color-ink-2: oklch(29% 0.014 262);
+  --color-ink-3: oklch(38% 0.014 262);
+  --color-muted: oklch(47% 0.016 260);
+  --color-rule: oklch(80% 0.011 250);
+  --color-rule-soft: oklch(88% 0.009 250);
+  --color-ink-rule: oklch(34% 0.014 262);
+  --color-accent: oklch(51% 0.22 264);
+  --color-accent-deep: oklch(41% 0.19 264);
+  --color-accent-soft: oklch(93% 0.028 264);
+  --color-accent-2: oklch(81% 0.16 82);
+  --color-accent-2-ink: oklch(24% 0.06 82);
+  --color-accent-ink: oklch(99.5% 0.003 250);
+  --color-focus: oklch(51% 0.22 264);
+  --color-error: oklch(52% 0.19 27);
+  --color-error-soft: oklch(95% 0.03 27);
+  --color-success: oklch(46% 0.12 152);
+  --color-success-soft: oklch(94% 0.04 152);
+  --color-warning: oklch(58% 0.13 72);
+  --color-warning-soft: oklch(95% 0.05 82);
+
+  --font-display: var(--font-chivo, "Chivo Mono"), ui-monospace, monospace;
+  --font-body: var(--font-display);
+  --font-outlier: var(--font-body);
+  --font-arabic: var(--font-noto-arabic, "Noto Sans Arabic"), "Segoe UI", sans-serif;
+
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.375rem;
+  --text-display-s: clamp(1.75rem, 2.4vw + 0.75rem, 2.75rem);
+  --text-display: clamp(2.5rem, 5.2vw + 0.5rem, 5rem);
+  --text-section: clamp(1.75rem, 2.4vw + 0.9rem, 3.125rem);
+  --text-title: clamp(1.125rem, 0.5vw + 0.95rem, 1.375rem);
+  --text-lead: clamp(1rem, 0.4vw + 0.9rem, 1.1875rem);
+  --text-figure: clamp(2rem, 3.4vw + 0.5rem, 3.5rem);
+
+  --radius-card: 0;
+  --radius-pill: 999px;
+  --shadow-card: 0 24px 40px -24px oklch(8% 0.01 260 / 0.6);
+  --tracking-display: -0.035em;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+:root {
+  color-scheme: light;
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 144px;
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+  --container: 1360px;
+  --container-prose: 720px;
+  --gutter: 48px;
+  --gap-columns: 32px;
+  --section-gap-s: 88px;
+  --section-gap: 120px;
+  --section-gap-l: 152px;
+  --nav-h: 64px;
+  --rail-w: 256px;
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-sticky-nav: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+  --rule-hair: 1px;
+  --rule-bar: 2px;
+  --display-weight: 800;
+  --live-dot: oklch(51% 0.22 264);
+}
+@media (max-width: 64rem) {
+  :root { --gutter: 24px; --section-gap-s: 64px; --section-gap: 88px; --section-gap-l: 112px; --rail-w: 100%; }
+}
+@media (max-width: 40rem) {
+  :root { --gutter: 16px; --section-gap-s: 48px; --section-gap: 64px; --section-gap-l: 80px; --gap-columns: 16px; }
+}

@@ -12,12 +12,11 @@
  *        APP_URL      = https://platepilot.<your-subdomain>.workers.dev
  *        CRON_SECRET  = the same value the app has
  *   3. Settings → Trigger Events → Cron Triggers → Add:
- *        */5 * * * *   (every five minutes)
+ *        every five minutes
  *
  * Without it the app still works: retries simply wait for the next drain the
  * app performs on its own.
  */
-
 export default {
   async scheduled(event, env, ctx) {
     const run = async () => {

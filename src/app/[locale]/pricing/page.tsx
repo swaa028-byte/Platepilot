@@ -40,10 +40,15 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
   return (
     <>
       <section className="info-hero">
-        <div className="shell">
-          <p className="eyebrow"><span />{t("eyebrow")}</p>
-          <h1>{t("title")}</h1>
-          <p className="cw-lede">{t("lede")}</p>
+        <div className="shell pricing-hero">
+          <div>
+            <h1>{t("title")}</h1>
+            <p className="cw-lede">{t("lede")}</p>
+          </div>
+          <div className="pricing-stamp">
+            <span className="pricing-stamp__value">0</span>
+            <span className="pricing-stamp__label">{t("cmp1")}</span>
+          </div>
         </div>
       </section>
 
@@ -51,7 +56,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         <div className="shell">
           <h2>{t("includedTitle")}</h2>
           <p className="info-lede">{t("includedBody")}</p>
-          <div className="info-grid info-grid--two">
+          <div className="info-grid">
             {included.map((item) => (
               <div className="info-card info-card--icon" key={item}>
                 <span className="info-card-icon"><Check size={20} /></span>
@@ -66,7 +71,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         <div className="shell">
           <h2>{t("costsTitle")}</h2>
           <p className="info-lede">{t("costsBody")}</p>
-          <div className="info-grid info-grid--two" style={{ maxWidth: 900 }}>
+          <div className="info-grid">
             {costs.map((cost) => {
               const Icon = cost.icon;
               return (
@@ -95,8 +100,8 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
               {rows.map(([label, theirs, ours]) => (
                 <tr key={label}>
                   <td>{label}</td>
-                  <td>{theirs}</td>
-                  <td className="is-us">{ours}</td>
+                  <td data-label={t("compareHosted")}>{theirs}</td>
+                  <td className="is-us" data-label={t("comparePlatepilot")}>{ours}</td>
                 </tr>
               ))}
             </tbody>
@@ -120,7 +125,6 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
 
       <section className="closing-section">
         <div className="shell closing-inner">
-          <p className="eyebrow eyebrow--light eyebrow--center"><span />PLATEPILOT</p>
           <h2>{t("ctaTitle")}</h2>
           <p>{t("ctaBody")}</p>
           <Link href="/onboarding" className="button button--light button--hero">{h("primaryCta")}<ArrowRight size={18} /></Link>

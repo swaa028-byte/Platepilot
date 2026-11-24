@@ -32,7 +32,7 @@ export default async function OnboardingPage({ params }: { params: Promise<{ loc
   }
   return (
     <>
-      <section className="page-hero page-hero--compact"><div className="shell"><p className="eyebrow"><span />{t("eyebrow")}</p><h1>{t("title")}</h1><p className="page-lede">{t("description")}</p></div></section>
+      <section className="page-hero page-hero--compact"><div className="shell"><h1>{t("title")}</h1><p className="page-lede">{t("description")}</p></div></section>
       <OnboardingWizard persistenceConfigured googleConfigured={isGoogleConfigured()} localMode={localMode} />
     </>
   );

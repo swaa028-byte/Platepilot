@@ -75,7 +75,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
             <p>
               <strong>{campaign.headline}</strong>
               {campaign.body ? ` — ${campaign.body}` : ""}
-              {campaign.discountCode ? ` · ${campaign.discountCode}` : ""}
+              {campaign.discountCode ? ` — ${campaign.discountCode}` : ""}
             </p>
             {campaign.ctaLabel && campaign.ctaHref && (
               <Link href={campaign.ctaHref} className="campaign-banner__cta">{campaign.ctaLabel} →</Link>
@@ -84,16 +84,29 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
         </aside>
       )}
 
-      <section className="page-hero page-hero--compact">
+      <header className="storefront-bar">
+        <div className="shell storefront-bar__inner">
+          <Link href={`/${locale}/r/${slug}`} className="storefront-bar__brand">
+            <span aria-hidden="true">{menu.location.name.slice(0, 2).toUpperCase()}</span>
+            {menu.location.name}
+          </Link>
+          <nav className="storefront-bar__nav" aria-label={menu.location.name}>
+            {hours.length > 0 && <a href="#hours">{t("hours")}</a>}
+            <a href="#menu">{t("menu")}</a>
+          </nav>
+        </div>
+      </header>
+
+      <header className="storefront-head">
         <div className="shell">
-          <p className="eyebrow"><span />{t("eyebrow")}</p>
           <h1>{menu.location.name}</h1>
           <p className="page-lede">{menu.location.address}</p>
         </div>
-      </section>
+      </header>
 
       <section className="section storefront-content">
-        <div className="shell">
+        <div className="shell storefront-grid">
+          <aside className="storefront-aside" id="hours">
           {hours.length > 0 && (
             <section className="storefront-block">
               <h2>{t("hours")}</h2>
@@ -107,7 +120,9 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
               </ul>
             </section>
           )}
+          </aside>
 
+          <div className="storefront-menu" id="menu">
           <section className="storefront-block">
             <h2>{t("menu")}</h2>
             {available.length === 0 ? (
@@ -135,6 +150,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ loc
               ))
             )}
           </section>
+          </div>
         </div>
       </section>
     </div>

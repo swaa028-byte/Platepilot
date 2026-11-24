@@ -58,6 +58,8 @@
     "secondaryCta": "Explore operations",
     "note": "Start with your real data. No demo restaurant required.",
     "previewLabel": "LIVE FLOOR · ILLUSTRATIVE VIEW",
+    "boardLive": "Live floor",
+    "boardNote": "Illustrative view",
     "previewTitle": "A room your team can read.",
     "previewDescription": "Build the view from your own floor plan. Every table stays connected to service, reservations and the POS.",
     "previewEmpty": "Your room begins here",

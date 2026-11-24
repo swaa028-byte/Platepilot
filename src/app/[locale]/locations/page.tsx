@@ -69,7 +69,6 @@ export default async function LocationsPage({ params }: { params: Promise<{ loca
     <div className="dir-page">
       <section className="dir-hero">
         <div className="shell">
-          <p className="eyebrow"><span />{t("eyebrow")}</p>
           <h1>{t("title")}</h1>
           <p className="dir-lede">{t("description")}</p>
           {places.length > 0 && <p className="dir-count">{t("count", { count: places.length })}</p>}

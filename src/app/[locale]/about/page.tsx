@@ -23,7 +23,6 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     <>
       <section className="info-hero">
         <div className="shell">
-          <p className="eyebrow"><span />{t("eyebrow")}</p>
           <h1>{t("title")}</h1>
           <p className="cw-lede">{t("lede")}</p>
         </div>
@@ -47,13 +46,13 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         </div>
       </section>
 
-      <section className="info-section info-section--tint" id="contact">
-        <div className="shell">
+      <section className="closing-section" id="contact">
+        <div className="shell closing-inner">
           <h2>{t("contactTitle")}</h2>
-          <p className="info-lede">{t("contactBody")}</p>
-          <div className="button-row" style={{ marginBlockStart: 28 }}>
-            <a className="button" href="mailto:team@platepilot.local"><Mail size={17} />{t("contactCta")}</a>
-            <Link className="button button--ghost" href="/security">{h("securityCta")}<ArrowRight size={16} /></Link>
+          <p>{t("contactBody")}</p>
+          <div className="button-row">
+            <a className="button button--light" href="mailto:team@platepilot.local"><Mail size={17} />{t("contactCta")}</a>
+            <Link className="button button--outline-light" href="/security">{h("securityCta")}<ArrowRight size={16} /></Link>
           </div>
         </div>
       </section>

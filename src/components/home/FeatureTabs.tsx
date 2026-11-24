@@ -51,7 +51,6 @@ export default function FeatureTabs() {
     <section className="section cw-tabs" id="features">
       <div className="shell">
         <div className="cw-center-head">
-          <p className="eyebrow eyebrow--center"><span />{t("tabsEyebrow")}</p>
           <h2>{t("tabsTitle")}</h2>
         </div>
         <div className="cw-tab-bar" role="tablist" aria-label={t("tabsTitle")} onKeyDown={onKeyDown}>

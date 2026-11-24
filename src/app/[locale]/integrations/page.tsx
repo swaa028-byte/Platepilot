@@ -1,4 +1,4 @@
-import { ArrowRight, Check, CreditCard, FileText, Landmark, Mail, MapPin, MessageSquare, Server, Smartphone } from "lucide-react";
+import { ArrowRight, Check, CreditCard, FileText, MapPin, MessageSquare, Server, Smartphone } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { buildPageMetadata } from "@/domain/seo";
@@ -54,7 +54,6 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ l
     <>
       <section className="info-hero">
         <div className="shell">
-          <p className="eyebrow"><span />{t("eyebrow")}</p>
           <h1>{t("title")}</h1>
           <p className="cw-lede">{t("lede")}</p>
         </div>
@@ -62,13 +61,16 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ l
 
       <section className="info-section info-section--tint">
         <div className="shell">
-          {groups.map((group, index) => {
+          {groups.map((group) => {
             const Icon = group.icon;
             return (
-              <div className={`int-group${index === 0 ? "" : " info-section"}`} style={index === 0 ? { marginBlockStart: 0 } : undefined} key={group.title}>
+              <div className="int-group" key={group.title}>
                 <div className="int-group-head">
-                  <h3><Icon size={22} style={{ display: "inline", verticalAlign: "-4px", marginInlineEnd: 10, color: "var(--accent)" }} />{group.title}</h3>
-                  <p>{group.body}</p>
+                  <span className="int-group-icon"><Icon size={20} aria-hidden="true" /></span>
+                  <div>
+                    <h3>{group.title}</h3>
+                    <p>{group.body}</p>
+                  </div>
                 </div>
                 <div className="int-chips">
                   {group.chips.map((chip) => (
@@ -78,16 +80,12 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ l
               </div>
             );
           })}
-          <p className="info-lede" style={{ marginBlockStart: 40 }}>
-            <FileText size={16} style={{ display: "inline", verticalAlign: "-3px", marginInlineEnd: 8, color: "var(--accent)" }} />
-            {t("docsNote")}
-          </p>
+          <p className="int-docs"><FileText size={16} aria-hidden="true" />{t("docsNote")}</p>
         </div>
       </section>
 
       <section className="closing-section">
         <div className="shell closing-inner">
-          <p className="eyebrow eyebrow--light eyebrow--center"><span />PLATEPILOT</p>
           <h2>{t("ctaTitle")}</h2>
           <p>{t("ctaBody")}</p>
           <Link href="/settings" className="button button--light button--hero">{h("secondaryCta")}<ArrowRight size={18} /></Link>

@@ -189,12 +189,15 @@ export function KitchenBoard() {
   useEffect(() => {
     let active = true;
     fetch("/api/staff/locations", { cache: "no-store" })
-      .then((response) => response.json())
-      .then((data: Location[]) => {
+      .then(async (response) => (response.ok ? ((await response.json()) as unknown) : null))
+      .then((data: unknown) => {
         if (!active) return;
-        setLocations(data);
-        setLocationId(data[0]?.locationId ?? null);
-        if (data.length === 0) setState("empty");
+        // A signed-out request answers with an error object, not a list. Treat
+        // that as "no linked location" instead of leaving the board loading.
+        const list = Array.isArray(data) ? (data as Location[]) : [];
+        setLocations(list);
+        setLocationId(list[0]?.locationId ?? null);
+        if (list.length === 0) setState("empty");
       })
       .catch(() => { if (active) setState("failed"); });
     return () => { active = false; };
